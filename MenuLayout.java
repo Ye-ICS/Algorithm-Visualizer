@@ -25,7 +25,10 @@ class MenuLayout extends VBox {
         Button bubbleSortBtn = new Button("Bubble Sort");
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
+        Button recursiveDivisionBtn = new Button("Recursive Division");
+        recursiveDivisionBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new RecursiveDivisionLayout()));
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, recursiveDivisionBtn);
         getChildren().addAll(title, buttonsBox);
     }
 }
