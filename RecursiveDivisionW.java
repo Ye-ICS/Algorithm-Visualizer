@@ -1,3 +1,5 @@
 public class RecursiveDivisionW {
-    
+    RecursiveDivisionW(){
+        //
+    }
 }
