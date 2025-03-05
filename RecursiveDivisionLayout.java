@@ -3,6 +3,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
 
+/**
+ * Placeholder. May delete later.
+ */
 public class RecursiveDivisionLayout extends FlowPane{
     RecursiveDivisionLayout(){
         setAlignment(Pos.CENTER);
