@@ -25,7 +25,10 @@ class MenuLayout extends VBox {
         Button bubbleSortBtn = new Button("Bubble Sort");
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
+        Button bruteforceBtn = new Button("Brute Force");
+        bruteforceBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BruteForce()));
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, bruteforceBtn);
         getChildren().addAll(title, buttonsBox);
     }
 }
