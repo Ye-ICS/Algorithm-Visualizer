@@ -9,7 +9,6 @@ public class Sudoku extends GridPane{
         int subGridSize = 3;   // Size of subgrid (3x3)
         int cellSize = 200;     // Size of each cell
 
-
         // Generate 3x3 grid UI with nested 3x3 cells inside each main cell
         for (int row = 0; row < subGridSize; row++) {
             for (int col = 0; col < subGridSize; col++) {
@@ -36,6 +35,8 @@ public class Sudoku extends GridPane{
                 add(stack, col, row);
             }
         }
+
+        
 
     }
 }
