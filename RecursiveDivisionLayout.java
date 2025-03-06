@@ -18,7 +18,7 @@ public class RecursiveDivisionLayout extends FlowPane{
         levelSpinner.setEditable(true);
 
         Button drawRecDevMazeBtn = new Button("Draw Recursive Division Maze");
-        drawRecDevMazeBtn.setOnAction(event -> RecursiveDivisionW.drawMaze(canvas.getGraphicsContext2D(), 0, 0, 500, levelSpinner.getValue()));
+        drawRecDevMazeBtn.setOnAction(event -> RecursiveDivisionW.drawMaze(canvas.getGraphicsContext2D(), 500, 0, 500, levelSpinner.getValue()));
 
         Button backBtn = new Button("Back");
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
