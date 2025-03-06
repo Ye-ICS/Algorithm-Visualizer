@@ -7,6 +7,9 @@ public class RecursiveDivisionW {
             return; //skip rest of method
         }
 
+        if (level == 1){
+            //draw 2 walls
+        }
     }
 }
 
