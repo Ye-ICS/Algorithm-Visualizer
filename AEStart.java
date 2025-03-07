@@ -1,27 +1,29 @@
 import javafx.geometry.Insets;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
-import javafx.scene.control.TextField;
 
-/**
- * Placeholder. May delete later.
- */
 public class AEStart extends VBox {
+    private static String password = ""; // Store the password
+
+    public static String getPassword() {
+        return password;
+    }
+
     AEStart() {
         setAlignment(Pos.CENTER);
         setPrefSize(600, 600);
         setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         setSpacing(50); // Set vertical spacing between elements
+
         VBox descriptionBox = new VBox();
         descriptionBox.setAlignment(Pos.CENTER);
         descriptionBox.setPrefSize(600, 200);
@@ -29,12 +31,10 @@ public class AEStart extends VBox {
         Text descriptionText = new Text(
                 "Welcome to our AES-256 Encryption Algorithm Visualizer! AES-256 (Advanced Encryption Standard) is a military standard encryption algorithm used to protect the most sensitive data on the planet. Not only that, you use it every day to protect your ZIP files! Go ahead and enter your password here and click the button below:");
         descriptionText.setStyle("-fx-padding: 10px;");
-        
-        TextFlow description = new TextFlow(descriptionText);
+
+        javafx.scene.text.TextFlow description = new javafx.scene.text.TextFlow(descriptionText);
         description.setTextAlignment(TextAlignment.CENTER);
         description.prefWidthProperty().bind(descriptionBox.widthProperty());
-
-
 
         VBox passBox = new VBox();
         passBox.setAlignment(Pos.CENTER);
@@ -46,15 +46,16 @@ public class AEStart extends VBox {
         VBox startBox = new VBox();
         startBox.setAlignment(Pos.CENTER);
         startBox.setSpacing(10);
-        
+
         Button startBtn = new Button("Start Animation !");
         startBtn.setMinSize(200, 50); // Adjust as needed
         startBtn.getStyleClass().add("StartButton"); // Apply CSS class
-        
-        // Load the CSS file
-        startBox.getStylesheets().add(getClass().getResource("CSS/StartButton.css").toExternalForm());
 
-        startBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        startBtn.setOnAction(event -> {
+            password = passwordBox.getText(); // Store the password
+            FXUtils.setSceneRoot(getScene(), new AESPasswordArray(password)); // Pass password to next scene
+        });
+
         passBox.getChildren().add(passwordBox);
         descriptionBox.getChildren().add(description);
         startBox.getChildren().add(startBtn);
