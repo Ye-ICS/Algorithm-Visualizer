@@ -9,7 +9,11 @@ public class RecursiveDivisionW {
 
         if (level == 1){
             //draw 2 walls
+            graphicsContext.strokeLine(x, y, size, y);
+            graphicsContext.strokeLine(x, y, x, size);
+            return;
         }
+        drawMaze(graphicsContext, x, y, size, level);
     }
 }
 
