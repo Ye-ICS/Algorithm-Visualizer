@@ -11,10 +11,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
+import javafx.stage.Stage;
 
 /**
- * Custom layout based on VBox for a menu to select which algorithm to visualize.
+ * Custom layout based on VBox for a menu to select which algorithm to
+ * visualize.
  */
 class MenuLayout extends VBox {
     /**
@@ -25,22 +26,22 @@ class MenuLayout extends VBox {
 
         Text title = new Text("Algorithm Visualizer");
         title.setFont(Font.font(24));
-        
+
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
         Button AESBtn = new Button("Advanced Encryption Standard algorithm");
-        // AESBtn.setMinSize(300, 50);
-        AESBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AEStart()));
-        AESBtn.getStyleClass().add("cool-button"); // Apply CSS class
+        AESBtn.setMinSize(300, 50);
+        AESBtn.setOnAction(event -> {
+            FXUtils.setSceneRoot(getScene(), new AEStart());
+        });
+        AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
 
-
-
-
-        
-        buttonsBox.getChildren().addAll(AESBtn);
+        buttonsBox.getChildren().add(AESBtn);
         getChildren().addAll(title, buttonsBox);
-        
 
+        // Load CSS file
+        getStylesheets().add(getClass().getResource("CSS/AEStyling.css").toExternalForm());
     }
+
 }

@@ -1,14 +1,16 @@
 import javafx.geometry.Insets;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.scene.control.TextField;
 
 /**
@@ -17,26 +19,45 @@ import javafx.scene.control.TextField;
 public class AEStart extends VBox {
     AEStart() {
         setAlignment(Pos.CENTER);
-        // javafx.stage.Stage stage = (javafx.stage.Stage) getScene().getWindow();
-        // stage.setFullScreen(true);
-        // stage.setMaximized(true);
-        setPrefSize(400, 600);
+        setPrefSize(600, 600);
         setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        setSpacing(150); // Set vertical spacing between elements
+        setSpacing(50); // Set vertical spacing between elements
+        VBox descriptionBox = new VBox();
+        descriptionBox.setAlignment(Pos.CENTER);
+        descriptionBox.setPrefSize(600, 200);
 
-        Text description = new Text("Enter your password here:");
-        description.setStyle("-fx-padding: 10px;");
+        Text descriptionText = new Text(
+                "Welcome to our AES-256 Encryption Algorithm Visualizer! AES-256 (Advanced Encryption Standard) is a military standard encryption algorithm used to protect the most sensitive data on the planet. Not only that, you use it every day to protect your ZIP files! Go ahead and enter your password here and click the button below:");
+        descriptionText.setStyle("-fx-padding: 10px;");
+        
+        TextFlow description = new TextFlow(descriptionText);
+        description.setTextAlignment(TextAlignment.CENTER);
+        description.prefWidthProperty().bind(descriptionBox.widthProperty());
 
+
+
+        VBox passBox = new VBox();
+        passBox.setAlignment(Pos.CENTER);
+        passBox.setSpacing(10);
         TextField passwordBox = new TextField();
         passwordBox.setMaxWidth(200);
         passwordBox.setStyle("-fx-padding: 10px;");
 
+        VBox startBox = new VBox();
+        startBox.setAlignment(Pos.CENTER);
+        startBox.setSpacing(10);
+        
         Button startBtn = new Button("Start Animation !");
-        startBtn.backgroundProperty().set(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-        startBtn.setStyle("-fx-padding: 10px;");
+        startBtn.setMinSize(200, 50); // Adjust as needed
+        startBtn.getStyleClass().add("StartButton"); // Apply CSS class
+        
+        // Load the CSS file
+        startBox.getStylesheets().add(getClass().getResource("CSS/StartButton.css").toExternalForm());
 
         startBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
-
-        getChildren().addAll(description, passwordBox, startBtn);
+        passBox.getChildren().add(passwordBox);
+        descriptionBox.getChildren().add(description);
+        startBox.getChildren().add(startBtn);
+        getChildren().addAll(descriptionBox, passBox, startBtn);
     }
 }
