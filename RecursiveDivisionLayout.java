@@ -17,12 +17,14 @@ public class RecursiveDivisionLayout extends FlowPane{
         Spinner<Integer> levelSpinner = new Spinner<Integer>(0, 100000, 0, 1);
         levelSpinner.setEditable(true);
 
+        setAlignment(Pos.CENTER);
+
         Button drawRecDevMazeBtn = new Button("Draw Recursive Division Maze");
         drawRecDevMazeBtn.setOnAction(event -> RecursiveDivisionW.drawMaze(canvas.getGraphicsContext2D(), 500, 0, 600, levelSpinner.getValue()));
 
         Button backBtn = new Button("Back");
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
 
-        getChildren().addAll(backBtn);
+        getChildren().addAll(backBtn, drawRecDevMazeBtn);
     }
 }
