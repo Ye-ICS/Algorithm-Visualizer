@@ -1,0 +1,23 @@
+.StartButton {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: #90EE90; /* Light Green */
+    -fx-background-radius: 15px;
+    -fx-padding: 10px 20px;
+    -fx-background-image: url("../Design objects/playButton.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: 20px; /* Adjust size as needed */
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+}
+
+/* Hover Effect */
+.StartButton:hover {
+    -fx-background-color: #87CEFA; /* Light Blue */
+}
+
+/* Click Effect */
+.StartButton:pressed {
+    -fx-background-color: #006400; /* Dark Green */
+}

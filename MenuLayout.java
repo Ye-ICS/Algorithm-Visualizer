@@ -1,13 +1,21 @@
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
+import javafx.stage.Stage;
 
 /**
- * Custom layout based on VBox for a menu to select which algorithm to visualize.
+ * Custom layout based on VBox for a menu to select which algorithm to
+ * visualize.
  */
 class MenuLayout extends VBox {
     /**
@@ -18,14 +26,22 @@ class MenuLayout extends VBox {
 
         Text title = new Text("Algorithm Visualizer");
         title.setFont(Font.font(24));
-        
+
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
-        Button bubbleSortBtn = new Button("Bubble Sort");
-        bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
+        Button AESBtn = new Button("Advanced Encryption Standard algorithm");
+        AESBtn.setMinSize(300, 50);
+        AESBtn.setOnAction(event -> {
+            FXUtils.setSceneRoot(getScene(), new AEStart());
+        });
+        AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
+        buttonsBox.getChildren().add(AESBtn);
         getChildren().addAll(title, buttonsBox);
+
+        // Load CSS file
+        getStylesheets().add(getClass().getResource("CSS/AEStyling.css").toExternalForm());
     }
+
 }
