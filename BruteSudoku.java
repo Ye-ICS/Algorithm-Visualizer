@@ -4,7 +4,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
 
 public class BruteForce extends FlowPane{
-    void BruteForceLayout() {
+    /**
+     * Constructs layout for brute force sudoku solver
+     */
+    BruteForce() {
         setAlignment(Pos.CENTER);
 
         Text description = new Text("");
