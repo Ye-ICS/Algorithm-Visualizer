@@ -26,7 +26,7 @@ class MenuLayout extends VBox {
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
         Button mazeSortBtn = new Button("Maze Sort");
-        mazeSortBtn.setOnAction(event -> DeclanJones.main(null));
+        mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MazeSortLayout()));
 
         buttonsBox.getChildren().addAll(bubbleSortBtn, mazeSortBtn);
         getChildren().addAll(title, buttonsBox);

@@ -1,30 +1,22 @@
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Scanner;
+
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 public class DeclanJones {
-    public static void main(String[] args) {
-
-        Scanner in = new Scanner(System.in);
-        System.out.println("What height would you like?");
-        int width = Integer.parseInt(in.nextLine());
-        System.out.println("What width would you like?");
-        int height = Integer.parseInt(in.nextLine());
-        System.out.println("What difficulty would you like?");
-        double difficulty = Double.parseDouble(in.nextLine());
-        in.close();
-
-        boolean[][] wallGrid = new boolean[width][height];
+    public static void start(WritableImage gridImage, PixelWriter writer) {
+        boolean[][] wallGrid = new boolean[(int)gridImage.getWidth()][(int)gridImage.getHeight()];
 
         while (true) {
 
             boolean[][] pathGrid = null;
 
-            int attempts = 0;
             while (pathGrid == null) {
                 for (int i = 0; i < wallGrid.length; i++) {
                     for (int j = 0; j < wallGrid[0].length; j++) {
-                        if ((int) (Math.random() * difficulty) != 0 && (i != 0 || j != 0)
+                        if ((int) (Math.random() * 2) != 0 && (i != 0 || j != 0)
                                 && (i != wallGrid.length - 1 || j != wallGrid[0].length - 1)) {
                             wallGrid[i][j] = true;
                         } else {
@@ -32,19 +24,18 @@ public class DeclanJones {
                         }
                     }
                 }
-                pathGrid = pathFind(wallGrid, false, 0);
-                attempts++;
+                pathGrid = pathFind(wallGrid, false, writer);
             }
 
-            printGrid(wallGrid, wallGrid);
-            pathFind(wallGrid, true, attempts);
+            printGrid(wallGrid, wallGrid, writer);
+            pathFind(wallGrid, true, writer);
 
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
             }
 
-            printGrid(wallGrid, pathGrid);
+            printGrid(wallGrid, pathGrid, writer);
 
             try {
                 Thread.sleep(2000);
@@ -53,30 +44,25 @@ public class DeclanJones {
         }
     }
 
-    public static void printGrid(boolean[][] wallGrid, boolean[][] pathGrid) {
+    public static void printGrid(boolean[][] wallGrid, boolean[][] pathGrid, PixelWriter writer) {
         if (pathGrid != null && wallGrid.length == pathGrid.length && wallGrid[0].length == pathGrid[0].length) {
-            String toPrint = "";
             for (int i = 0; i < wallGrid.length; i++) {
                 for (int j = 0; j < wallGrid[0].length; j++) {
                     if (i + j == 0 || i == wallGrid.length - 1 && j == wallGrid[0].length - 1) {
-                        toPrint += "▓▓";
+                        writer.setColor(i, j, Color.rgb(50, 50, 50));
                     } else if (wallGrid[i][j]) {
-                        toPrint += "▒▒";
+                        writer.setColor(i, j, Color.rgb(150, 150, 150));
                     } else if (pathGrid[i][j]) {
-                        toPrint += "██";
+                        writer.setColor(i, j, Color.rgb(255, 255, 255));
                     } else {
-                        toPrint += "  ";
+                        writer.setColor(i, j, Color.rgb(0, 0, 0));
                     }
                 }
-                toPrint += "\n";
             }
-            System.out.print("\033c");
-            System.out.flush();
-            System.out.print(toPrint);
         }
     }
 
-    public static boolean[][] pathFind(boolean[][] wallGrid, boolean debug, int attempts) {
+    public static boolean[][] pathFind(boolean[][] wallGrid, boolean debug, PixelWriter writer) {
 
         boolean[][] checked = new boolean[wallGrid.length][wallGrid[0].length];
         int[][][] cameFrom = new int[wallGrid.length][wallGrid[0].length][2];
@@ -109,7 +95,7 @@ public class DeclanJones {
         int[][][] cameFromGrid;
 
         cameFromGrid = checkNeighbours(new int[][] { { 0, 0 } }, wallGrid, distanceGrid, distanceGridGoal,
-                checked, cameFrom, debug, attempts);
+                checked, cameFrom, debug, writer);
         boolean[][] pathGrid = findPathGrid(cameFromGrid);
         return pathGrid;
     }
@@ -136,12 +122,11 @@ public class DeclanJones {
     }
 
     private static int[][][] checkNeighbours(int[][] coords, boolean[][] wallGrid, int[][] distanceGrid,
-            int[][] distanceGridGoal, boolean[][] checked, int[][][] cameFrom, boolean debug, int attempts) {
+            int[][] distanceGridGoal, boolean[][] checked, int[][][] cameFrom, boolean debug, PixelWriter writer) {
 
         while (true) {
             if (debug) {
-                printGrid(wallGrid, checked);
-                System.out.print("\n" + attempts);
+                printGrid(wallGrid, checked, writer);
             }
 
             if (coords.length == 0) {
