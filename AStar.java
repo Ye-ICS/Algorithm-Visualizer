@@ -45,7 +45,11 @@ public class AStar extends BorderPane {
         clearButton.setOnAction(event -> resetGrid());
         aStarButton.setOnAction(event -> RunAStar());
 
-    }    
+    } 
+    
+    private static double heuristic(Cell a, Cell b) {
+        return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+    }
 
     public static void resetGrid(){
         for (int row = 0; row < GRID_SIZE; row++) {
@@ -115,6 +119,10 @@ public class AStar extends BorderPane {
         }
     }
 }
+
+
+
+
 
 
 
