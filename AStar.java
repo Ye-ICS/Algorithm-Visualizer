@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+
 /**
  * A* Pathfinding Visualization UI.
  */
@@ -21,9 +25,11 @@ public class AStar extends BorderPane {
     private static Cell[][] grid = new Cell[GRID_SIZE][GRID_SIZE];
     private static Cell startNode = null;
     private static Cell endNode = null;
+    private static Set<Cell> closedList = new HashSet<>();
 
     public AStar() {
         GridPane gridPane = new GridPane();
+        GridPane currentNode = new GridPane();
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -32,14 +38,13 @@ public class AStar extends BorderPane {
                 gridPane.add(cell.getRectangle(), col, row);
             }
         }
-        
+
         Button aStarButton = new Button("Run A*");
         Button clearButton = new Button("Clear Grid");
         Button backButton = new Button("Back");
         Button generateMaze = new Button("Generate Maze");
 
         Label totalCost = new Label("test");
-
 
         HBox buttonBox = new HBox(10, aStarButton, clearButton, backButton, generateMaze);
         VBox infoBox = new VBox(10, totalCost);
@@ -67,6 +72,7 @@ public class AStar extends BorderPane {
             }
         });
         generateMaze.setOnAction(event -> {
+            resetGrid();
             System.out.println("Generating Maze");
             generateMaze();
         });
@@ -74,6 +80,7 @@ public class AStar extends BorderPane {
     } 
     
     private static double heuristic(Cell a, Cell b) {
+        // Use Manhattan distance for grid-based pathfinding
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
     }
 
@@ -85,16 +92,69 @@ public class AStar extends BorderPane {
         }
         startNode = null;
         endNode = null;
+        closedList.clear(); // Clear the closed list
         System.out.println("Grid Cleared");
     }
 
-    public static void runAStar(Cell start, Cell end){
-        PriorityQueue<Cell> pq = new PriorityQueue<>(Comparator.comparingDouble(c -> c.distance + heuristic(c, end))); //orders cells by f(n), or total estimated cost
-        start.distance = 0; //sets the distance of the start node to 0
-        pq.add(start);  //adds the start node to pq
+    public static void runAStar(Cell start, Cell end) {
+        PriorityQueue<Cell> openList = new PriorityQueue<>(Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
+        Set<Cell> closedList = new HashSet<>();
 
+        start.distance = 0;
+        openList.add(start);
 
+        while (!openList.isEmpty()) {
+            Cell current = openList.poll();
+            if (current == end) {
+                reconstructPath();
+                return;
+            }
 
+            closedList.add(current);
+
+            for (Cell neighbor : getNeighbors(current)) {
+                if (closedList.contains(neighbor) || neighbor.isWall()) {
+                    continue;
+                }
+
+                double tentativeG = current.distance + 1; // Assuming uniform cost for moving to a neighbor
+
+                if (tentativeG < neighbor.distance) {
+                    neighbor.distance = tentativeG;
+                    neighbor.parent = current;
+                    if (!openList.contains(neighbor)) {
+                        openList.add(neighbor);
+                    }
+                }
+            }
+        }
+
+        System.out.println("No path found.");
+    }
+
+    private static void reconstructPath() {
+        Cell current = endNode;
+        while (current != null) {
+            current.getRectangle().setFill(Color.YELLOW); // Highlight the path
+            current = current.parent;
+        }
+    }
+
+    private static Set<Cell> getNeighbors(Cell cell) {
+        Set<Cell> neighbors = new HashSet<>();
+        int[] dRow = {-1, 1, 0, 0};
+        int[] dCol = {0, 0, -1, 1};
+
+        for (int i = 0; i < 4; i++) {
+            int newRow = cell.row + dRow[i];
+            int newCol = cell.col + dCol[i];
+
+            if (newRow >= 0 && newRow < GRID_SIZE && newCol >= 0 && newCol < GRID_SIZE) {
+                neighbors.add(grid[newRow][newCol]);
+            }
+        }
+
+        return neighbors;
     }
 
     private class Cell {
@@ -154,7 +214,7 @@ public class AStar extends BorderPane {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 grid[row][col].reset();
-                if (Math.random() < 0.3) { // 40% chance to be a wall
+                if (Math.random() < 0.3) { // 30% chance to be a wall
                     grid[row][col].setWall(true);
                 }
             }
@@ -165,11 +225,3 @@ public class AStar extends BorderPane {
             endNode.setWall(false);
     }
 }
-
-
-
-
-
-
-
-
