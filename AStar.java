@@ -7,12 +7,14 @@ import java.util.Set;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -33,6 +35,8 @@ public class AStar extends BorderPane {
     private static Set<Cell> closedList = new HashSet<>();
     private static Set<Cell> currentPath = new HashSet<>();
 
+    private static TextArea explanationPanel;
+
     public AStar() {
         GridPane gridPane = new GridPane();
         GridPane currentNode = new GridPane();
@@ -42,6 +46,15 @@ public class AStar extends BorderPane {
                 Cell cell = new Cell(row, col);
                 grid[row][col] = cell;
                 gridPane.add(cell.getRectangle(), col, row);
+            }
+        }
+
+        // Initialize the 3x3 currentNode grid
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE, Color.LIGHTGRAY);
+                rect.setStroke(Color.BLACK);
+                currentNode.add(rect, col, row);
             }
         }
 
@@ -64,12 +77,23 @@ public class AStar extends BorderPane {
         setBottom(buttonBox);
         buttonBox.setAlignment(Pos.BOTTOM_LEFT);
         buttonBox.setTranslateX(275);
-        buttonBox.setTranslateY(-40);
+        buttonBox.setTranslateY(-10);
 
         titleBox.setAlignment(Pos.TOP_LEFT);
         titleBox.setTranslateX(275);
-        titleBox.setTranslateY(40);
+        titleBox.setTranslateY(15);
         setTop(titleBox);
+
+        // Create the Explanation Panel
+        explanationPanel = new TextArea();
+        explanationPanel.setEditable(false);
+        explanationPanel.setWrapText(true);
+        explanationPanel.setPrefSize(300, 200);
+        explanationPanel.setStyle("-fx-font-size: 14px;");
+
+        VBox rightPanel = new VBox(10, explanationPanel);
+        rightPanel.setPadding(new Insets(20));
+        setRight(rightPanel);
 
         // Back button returns to the main menu
         backButton.setOnAction(event -> {
@@ -80,21 +104,21 @@ public class AStar extends BorderPane {
         clearButton.setOnAction(event -> resetGrid());
         aStarButton.setOnAction(event -> {
             if (startNode == null || endNode == null) {
-                System.out.println("Please select a start and end node.");
+                updateExplanation("Please select a start and end node.");
                 return;
             } else {
-                System.out.println("Running A*");
+                updateExplanation("Running A* Algorithm...");
                 runAStar(startNode, endNode);
             }
         });
         generateMaze.setOnAction(event -> {
             resetGrid();
-            System.out.println("Generating Maze");
+            updateExplanation("Generating Maze...");
             generateMaze();
         });
 
     } 
-    
+
     private static double heuristic(Cell a, Cell b) {
         // Use Manhattan distance for grid-based pathfinding
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
@@ -110,7 +134,7 @@ public class AStar extends BorderPane {
         endNode = null;
         closedList.clear(); // Clear the closed list
         currentPath.clear(); // Clear the current path
-        System.out.println("Grid Cleared");
+        updateExplanation("Grid Cleared");
     }
 
     public static void runAStar(Cell start, Cell end) {
@@ -125,13 +149,16 @@ public class AStar extends BorderPane {
 
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.1), event -> {
             if (openList.isEmpty()) {
-                System.out.println("No path found.");
+                updateExplanation("No path found.");
                 timeline.stop();
                 return;
             }
 
             Cell current = openList.poll();
+            updateExplanation("Checking node (" + current.row + ", " + current.col + ")");
+
             if (current == end) {
+                updateExplanation("Path found! Reconstructing...");
                 reconstructPath();
                 timeline.stop();
                 return;
@@ -154,6 +181,7 @@ public class AStar extends BorderPane {
                     neighbor.parent = current;
                     if (!openList.contains(neighbor)) {
                         openList.add(neighbor);
+                        updateExplanation("Adding node (" + neighbor.row + ", " + neighbor.col + ") to open list");
                         if (neighbor != start && neighbor != end) {
                             neighbor.getRectangle().setFill(Color.BLUE); // Highlight open list nodes
                         }
@@ -229,7 +257,7 @@ public class AStar extends BorderPane {
         return neighbors;
     }
 
-    private class Cell {
+    private static class Cell {
         private int row, col;
         private Rectangle rect;
         private boolean isWall = false;
@@ -282,6 +310,10 @@ public class AStar extends BorderPane {
         }
     }
 
+    private static void updateExplanation(String message) {
+        Platform.runLater(() -> explanationPanel.appendText(message + "\n"));
+    }
+
     private void generateMaze() {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -297,11 +329,3 @@ public class AStar extends BorderPane {
             endNode.setWall(false);
     }
 }
-
-
-
-
-
-
-
-
