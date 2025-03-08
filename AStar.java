@@ -9,7 +9,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
 /**
  * A* Pathfinding Visualization UI.
  */
@@ -35,13 +36,23 @@ public class AStar extends BorderPane {
         Button aStarButton = new Button("Run A*");
         Button clearButton = new Button("Clear Grid");
         Button backButton = new Button("Back");
+        Button generateMaze = new Button("Generate Maze");
 
-        HBox buttonBox = new HBox(10, aStarButton, clearButton, backButton);
+        Label totalCost = new Label("test");
+
+
+        HBox buttonBox = new HBox(10, aStarButton, clearButton, backButton, generateMaze);
+        VBox infoBox = new VBox(10, totalCost);
+
         setCenter(gridPane);
         gridPane.setAlignment(Pos.CENTER);
 
         setBottom(buttonBox);
         buttonBox.setAlignment(Pos.BOTTOM_CENTER);
+
+        infoBox.setAlignment(Pos.TOP_RIGHT);
+
+        setTop(infoBox);
 
         // Back button returns to the main menu
         backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
@@ -54,6 +65,10 @@ public class AStar extends BorderPane {
                 System.out.println("Running A*");
                 runAStar(startNode, endNode);
             }
+        });
+        generateMaze.setOnAction(event -> {
+            System.out.println("Generating Maze");
+            generateMaze();
         });
 
     } 
@@ -133,6 +148,21 @@ public class AStar extends BorderPane {
                 setWall(!isWall);
             }
         }
+    }
+
+    private void generateMaze() {
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                grid[row][col].reset();
+                if (Math.random() < 0.3) { // 40% chance to be a wall
+                    grid[row][col].setWall(true);
+                }
+            }
+        }
+        if (startNode != null)
+            startNode.setWall(false);
+        if (endNode != null)
+            endNode.setWall(false);
     }
 }
 
