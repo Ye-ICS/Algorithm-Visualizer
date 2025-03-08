@@ -14,6 +14,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.util.Duration;
 import javafx.geometry.Insets;
 
 /**
@@ -27,6 +31,7 @@ public class AStar extends BorderPane {
     private static Cell startNode = null;
     private static Cell endNode = null;
     private static Set<Cell> closedList = new HashSet<>();
+    private static Set<Cell> currentPath = new HashSet<>();
 
     public AStar() {
         GridPane gridPane = new GridPane();
@@ -67,7 +72,11 @@ public class AStar extends BorderPane {
         setTop(titleBox);
 
         // Back button returns to the main menu
-        backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        backButton.setOnAction(event -> {
+            resetGrid();
+            FXUtils.setSceneRoot(getScene(), new MenuLayout());
+        });
+
         clearButton.setOnAction(event -> resetGrid());
         aStarButton.setOnAction(event -> {
             if (startNode == null || endNode == null) {
@@ -84,14 +93,14 @@ public class AStar extends BorderPane {
             generateMaze();
         });
 
-    }
-
+    } 
+    
     private static double heuristic(Cell a, Cell b) {
         // Use Manhattan distance for grid-based pathfinding
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
     }
 
-    public static void resetGrid() {
+    public static void resetGrid(){
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 grid[row][col].reset();
@@ -100,25 +109,38 @@ public class AStar extends BorderPane {
         startNode = null;
         endNode = null;
         closedList.clear(); // Clear the closed list
+        currentPath.clear(); // Clear the current path
         System.out.println("Grid Cleared");
     }
 
     public static void runAStar(Cell start, Cell end) {
-        PriorityQueue<Cell> openList = new PriorityQueue<>(
-                Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
+        PriorityQueue<Cell> openList = new PriorityQueue<>(Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
         Set<Cell> closedList = new HashSet<>();
 
         start.distance = 0;
         openList.add(start);
 
-        while (!openList.isEmpty()) {
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.1), event -> {
+            if (openList.isEmpty()) {
+                System.out.println("No path found.");
+                timeline.stop();
+                return;
+            }
+
             Cell current = openList.poll();
             if (current == end) {
                 reconstructPath();
+                timeline.stop();
                 return;
             }
 
             closedList.add(current);
+            if (current != start && current != end) {
+                current.getRectangle().setFill(Color.YELLOW); // Highlight current node
+            }
 
             for (Cell neighbor : getNeighbors(current)) {
                 if (closedList.contains(neighbor) || neighbor.isWall()) {
@@ -132,26 +154,68 @@ public class AStar extends BorderPane {
                     neighbor.parent = current;
                     if (!openList.contains(neighbor)) {
                         openList.add(neighbor);
+                        if (neighbor != start && neighbor != end) {
+                            neighbor.getRectangle().setFill(Color.BLUE); // Highlight open list nodes
+                        }
                     }
                 }
             }
-        }
 
-        System.out.println("No path found.");
+            Platform.runLater(() -> {
+                if (current != start && current != end) {
+                    current.getRectangle().setFill(Color.BLUE); // Mark as visited
+                }
+                highlightPath(current); // Highlight the path from the current node to the start node
+            });
+        });
+
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
+
+    private static void highlightPath(Cell current) {
+        // Clear the previous path
+        for (Cell cell : currentPath) {
+            if (cell != startNode && cell != endNode) {
+                cell.getRectangle().setFill(Color.BLUE);
+            }
+        }
+        currentPath.clear();
+
+        // Highlight the new path
+        while (current != null) {
+            if (current != startNode && current != endNode) {
+                current.getRectangle().setFill(Color.YELLOW); // Highlight the path
+                currentPath.add(current);
+            }
+            current = current.parent;
+        }
     }
 
     private static void reconstructPath() {
+        // Clear the previous path
+        for (Cell cell : currentPath) {
+            if (cell != startNode && cell != endNode) {
+                cell.getRectangle().setFill(Color.BLUE);
+            }
+        }
+        currentPath.clear();
+
+        // Highlight the final path
         Cell current = endNode;
         while (current != null) {
-            current.getRectangle().setFill(Color.YELLOW); // Highlight the path
+            if (current != startNode && current != endNode) {
+                current.getRectangle().setFill(Color.YELLOW); // Highlight the path
+                currentPath.add(current);
+            }
             current = current.parent;
         }
     }
 
     private static Set<Cell> getNeighbors(Cell cell) {
         Set<Cell> neighbors = new HashSet<>();
-        int[] dRow = { -1, 1, 0, 0 };
-        int[] dCol = { 0, 0, -1, 1 };
+        int[] dRow = {-1, 1, 0, 0};
+        int[] dCol = {0, 0, -1, 1};
 
         for (int i = 0; i < 4; i++) {
             int newRow = cell.row + dRow[i];
@@ -172,7 +236,7 @@ public class AStar extends BorderPane {
         private double distance = Double.MAX_VALUE;
         private Cell parent = null;
 
-        public Cell(int row, int col) {
+        public Cell(int row, int col){
             this.row = row;
             this.col = col;
             this.rect = new Rectangle(CELL_SIZE, CELL_SIZE, Color.LIGHTGRAY);
@@ -181,17 +245,17 @@ public class AStar extends BorderPane {
             rect.setOnMouseClicked(event -> cellClicked());
         }
 
-        public Rectangle getRectangle() {
+        public Rectangle getRectangle(){
             return rect;
         }
 
-        public boolean isWall() {
+        public boolean isWall(){
             return isWall;
         }
 
-        public void setWall(boolean wall) {
+        public void setWall(boolean wall){
             isWall = wall;
-            if (wall) {
+            if (wall){
                 rect.setFill(Color.BLACK);
             } else {
                 rect.setFill(Color.LIGHTGRAY);
@@ -233,3 +297,11 @@ public class AStar extends BorderPane {
             endNode.setWall(false);
     }
 }
+
+
+
+
+
+
+
+
