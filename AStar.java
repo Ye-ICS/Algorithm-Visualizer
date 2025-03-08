@@ -1,3 +1,6 @@
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -43,7 +46,15 @@ public class AStar extends BorderPane {
         // Back button returns to the main menu
         backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
         clearButton.setOnAction(event -> resetGrid());
-        aStarButton.setOnAction(event -> RunAStar());
+        aStarButton.setOnAction(event -> {
+            if (startNode == null || endNode == null) {
+                System.out.println("Please select a start and end node.");
+                return;
+            } else {
+                System.out.println("Running A*");
+                runAStar(startNode, endNode);
+            }
+        });
 
     } 
     
@@ -62,7 +73,12 @@ public class AStar extends BorderPane {
         System.out.println("Grid Cleared");
     }
 
-    public static void RunAStar(){
+    public static void runAStar(Cell start, Cell end){
+        PriorityQueue<Cell> pq = new PriorityQueue<>(Comparator.comparingDouble(c -> c.distance + heuristic(c, end))); //orders cells by f(n), or total estimated cost
+        start.distance = 0; //sets the distance of the start node to 0
+        pq.add(start);  //adds the start node to pq
+
+
 
     }
 
