@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+import javafx.geometry.Insets;
 
 /**
  * A* Pathfinding Visualization UI.
@@ -44,20 +45,26 @@ public class AStar extends BorderPane {
         Button backButton = new Button("Back");
         Button generateMaze = new Button("Generate Maze");
 
-        Label totalCost = new Label("test");
+        Label title = new Label("A* Pathfinding Visualization");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        title.setTextFill(Color.BLACK);
 
         HBox buttonBox = new HBox(10, aStarButton, clearButton, backButton, generateMaze);
-        VBox infoBox = new VBox(10, totalCost);
+        VBox titleBox = new VBox(10, title);
 
         setCenter(gridPane);
-        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setAlignment(Pos.CENTER_LEFT);
+        gridPane.setPadding(new Insets(20, 0, 20, 20));
 
         setBottom(buttonBox);
-        buttonBox.setAlignment(Pos.BOTTOM_CENTER);
+        buttonBox.setAlignment(Pos.BOTTOM_LEFT);
+        buttonBox.setTranslateX(275);
+        buttonBox.setTranslateY(-40);
 
-        infoBox.setAlignment(Pos.TOP_RIGHT);
-
-        setTop(infoBox);
+        titleBox.setAlignment(Pos.TOP_LEFT);
+        titleBox.setTranslateX(275);
+        titleBox.setTranslateY(40);
+        setTop(titleBox);
 
         // Back button returns to the main menu
         backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
@@ -77,14 +84,14 @@ public class AStar extends BorderPane {
             generateMaze();
         });
 
-    } 
-    
+    }
+
     private static double heuristic(Cell a, Cell b) {
         // Use Manhattan distance for grid-based pathfinding
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
     }
 
-    public static void resetGrid(){
+    public static void resetGrid() {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 grid[row][col].reset();
@@ -97,7 +104,8 @@ public class AStar extends BorderPane {
     }
 
     public static void runAStar(Cell start, Cell end) {
-        PriorityQueue<Cell> openList = new PriorityQueue<>(Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
+        PriorityQueue<Cell> openList = new PriorityQueue<>(
+                Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
         Set<Cell> closedList = new HashSet<>();
 
         start.distance = 0;
@@ -142,8 +150,8 @@ public class AStar extends BorderPane {
 
     private static Set<Cell> getNeighbors(Cell cell) {
         Set<Cell> neighbors = new HashSet<>();
-        int[] dRow = {-1, 1, 0, 0};
-        int[] dCol = {0, 0, -1, 1};
+        int[] dRow = { -1, 1, 0, 0 };
+        int[] dCol = { 0, 0, -1, 1 };
 
         for (int i = 0; i < 4; i++) {
             int newRow = cell.row + dRow[i];
@@ -164,7 +172,7 @@ public class AStar extends BorderPane {
         private double distance = Double.MAX_VALUE;
         private Cell parent = null;
 
-        public Cell(int row, int col){
+        public Cell(int row, int col) {
             this.row = row;
             this.col = col;
             this.rect = new Rectangle(CELL_SIZE, CELL_SIZE, Color.LIGHTGRAY);
@@ -173,17 +181,17 @@ public class AStar extends BorderPane {
             rect.setOnMouseClicked(event -> cellClicked());
         }
 
-        public Rectangle getRectangle(){
+        public Rectangle getRectangle() {
             return rect;
         }
 
-        public boolean isWall(){
+        public boolean isWall() {
             return isWall;
         }
 
-        public void setWall(boolean wall){
+        public void setWall(boolean wall) {
             isWall = wall;
-            if (wall){
+            if (wall) {
                 rect.setFill(Color.BLACK);
             } else {
                 rect.setFill(Color.LIGHTGRAY);
