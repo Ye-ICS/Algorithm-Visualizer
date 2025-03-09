@@ -77,25 +77,30 @@ public class AStar extends BorderPane {
         }
 
         Button aStarButton = new Button("Run A*");
+        aStarButton.setPrefSize(300, 110);
+        aStarButton.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        aStarButton.setTranslateY(2);
+
         Button clearButton = new Button("Clear Grid");
         Button backButton = new Button("Back");
         Button generateMaze = new Button("Generate Maze");
+
+        HBox buttonbox = new HBox(10, clearButton, generateMaze);
+        clearButton.setPrefWidth(90);
+        generateMaze.setPrefWidth(90);
+
 
         Label title = new Label("A* Pathfinding Visualization");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         title.setTextFill(Color.BLACK);
 
-        HBox buttonBox = new HBox(10, aStarButton, clearButton, backButton, generateMaze);
         VBox titleBox = new VBox(10, title);
 
         setCenter(gridPane);
         gridPane.setAlignment(Pos.CENTER_LEFT);
         gridPane.setPadding(new Insets(20, 0, 20, 20));
 
-        setBottom(buttonBox);
-        buttonBox.setAlignment(Pos.BOTTOM_LEFT);
-        buttonBox.setTranslateX(275);
-        buttonBox.setTranslateY(-10);
+        
 
         titleBox.setAlignment(Pos.TOP_LEFT);
         titleBox.setTranslateX(275);
@@ -153,6 +158,7 @@ public class AStar extends BorderPane {
 
         heuristic = new HBox(10, manhattan, euclidean, chebyshev);
 
+
         // Create a new 3x3 grid below the explanationPanel
         threeByThreeGrid = new GridPane();
         for (int row = 0; row < 3; row++) {
@@ -171,12 +177,14 @@ public class AStar extends BorderPane {
         Label infoLabel = new Label("Info Panel:");
         Label explanationLabel = new Label("Explanation Panel:");
         Label gridLabel = new Label("Current Node:");
+        Label buttonBoxLabel = new Label("Control Panel:");
         Label speedLabel = new Label("Speed Slider:");
         Label heuristicLabel = new Label("Heuristic:");
+        Label pauseLabel = new Label("Pause Button:");
 
         // Create the right panel with the labels and components
         VBox rightPanel = new VBox(5, infoLabel, infoPanel, explanationLabel, explanationPanel, gridLabel,
-                threeByThreeGrid, speedLabel, speedSlider, heuristicLabel, heuristic);
+                threeByThreeGrid, buttonBoxLabel, buttonbox, speedLabel, speedSlider, heuristicLabel, heuristic, aStarButton );
         rightPanel.setPadding(new Insets(20));
         setRight(rightPanel);
 
@@ -374,22 +382,37 @@ public class AStar extends BorderPane {
             for (int col = 0; col < 3; col++) {
                 StackPane stackPane = (StackPane) threeByThreeGrid.getChildren().get(row * 3 + col);
                 Rectangle rect = (Rectangle) stackPane.getChildren().get(0);
+                Text text = (Text) stackPane.getChildren().get(1);
                 rect.setFill(Color.LIGHTGRAY);
+                text.setText(""); // Clear the text
             }
         }
-    
+
         // Update the 3x3 grid with the current node and its neighbors
         int[] dRow = { -1, -1, -1, 0, 0, 0, 1, 1, 1 };
         int[] dCol = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
-    
+
         for (int i = 0; i < 9; i++) {
             int newRow = current.row + dRow[i];
             int newCol = current.col + dCol[i];
-    
+
             if (newRow >= 0 && newRow < GRID_SIZE && newCol >= 0 && newCol < GRID_SIZE) {
-                StackPane stackPane = (StackPane) threeByThreeGrid.getChildren().get((dRow[i] + 1) * 3 + (dCol[i] + 1));
+                Cell neighbor = grid[newRow][newCol];
+                StackPane stackPane = (StackPane) threeByThreeGrid.getChildren().get(i);
                 Rectangle rect = (Rectangle) stackPane.getChildren().get(0);
-                rect.setFill(grid[newRow][newCol].getRectangle().getFill());
+                Text text = (Text) stackPane.getChildren().get(1);
+
+                // Set the rectangle color based on the cell state
+                rect.setFill(neighbor.getRectangle().getFill());
+
+                // Only display the value if the node has been scanned (distance is not
+                // Double.MAX_VALUE)
+                if (neighbor.distance != Double.MAX_VALUE) {
+                    double heuristicValue = heuristic(neighbor, endNode);
+                    text.setText(String.format("%.1f", neighbor.distance + heuristicValue));
+                } else {
+                    text.setText(""); // Leave the text empty for unscanned nodes
+                }
             }
         }
     }
