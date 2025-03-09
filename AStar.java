@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -18,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -43,6 +45,10 @@ public class AStar extends BorderPane {
     private static TextArea explanationPanel;
     private static GridPane threeByThreeGrid;
     private static TextArea infoPanel;
+    private static VBox controlPanel;
+    private static Slider speedSlider;
+    private static double speed = 0.1; // Default speed
+    private static ChoiceBox heuristic;
 
     public AStar() {
         GridPane gridPane = new GridPane();
@@ -91,6 +97,7 @@ public class AStar extends BorderPane {
         titleBox.setTranslateY(15);
         setTop(titleBox);
 
+        // Create the Info Panel
         infoPanel = new TextArea();
         infoPanel.setEditable(false);
         infoPanel.setWrapText(true);
@@ -104,6 +111,21 @@ public class AStar extends BorderPane {
         explanationPanel.setPrefSize(300, 100);
         explanationPanel.setStyle("-fx-font-size: 14px;");
 
+        // Create the Speed Slider
+        speedSlider = new Slider(0.01, 1.0, 0.1);
+        speedSlider.setShowTickLabels(true);
+        speedSlider.setShowTickMarks(true);
+        speedSlider.setMajorTickUnit(0.1);
+        speedSlider.setMinorTickCount(4);
+        speedSlider.setBlockIncrement(0.01);
+        speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            speed = newValue.doubleValue();
+        });
+        // Create the Heuristic ChoiceBox
+        heuristic = new ChoiceBox();
+        heuristic.getItems().addAll("Manhattan", "Euclidean", "Chebyshev");
+        heuristic.setValue("Manhattan");
+
         // Create a new 3x3 grid below the explanationPanel
         threeByThreeGrid = new GridPane();
         for (int row = 0; row < 3; row++) {
@@ -114,7 +136,8 @@ public class AStar extends BorderPane {
             }
         }
 
-        VBox rightPanel = new VBox(10, infoPanel, explanationPanel, threeByThreeGrid);
+        // Create the right panel with the infoPanel, explanationPanel, 3x3 grid
+        VBox rightPanel = new VBox(10, infoPanel, explanationPanel, threeByThreeGrid, speedSlider, heuristic);
         rightPanel.setPadding(new Insets(20));
         setRight(rightPanel);
 
@@ -143,8 +166,16 @@ public class AStar extends BorderPane {
     }
 
     private static double heuristic(Cell a, Cell b) {
-        // Use Manhattan distance for grid-based pathfinding
-        return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+        if (heuristic.getValue().equals("Euclidean")) {
+            //Euclidean distance
+            return Math.sqrt(Math.pow(a.row - b.row, 2) + Math.pow(a.col - b.col, 2));
+        } else if (heuristic.getValue().equals("Chebyshev")) {
+            // Chebyshev distance
+            return Math.max(Math.abs(a.row - b.row), Math.abs(a.col - b.col));
+        } else {
+            // Manhattan distance
+            return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+        }
     }
 
     public static void resetGrid() {
@@ -164,18 +195,19 @@ public class AStar extends BorderPane {
     }
 
     public static void runAStar(Cell start, Cell end) {
-        PriorityQueue<Cell> openList = new PriorityQueue<>(Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
+        PriorityQueue<Cell> openList = new PriorityQueue<>(
+                Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
         Set<Cell> closedList = new HashSet<>();
-    
+
         start.distance = 0;
         openList.add(start);
-    
+
         startTime = System.currentTimeMillis();
-    
+
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
-    
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.1), event -> {
+
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(speed), event -> {
             if (openList.isEmpty()) {
                 updateExplanation("No path found.");
                 endTime = System.currentTimeMillis();
@@ -183,11 +215,11 @@ public class AStar extends BorderPane {
                 timeline.stop();
                 return;
             }
-    
+
             Cell current = openList.poll();
             nodesExplored++;
             updateExplanation("Checking node (" + current.row + ", " + current.col + ")");
-    
+
             if (current == end) {
                 end.getRectangle().setFill(Color.RED); // Ensure end node stays red
                 reconstructPath();
@@ -196,19 +228,20 @@ public class AStar extends BorderPane {
                 timeline.stop();
                 return;
             }
-    
+
             closedList.add(current);
             if (current != start && current != end) {
                 current.getRectangle().setFill(Color.YELLOW); // Highlight current node
             }
-    
+
             for (Cell neighbor : getNeighbors(current)) {
                 if (closedList.contains(neighbor) || neighbor.isWall()) {
+                    updateInfoPanel();
                     continue;
                 }
-    
+
                 double tentativeG = current.distance + 1; // Assuming uniform cost for moving to a neighbor
-    
+
                 if (tentativeG < neighbor.distance) {
                     neighbor.distance = tentativeG;
                     neighbor.parent = current;
@@ -221,7 +254,7 @@ public class AStar extends BorderPane {
                     }
                 }
             }
-    
+
             Platform.runLater(() -> {
                 if (current != start && current != end) {
                     current.getRectangle().setFill(Color.BLUE); // Mark as visited
@@ -230,7 +263,7 @@ public class AStar extends BorderPane {
                 updateThreeByThreeGrid(current); // Update the 3x3 grid
             });
         });
-    
+
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
     }
@@ -261,7 +294,7 @@ public class AStar extends BorderPane {
             }
         }
         currentPath.clear();
-    
+
         // Rebuild the path
         Cell current = endNode;
         while (current != null) {
