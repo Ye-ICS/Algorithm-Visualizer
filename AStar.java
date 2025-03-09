@@ -48,7 +48,8 @@ public class AStar extends BorderPane {
     private static VBox controlPanel;
     private static Slider speedSlider;
     private static double speed = 0.1; // Default speed
-    private static ChoiceBox heuristic;
+    private static HBox heuristic;
+    private static int choice = 0;
 
     public AStar() {
         GridPane gridPane = new GridPane();
@@ -65,9 +66,13 @@ public class AStar extends BorderPane {
         // Initialize the 3x3 currentNode grid
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
+                StackPane stackPane = new StackPane();
                 Rectangle rect = new Rectangle(CELL_SIZE, CELL_SIZE, Color.LIGHTGRAY);
                 rect.setStroke(Color.BLACK);
-                currentNode.add(rect, col, row);
+                Text text = new Text();
+                text.setFill(Color.WHITE);
+                stackPane.getChildren().addAll(rect, text);
+                currentNode.add(stackPane, col, row);
             }
         }
 
@@ -121,23 +126,57 @@ public class AStar extends BorderPane {
         speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             speed = newValue.doubleValue();
         });
-        // Create the Heuristic ChoiceBox
-        heuristic = new ChoiceBox();
-        heuristic.getItems().addAll("Manhattan", "Euclidean", "Chebyshev");
-        heuristic.setValue("Manhattan");
+
+        // Create the Heuristic buttons
+        Button manhattan = new Button("Manhattan");
+        Button euclidean = new Button("Euclidean");
+        Button chebyshev = new Button("Chebyshev");
+
+        euclidean.setPrefWidth(90);
+        manhattan.setPrefWidth(90);
+        chebyshev.setPrefWidth(90);
+
+        choice = 0; // Default choice is Manhattan
+
+        manhattan.setOnAction(event -> {
+            choice = 0;
+            updateExplanation("Selected: Manhattan");
+        });
+        euclidean.setOnAction(event -> {
+            choice = 1;
+            updateExplanation("Selected: Euclidean");
+        });
+        chebyshev.setOnAction(event -> {
+            choice = 2;
+            updateExplanation("Selected: Chebyshev");
+        });
+
+        heuristic = new HBox(10, manhattan, euclidean, chebyshev);
 
         // Create a new 3x3 grid below the explanationPanel
         threeByThreeGrid = new GridPane();
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
+                StackPane stackPane = new StackPane();
                 Rectangle rect = new Rectangle(100, 100, Color.LIGHTGRAY);
                 rect.setStroke(Color.BLACK);
-                threeByThreeGrid.add(rect, col, row);
+                Text text = new Text();
+                text.setFill(Color.BLACK);
+                stackPane.getChildren().addAll(rect, text);
+                threeByThreeGrid.add(stackPane, col, row);
             }
         }
 
-        // Create the right panel with the infoPanel, explanationPanel, 3x3 grid
-        VBox rightPanel = new VBox(10, infoPanel, explanationPanel, threeByThreeGrid, speedSlider, heuristic);
+        // Create labels for each component
+        Label infoLabel = new Label("Info Panel:");
+        Label explanationLabel = new Label("Explanation Panel:");
+        Label gridLabel = new Label("Current Node:");
+        Label speedLabel = new Label("Speed Slider:");
+        Label heuristicLabel = new Label("Heuristic:");
+
+        // Create the right panel with the labels and components
+        VBox rightPanel = new VBox(5, infoLabel, infoPanel, explanationLabel, explanationPanel, gridLabel,
+                threeByThreeGrid, speedLabel, speedSlider, heuristicLabel, heuristic);
         rightPanel.setPadding(new Insets(20));
         setRight(rightPanel);
 
@@ -153,6 +192,7 @@ public class AStar extends BorderPane {
                 updateExplanation("Please select a start and end node.");
                 return;
             } else {
+                resetAlgorithm();
                 updateExplanation("Running A* Algorithm...");
                 runAStar(startNode, endNode);
             }
@@ -166,15 +206,16 @@ public class AStar extends BorderPane {
     }
 
     private static double heuristic(Cell a, Cell b) {
-        if (heuristic.getValue().equals("Euclidean")) {
-            //Euclidean distance
-            return Math.sqrt(Math.pow(a.row - b.row, 2) + Math.pow(a.col - b.col, 2));
-        } else if (heuristic.getValue().equals("Chebyshev")) {
-            // Chebyshev distance
-            return Math.max(Math.abs(a.row - b.row), Math.abs(a.col - b.col));
-        } else {
-            // Manhattan distance
-            return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+        switch (choice) {
+            case 0:
+                // Euclidean distance
+                return Math.sqrt(Math.pow(a.row - b.row, 2) + Math.pow(a.col - b.col, 2));
+            case 2:
+                // Chebyshev distance
+                return Math.max(Math.abs(a.row - b.row), Math.abs(a.col - b.col));
+            default:
+                // Manhattan distance
+                return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
         }
     }
 
@@ -312,8 +353,8 @@ public class AStar extends BorderPane {
 
     private static Set<Cell> getNeighbors(Cell cell) {
         Set<Cell> neighbors = new HashSet<>();
-        int[] dRow = { -1, 1, 0, 0 }; // Only Up, Down, Left, Right
-        int[] dCol = { 0, 0, -1, 1 };
+        int[] dRow = { -1, 0, 1, 0, -1, 1, -1, 1 };
+        int[] dCol = { 0, -1, 0, 1, -1, -1, 1, 1 };
 
         for (int i = 0; i < 4; i++) {
             int newRow = cell.row + dRow[i];
@@ -331,28 +372,24 @@ public class AStar extends BorderPane {
         // Clear the 3x3 grid
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                Rectangle rect = (Rectangle) threeByThreeGrid.getChildren().get(row * 3 + col);
+                StackPane stackPane = (StackPane) threeByThreeGrid.getChildren().get(row * 3 + col);
+                Rectangle rect = (Rectangle) stackPane.getChildren().get(0);
                 rect.setFill(Color.LIGHTGRAY);
             }
         }
-
+    
         // Update the 3x3 grid with the current node and its neighbors
-        int[] dRow = { -1, 0, 1, 0, -1, 1, -1, 1 };
-        int[] dCol = { 0, -1, 0, 1, -1, -1, 1, 1 };
-
-        // Set the current node in the center
-        Rectangle centerRect = (Rectangle) threeByThreeGrid.getChildren().get(4);
-        centerRect.setFill(current.getRectangle().getFill());
-
-        // Set the neighbors
-        for (int i = 0; i < 8; i++) {
+        int[] dRow = { -1, -1, -1, 0, 0, 0, 1, 1, 1 };
+        int[] dCol = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
+    
+        for (int i = 0; i < 9; i++) {
             int newRow = current.row + dRow[i];
             int newCol = current.col + dCol[i];
-
+    
             if (newRow >= 0 && newRow < GRID_SIZE && newCol >= 0 && newCol < GRID_SIZE) {
-                Rectangle neighborRect = (Rectangle) threeByThreeGrid.getChildren()
-                        .get((dRow[i] + 1) * 3 + (dCol[i] + 1));
-                neighborRect.setFill(grid[newRow][newCol].getRectangle().getFill());
+                StackPane stackPane = (StackPane) threeByThreeGrid.getChildren().get((dRow[i] + 1) * 3 + (dCol[i] + 1));
+                Rectangle rect = (Rectangle) stackPane.getChildren().get(0);
+                rect.setFill(grid[newRow][newCol].getRectangle().getFill());
             }
         }
     }
@@ -435,5 +472,22 @@ public class AStar extends BorderPane {
             infoPanel.appendText("Path Length: " + pathLength + "\n");
             infoPanel.appendText("Execution Time: " + (endTime - startTime) + " ms\n");
         });
+    }
+
+    private static void resetAlgorithm() {
+        closedList.clear(); // Clear the closed list
+        currentPath.clear(); // Clear the current path
+        nodesExplored = 0;
+        pathLength = 0;
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                grid[row][col].distance = Double.MAX_VALUE;
+                grid[row][col].parent = null;
+                if (!grid[row][col].isWall() && grid[row][col] != startNode && grid[row][col] != endNode) {
+                    grid[row][col].getRectangle().setFill(Color.LIGHTGRAY);
+                }
+            }
+        }
+        updateInfoPanel();
     }
 }
