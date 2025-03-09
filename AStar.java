@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -20,7 +21,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.util.Duration;
-import javafx.geometry.Insets;
 
 /**
  * A* Pathfinding Visualization UI.
@@ -36,6 +36,7 @@ public class AStar extends BorderPane {
     private static Set<Cell> currentPath = new HashSet<>();
 
     private static TextArea explanationPanel;
+    private static GridPane threeByThreeGrid;
 
     public AStar() {
         GridPane gridPane = new GridPane();
@@ -91,7 +92,17 @@ public class AStar extends BorderPane {
         explanationPanel.setPrefSize(300, 200);
         explanationPanel.setStyle("-fx-font-size: 14px;");
 
-        VBox rightPanel = new VBox(10, explanationPanel);
+        // Create a new 3x3 grid below the explanationPanel
+        threeByThreeGrid = new GridPane();
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                Rectangle rect = new Rectangle(100, 100, Color.LIGHTGRAY);
+                rect.setStroke(Color.BLACK);
+                threeByThreeGrid.add(rect, col, row);
+            }
+        }
+
+        VBox rightPanel = new VBox(10, explanationPanel, threeByThreeGrid);
         rightPanel.setPadding(new Insets(20));
         setRight(rightPanel);
 
@@ -118,7 +129,7 @@ public class AStar extends BorderPane {
         });
 
     } 
-
+    
     private static double heuristic(Cell a, Cell b) {
         // Use Manhattan distance for grid-based pathfinding
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
@@ -147,7 +158,7 @@ public class AStar extends BorderPane {
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.1), event -> {
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.5), event -> {
             if (openList.isEmpty()) {
                 updateExplanation("No path found.");
                 timeline.stop();
@@ -158,11 +169,12 @@ public class AStar extends BorderPane {
             updateExplanation("Checking node (" + current.row + ", " + current.col + ")");
 
             if (current == end) {
-                updateExplanation("Path found! Reconstructing...");
+                end.getRectangle().setFill(Color.RED); // Ensure end node stays red
                 reconstructPath();
                 timeline.stop();
                 return;
             }
+            
 
             closedList.add(current);
             if (current != start && current != end) {
@@ -194,6 +206,7 @@ public class AStar extends BorderPane {
                     current.getRectangle().setFill(Color.BLUE); // Mark as visited
                 }
                 highlightPath(current); // Highlight the path from the current node to the start node
+                updateThreeByThreeGrid(current); // Update the 3x3 grid
             });
         });
 
@@ -221,40 +234,73 @@ public class AStar extends BorderPane {
     }
 
     private static void reconstructPath() {
-        // Clear the previous path
         for (Cell cell : currentPath) {
             if (cell != startNode && cell != endNode) {
-                cell.getRectangle().setFill(Color.BLUE);
+                cell.getRectangle().setFill(Color.BLUE); // Reset path color
             }
         }
         currentPath.clear();
-
-        // Highlight the final path
+    
+        // Rebuild the path
         Cell current = endNode;
         while (current != null) {
-            if (current != startNode && current != endNode) {
-                current.getRectangle().setFill(Color.YELLOW); // Highlight the path
-                currentPath.add(current);
+            if (current == endNode) {
+                current.getRectangle().setFill(Color.RED); // Ensure end node is always red
+            } else if (current != startNode) {
+                current.getRectangle().setFill(Color.YELLOW); // Highlight path
             }
+            currentPath.add(current);
             current = current.parent;
         }
+        updateThreeByThreeGrid(endNode); // Update the 3x3 grid with the final path
     }
+    
 
     private static Set<Cell> getNeighbors(Cell cell) {
         Set<Cell> neighbors = new HashSet<>();
-        int[] dRow = {-1, 1, 0, 0};
+        int[] dRow = {-1, 1, 0, 0}; // Only Up, Down, Left, Right
         int[] dCol = {0, 0, -1, 1};
-
+    
         for (int i = 0; i < 4; i++) {
             int newRow = cell.row + dRow[i];
             int newCol = cell.col + dCol[i];
-
+    
             if (newRow >= 0 && newRow < GRID_SIZE && newCol >= 0 && newCol < GRID_SIZE) {
                 neighbors.add(grid[newRow][newCol]);
             }
         }
-
+    
         return neighbors;
+    }
+    
+
+    private static void updateThreeByThreeGrid(Cell current) {
+        // Clear the 3x3 grid
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                Rectangle rect = (Rectangle) threeByThreeGrid.getChildren().get(row * 3 + col);
+                rect.setFill(Color.LIGHTGRAY);
+            }
+        }
+
+        // Update the 3x3 grid with the current node and its neighbors
+        int[] dRow = {-1, 0, 1, 0, -1, 1, -1, 1};
+        int[] dCol = {0, -1, 0, 1, -1, -1, 1, 1};
+
+        // Set the current node in the center
+        Rectangle centerRect = (Rectangle) threeByThreeGrid.getChildren().get(4);
+        centerRect.setFill(current.getRectangle().getFill());
+
+        // Set the neighbors
+        for (int i = 0; i < 8; i++) {
+            int newRow = current.row + dRow[i];
+            int newCol = current.col + dCol[i];
+
+            if (newRow >= 0 && newRow < GRID_SIZE && newCol >= 0 && newCol < GRID_SIZE) {
+                Rectangle neighborRect = (Rectangle) threeByThreeGrid.getChildren().get((dRow[i] + 1) * 3 + (dCol[i] + 1));
+                neighborRect.setFill(grid[newRow][newCol].getRectangle().getFill());
+            }
+        }
     }
 
     private static class Cell {
