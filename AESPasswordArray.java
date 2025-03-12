@@ -2,9 +2,12 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.Insets;
@@ -14,9 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AESPasswordArray extends VBox { // A custom JavaFX component
-
     private static final int BLOCK_SIZE = 16; // AES block size (16 bytes)
     private static final int GRID_SIZE = 4; // 4x4 grid
+    
+
 
     /**
      * Constructor: Accepts a password, converts it into a 4x4 hex grid
@@ -24,7 +28,9 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
      * 
      * @param password The input string to be converted into a hex grid.
      */
+    @SuppressWarnings("unused")
     public AESPasswordArray(String password) {
+        setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         List<String> hexBytes = convertToHexBytes(password); // Convert password to hex byte array
         String[][] grid = fillGridColumnWise(hexBytes); // Fill the 4x4 grid column-wise
         VBox descriptionBox = new VBox();
@@ -42,7 +48,7 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
         textBox.setAlignment(Pos.CENTER); 
         Text descriptionText = new Text(
                 "Now that you have entered your password, AES-256 will convert the plaintext password into hexadecimal before creating a 4x4 column-major order array composed of 16 bytes. Each byte is represented by two hexadecimal characters. The array is then used (after many transformations) generate the encryption key.");
-        descriptionText.setStyle("-fx-padding: 10px;");
+        descriptionText.setStyle("-fx-padding: 10px; -fx-font-size: 19px;");
         this.getChildren().add(descriptionText);
         javafx.scene.text.TextFlow description = new javafx.scene.text.TextFlow(descriptionText);
         description.setTextAlignment(TextAlignment.CENTER);
@@ -54,7 +60,7 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
         // Display initial hex sequence as a single line
         Label hexLine = new Label(String.join(" ", hexBytes));
         hexLine.setStyle(
-                "-fx-font-size: 14px; -fx-padding: 10px; -fx-border-color: black; -fx-background-color: white; -fx-border-width: 1px; ");
+                "-fx-font-size: 17px; -fx-padding: 10px; -fx-border-color: black; -fx-background-color: white; -fx-border-width: 1px; ");
         this.getChildren().add(hexLine);
 
         // Pause before moving to the grid
@@ -62,19 +68,26 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
 
         // Create the grid layout
         HBox gridContainer = new HBox();
+        gridContainer.setStyle("-fx-border-color:rgb(30, 70, 170); -fx-border-width: 2px;");
+        gridContainer.setMinSize(190, 190);
+        gridContainer.setPrefSize(190, 190);
+        gridContainer.setMaxSize(190, 190);
         VBox gridWrapper = new VBox();
+        gridWrapper.setMinSize(196, 196); // 180px + (3px border on each side)
+        gridWrapper.setPrefSize(196, 196);
+        gridWrapper.setMaxSize(196, 196);
         gridWrapper.setAlignment(Pos.CENTER);
         gridContainer.setAlignment(Pos.CENTER);
         List<TranslateTransition> animations = new ArrayList<>();
 
         for (int col = 0; col < GRID_SIZE; col++) {
             VBox colBox = new VBox(); // Create a horizontal row
-            colBox.setSpacing(10);
+            colBox.setSpacing(5);
             colBox.setPadding(new Insets(5, 5, 5, 5));
 
             for (int row = 0; row < GRID_SIZE; row++) {
                 Label cell = new Label(grid[row][col]); // Get hex value
-                cell.setStyle("-fx-border-color: black; -fx-padding: 5px;"); // Add border
+                cell.setStyle("-fx-border-color: black; -fx-padding: 5px; -fx-background-color: white; -fx-font-size : 17px"); // Add border
                 cell.setOpacity(0); // Initially hidden
                 colBox.getChildren().add(cell);
 
@@ -87,12 +100,14 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
             }
             gridContainer.getChildren().add(colBox); // Add row to VBox
         }
-        this.getChildren().add(gridContainer);
+        gridWrapper.getChildren().add(gridContainer); // Wrap the grid with the border
+        this.getChildren().add(gridWrapper); // Add the wrapped grid to the main layout
 
         // Play animations sequentially after pause
         SequentialTransition sequence = new SequentialTransition(pause);
         sequence.getChildren().addAll(animations);
         sequence.play();
+
     }
 
     /**

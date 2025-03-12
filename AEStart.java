@@ -20,6 +20,7 @@ public class AEStart extends VBox {
         return password;
     }
 
+    @SuppressWarnings("unused")
     AEStart() {
         setAlignment(Pos.CENTER);
         setPrefSize(600, 600);
