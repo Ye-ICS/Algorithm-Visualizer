@@ -3,13 +3,15 @@
     -fx-text-fill: white;
     -fx-background-color: #90EE90; /* Light Green */
     -fx-background-radius: 15px;
-    -fx-padding: 10px 20px;
-    -fx-background-image: url("../Design objects/playButton.png");
+    -fx-padding: 80px 20px 20px 20px; /* More padding on top */
+    -fx-background-image: url("../images/playButton.png");
     -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-background-size: 20px; /* Adjust size as needed */
+    -fx-background-position: center top 10px; /* Move image higher */
+    -fx-background-size: 90px; /* Adjust size as needed */
     -fx-border-width: 0;
     -fx-cursor: hand;
+    -fx-alignment: center; /* Center text */
+    -fx-content-display: top; /* Ensure text is displayed below the image */
 }
 
 /* Hover Effect */

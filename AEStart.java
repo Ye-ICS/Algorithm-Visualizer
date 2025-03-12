@@ -1,6 +1,7 @@
 import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -50,9 +51,20 @@ public class AEStart extends VBox {
         Button startBtn = new Button("Start Animation !");
         startBtn.setMinSize(200, 50); // Adjust as needed
         startBtn.getStyleClass().add("StartButton"); // Apply CSS class
+        getStylesheets().add(getClass().getResource("CSS/StartButton.css").toExternalForm()); // Load CSS file
+
 
         startBtn.setOnAction(event -> {
             password = passwordBox.getText(); // Store the password
+            if (password.length() == 0) {
+                return;
+            }
+            if (password.length()>16)
+            {
+                Toolkit.getDefaultToolkit().beep();
+                showError("Password length should be less than 16 characters");
+                return;
+            }
             FXUtils.setSceneRoot(getScene(), new AESPasswordArray(password)); // Pass password to next scene
         });
 
@@ -60,5 +72,13 @@ public class AEStart extends VBox {
         descriptionBox.getChildren().add(description);
         startBox.getChildren().add(startBtn);
         getChildren().addAll(descriptionBox, passBox, startBtn);
+    }
+
+        private void showError(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Input Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

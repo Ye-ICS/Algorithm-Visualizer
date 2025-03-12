@@ -41,7 +41,7 @@ class MenuLayout extends VBox {
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
-        getStylesheets().add(getClass().getResource("CSS/AEStyling.css").toExternalForm());
+        getStylesheets().add(getClass().getResource("css/AEStyling.css").toExternalForm());
     }
 
 }
