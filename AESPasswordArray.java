@@ -1,70 +1,104 @@
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
+import javafx.scene.shape.Line;
+import javafx.geometry.Insets;
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AESPasswordArray extends VBox { // A custom JavaFX component that extends VBox
+public class AESPasswordArray extends VBox { // A custom JavaFX component
 
     private static final int BLOCK_SIZE = 16; // AES block size (16 bytes)
+    private static final int GRID_SIZE = 4;  // 4x4 grid
 
     /**
-     * Constructor: Accepts a password, converts it into hex blocks, and displays them.
-     * @param password The input string to be converted into hex blocks.
+     * Constructor: Accepts a password, converts it into a 4x4 hex grid (column-wise), and displays it.
+     * @param password The input string to be converted into a hex grid.
      */
-    public AESPasswordArray(String password) { 
-        List<String> hexBlocks = convertToHexBlocks(password); // Convert the password into hex blocks
+    public AESPasswordArray(String password) {
+        List<String> hexBytes = convertToHexBytes(password); // Convert password to hex byte array
+        String[][] grid = fillGridColumnWise(hexBytes); // Fill the 4x4 grid column-wise
 
-        // Display each hex block as a label inside the VBox
-        for (String block : hexBlocks) {
-            Label label = new Label(block); // Create a label with hex block text
-            this.getChildren().add(label); // Add label to VBox (this component)
+        // Display initial hex sequence as a single line
+        Label hexLine = new Label(String.join(" ", hexBytes));
+        hexLine.setStyle("-fx-font-size: 14px; -fx-padding: 10px;");
+        this.getChildren().add(hexLine);
+
+        // Pause before moving to the grid
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+
+        // Create the grid layout
+        VBox gridContainer = new VBox();
+        List<TranslateTransition> animations = new ArrayList<>();
+
+        for (int row = 0; row < GRID_SIZE; row++) {
+            HBox rowBox = new HBox(); // Create a horizontal row
+            rowBox.setSpacing(10);
+            rowBox.setPadding(new Insets(5, 5, 5, 5));
+
+            for (int col = 0; col < GRID_SIZE; col++) {
+                Label cell = new Label(grid[row][col]); // Get hex value
+                cell.setStyle("-fx-border-color: black; -fx-padding: 5px;"); // Add border
+                cell.setOpacity(0); // Initially hidden
+                rowBox.getChildren().add(cell);
+
+                // Create animation for each cell
+                TranslateTransition anim = new TranslateTransition(Duration.seconds(1), cell);
+                anim.setFromY(-20); // Start slightly above
+                anim.setToY(0);
+                anim.setOnFinished(e -> cell.setOpacity(1)); // Make visible after animation
+                animations.add(anim);
+            }
+            gridContainer.getChildren().add(rowBox); // Add row to VBox
         }
+        this.getChildren().add(gridContainer);
+
+        // Play animations sequentially after pause
+        SequentialTransition sequence = new SequentialTransition(pause);
+        sequence.getChildren().addAll(animations);
+        sequence.play();
     }
 
     /**
-     * Converts a given string into a list of hexadecimal blocks, each of size 16 bytes.
-     * If a block is smaller than 16 bytes, it is padded with "00".
+     * Converts the password into a list of hexadecimal byte strings (each byte is 2 hex characters).
+     * If there are fewer than 16 bytes, it is padded with "00".
      * 
-     * @param text The input string to be converted.
-     * @return List of hex-encoded 16-byte blocks.
+     * @param text The input password string.
+     * @return A list of 16 hex byte strings.
      */
-    private List<String> convertToHexBlocks(String text) {
-        List<String> blocks = splitIntoBlocks(text, BLOCK_SIZE); // Split text into 16-byte blocks
-        List<String> hexBlocks = new ArrayList<>(); // List to store hex representations
-
-        for (String block : blocks) {
-            StringBuilder hexString = new StringBuilder();
-
-            // Convert each character to its hexadecimal representation
-            for (char c : block.toCharArray()) {
-                String hex = String.format("%02x", (int) c); // Convert char to 2-digit hex
-                hexString.append(hex);
-            }
-
-            // Pad the block with "00" if it's smaller than 16 bytes
-            while (hexString.length() < BLOCK_SIZE * 2) { // *2 because each byte is 2 hex chars
-                hexString.append("00");
-            }
-
-            hexBlocks.add(hexString.toString()); // Add hex block to the list
+    private List<String> convertToHexBytes(String text) {
+        List<String> hexBytes = new ArrayList<>(); // List to store hex bytes
+        for (char c : text.toCharArray()) {
+            hexBytes.add(String.format("%02x", (int) c)); // Convert char to 2-digit hex
         }
-        return hexBlocks;
+
+        // Pad with "00" if length < 16
+        while (hexBytes.size() < BLOCK_SIZE) {
+            hexBytes.add("00");
+        }
+        return hexBytes;
     }
 
     /**
-     * Splits the input string into blocks of a specified size.
+     * Fills a 4x4 grid column-wise with hex byte strings.
+     * AES fills the state matrix column by column, not row by row.
      * 
-     * @param text The input string.
-     * @param blockSize The desired block size.
-     * @return List of string blocks, each up to blockSize characters long.
+     * @param hexBytes A list of 16 hex byte strings.
+     * @return A 4x4 grid of hex values.
      */
-    private List<String> splitIntoBlocks(String text, int blockSize) {
-        List<String> blocks = new ArrayList<>();
+    private String[][] fillGridColumnWise(List<String> hexBytes) {
+        String[][] grid = new String[GRID_SIZE][GRID_SIZE];
 
-        for (int i = 0; i < text.length(); i += blockSize) {
-            int endIndex = Math.min(i + blockSize, text.length()); // Ensure we don't exceed text length
-            blocks.add(text.substring(i, endIndex)); // Extract a block of text
+        int index = 0;
+        for (int col = 0; col < GRID_SIZE; col++) { // Column-wise filling
+            for (int row = 0; row < GRID_SIZE; row++) {
+                grid[row][col] = hexBytes.get(index++); // Fill row first in each column
+            }
         }
-        return blocks;
+        return grid;
     }
 }
