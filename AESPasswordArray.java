@@ -32,19 +32,19 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
         PauseTransition pause = new PauseTransition(Duration.seconds(3));
 
         // Create the grid layout
-        VBox gridContainer = new VBox();
+        HBox gridContainer = new HBox();
         List<TranslateTransition> animations = new ArrayList<>();
 
-        for (int row = 0; row < GRID_SIZE; row++) {
-            HBox rowBox = new HBox(); // Create a horizontal row
-            rowBox.setSpacing(10);
-            rowBox.setPadding(new Insets(5, 5, 5, 5));
+        for (int col = 0; col < GRID_SIZE; col++) {
+            VBox colBox = new VBox(); // Create a horizontal row
+            colBox.setSpacing(10);
+            colBox.setPadding(new Insets(5, 5, 5, 5));
 
-            for (int col = 0; col < GRID_SIZE; col++) {
+            for (int row = 0; row < GRID_SIZE; row++) {
                 Label cell = new Label(grid[row][col]); // Get hex value
                 cell.setStyle("-fx-border-color: black; -fx-padding: 5px;"); // Add border
                 cell.setOpacity(0); // Initially hidden
-                rowBox.getChildren().add(cell);
+                colBox.getChildren().add(cell);
 
                 // Create animation for each cell
                 TranslateTransition anim = new TranslateTransition(Duration.seconds(1), cell);
@@ -53,7 +53,7 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
                 anim.setOnFinished(e -> cell.setOpacity(1)); // Make visible after animation
                 animations.add(anim);
             }
-            gridContainer.getChildren().add(rowBox); // Add row to VBox
+            gridContainer.getChildren().add(colBox); // Add row to VBox
         }
         this.getChildren().add(gridContainer);
 

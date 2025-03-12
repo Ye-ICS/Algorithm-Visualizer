@@ -4,7 +4,7 @@
     -fx-background-color: #90EE90; /* Light Green */
     -fx-background-radius: 15px;
     -fx-padding: 80px 20px 20px 20px; /* More padding on top */
-    -fx-background-image: url("../images/playButton.png");
+    -fx-background-image: url("../images/YK/playButton.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: center top 10px; /* Move image higher */
     -fx-background-size: 90px; /* Adjust size as needed */

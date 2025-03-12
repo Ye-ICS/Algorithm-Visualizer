@@ -2,14 +2,15 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import java.awt.Toolkit;
 import javafx.scene.text.TextAlignment;
 
 public class AEStart extends VBox {
@@ -51,7 +52,7 @@ public class AEStart extends VBox {
         Button startBtn = new Button("Start Animation !");
         startBtn.setMinSize(200, 50); // Adjust as needed
         startBtn.getStyleClass().add("StartButton"); // Apply CSS class
-        getStylesheets().add(getClass().getResource("CSS/StartButton.css").toExternalForm()); // Load CSS file
+        getStylesheets().add(getClass().getResource("css/StartButton.css").toExternalForm()); // Load CSS file
 
 
         startBtn.setOnAction(event -> {
