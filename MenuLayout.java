@@ -1,17 +1,9 @@
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 /**
  * Custom layout based on VBox for a menu to select which algorithm to
@@ -21,6 +13,7 @@ class MenuLayout extends VBox {
     /**
      * Basic constructor, initializes the menu with a button to each algorithm.
      */
+    @SuppressWarnings("unused")
     MenuLayout() {
         setAlignment(Pos.CENTER);
 
