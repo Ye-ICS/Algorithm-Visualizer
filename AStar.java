@@ -25,6 +25,10 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.util.Duration;
 
+import javafx.scene.control.ProgressBar;
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * A* Pathfinding Visualization UI.
  */
@@ -35,6 +39,8 @@ public class AStar extends BorderPane {
     private static int pathLength = 0;
     private static long startTime;
     private static long endTime;
+    private static ProgressBar progressBar;
+    private static List<Cell> stages = new ArrayList<>();
 
     private static Cell[][] grid = new Cell[GRID_SIZE][GRID_SIZE];
     private static Cell startNode = null;
@@ -50,8 +56,12 @@ public class AStar extends BorderPane {
     private static double speed = 0.1; // Default speed
     private static HBox heuristic;
     private static int choice = 0;
+    private static VBox playback;
+    private static boolean paused = false; // Move paused to class level
 
     public AStar() {
+        paused = false; // Initialize paused in the constructor
+
         GridPane gridPane = new GridPane();
         GridPane currentNode = new GridPane();
 
@@ -75,7 +85,8 @@ public class AStar extends BorderPane {
                 currentNode.add(stackPane, col, row);
             }
         }
-
+        Button pauseBtn = new Button("Pause");
+        
         Button aStarButton = new Button("Run A*");
         aStarButton.setPrefSize(300, 110);
         aStarButton.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
@@ -84,11 +95,11 @@ public class AStar extends BorderPane {
         Button clearButton = new Button("Clear Grid");
         Button backButton = new Button("Back");
         Button generateMaze = new Button("Generate Maze");
+        Button allowDiagonal = new Button("Allow Diagonal");
 
-        HBox buttonbox = new HBox(10, clearButton, generateMaze);
+        HBox buttonbox = new HBox(10, clearButton, generateMaze, pauseBtn);
         clearButton.setPrefWidth(90);
         generateMaze.setPrefWidth(90);
-
 
         Label title = new Label("A* Pathfinding Visualization");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
@@ -99,8 +110,6 @@ public class AStar extends BorderPane {
         setCenter(gridPane);
         gridPane.setAlignment(Pos.CENTER_LEFT);
         gridPane.setPadding(new Insets(20, 0, 20, 20));
-
-        
 
         titleBox.setAlignment(Pos.TOP_LEFT);
         titleBox.setTranslateX(275);
@@ -158,7 +167,6 @@ public class AStar extends BorderPane {
 
         heuristic = new HBox(10, manhattan, euclidean, chebyshev);
 
-
         // Create a new 3x3 grid below the explanationPanel
         threeByThreeGrid = new GridPane();
         for (int row = 0; row < 3; row++) {
@@ -184,7 +192,8 @@ public class AStar extends BorderPane {
 
         // Create the right panel with the labels and components
         VBox rightPanel = new VBox(5, infoLabel, infoPanel, explanationLabel, explanationPanel, gridLabel,
-                threeByThreeGrid, buttonBoxLabel, buttonbox, speedLabel, speedSlider, heuristicLabel, heuristic, aStarButton );
+                threeByThreeGrid, buttonBoxLabel, buttonbox, speedLabel, speedSlider, heuristicLabel, heuristic,
+                aStarButton);
         rightPanel.setPadding(new Insets(20));
         setRight(rightPanel);
 
@@ -202,7 +211,9 @@ public class AStar extends BorderPane {
             } else {
                 resetAlgorithm();
                 updateExplanation("Running A* Algorithm...");
-                runAStar(startNode, endNode);
+                pauseBtn.setDisable(false); // Enable the pause button
+                pauseBtn.setText("Pause"); // Ensure the pause button text is set to "Pause"
+                runAStar(startNode, endNode, pauseBtn);
             }
         });
         generateMaze.setOnAction(event -> {
@@ -210,7 +221,6 @@ public class AStar extends BorderPane {
             updateExplanation("Generating Maze...");
             generateMaze();
         });
-
     }
 
     private static double heuristic(Cell a, Cell b) {
@@ -243,7 +253,7 @@ public class AStar extends BorderPane {
         updateInfoPanel();
     }
 
-    public static void runAStar(Cell start, Cell end) {
+    public static void runAStar(Cell start, Cell end, Button pauseBtn) {
         PriorityQueue<Cell> openList = new PriorityQueue<>(
                 Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
         Set<Cell> closedList = new HashSet<>();
@@ -255,6 +265,18 @@ public class AStar extends BorderPane {
 
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
+
+        pauseBtn.setOnAction(e -> {
+            if (paused) {
+                timeline.play();
+                paused = false;
+                pauseBtn.setText("Pause"); // Set text to "Pause" when resuming
+            } else {
+                timeline.stop();
+                paused = true;
+                pauseBtn.setText("Play"); // Set text to "Play" when pausing
+            }
+        });
 
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(speed), event -> {
             if (openList.isEmpty()) {
@@ -275,6 +297,7 @@ public class AStar extends BorderPane {
                 endTime = System.currentTimeMillis();
                 updateInfoPanel();
                 timeline.stop();
+                pauseBtn.setDisable(true); // Disable the pause button
                 return;
             }
 
@@ -315,6 +338,7 @@ public class AStar extends BorderPane {
 
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
+        pauseBtn.setDisable(false); // Ensure the pause button is enabled when the algorithm starts
     }
 
     private static void highlightPath(Cell current) {
