@@ -58,9 +58,17 @@ public class AStar extends BorderPane {
     private static int choice = 0;
     private static VBox playback;
     private static boolean paused = false; // Move paused to class level
+    private static Timeline currentTimeline; // Add this field at the class level
 
     public AStar() {
         paused = false; // Initialize paused in the constructor
+        
+        // Add this line right at the start of the constructor
+        Platform.runLater(() -> {
+            if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage) {
+                ((javafx.stage.Stage) getScene().getWindow()).setResizable(false);
+            }
+        });
 
         GridPane gridPane = new GridPane();
         GridPane currentNode = new GridPane();
@@ -100,6 +108,7 @@ public class AStar extends BorderPane {
         HBox buttonbox = new HBox(10, clearButton, generateMaze, pauseBtn);
         clearButton.setPrefWidth(90);
         generateMaze.setPrefWidth(90);
+        pauseBtn.setPrefWidth(90);
 
         Label title = new Label("A* Pathfinding Visualization");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
@@ -238,6 +247,11 @@ public class AStar extends BorderPane {
     }
 
     public static void resetGrid() {
+        // Stop any running animation first
+        if (currentTimeline != null) {
+            currentTimeline.stop();
+        }
+        
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 grid[row][col].reset();
@@ -245,19 +259,27 @@ public class AStar extends BorderPane {
         }
         startNode = null;
         endNode = null;
-        closedList.clear(); // Clear the closed list
-        currentPath.clear(); // Clear the current path
+        closedList.clear();
+        currentPath.clear();
         nodesExplored = 0;
         pathLength = 0;
+        paused = false;  // Reset pause state
         updateExplanation("Grid Cleared");
         updateInfoPanel();
     }
 
     public static void runAStar(Cell start, Cell end, Button pauseBtn) {
+        // Make sure any existing timeline is stopped
+        if (currentTimeline != null) {
+            currentTimeline.stop();
+        }
+        
         PriorityQueue<Cell> openList = new PriorityQueue<>(
                 Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
         Set<Cell> closedList = new HashSet<>();
 
+        // Reset states
+        paused = false;
         start.distance = 0;
         openList.add(start);
 
@@ -265,6 +287,7 @@ public class AStar extends BorderPane {
 
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
+        currentTimeline = timeline;
 
         pauseBtn.setOnAction(e -> {
             if (paused) {
@@ -284,6 +307,7 @@ public class AStar extends BorderPane {
                 endTime = System.currentTimeMillis();
                 updateInfoPanel();
                 timeline.stop();
+                pauseBtn.setDisable(true); // Disable the pause button
                 return;
             }
 
@@ -522,10 +546,16 @@ public class AStar extends BorderPane {
     }
 
     private static void resetAlgorithm() {
-        closedList.clear(); // Clear the closed list
-        currentPath.clear(); // Clear the current path
+        if (currentTimeline != null) {
+            currentTimeline.stop();
+        }
+        
+        closedList.clear();
+        currentPath.clear();
         nodesExplored = 0;
         pathLength = 0;
+        paused = false;
+        
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 grid[row][col].distance = Double.MAX_VALUE;
