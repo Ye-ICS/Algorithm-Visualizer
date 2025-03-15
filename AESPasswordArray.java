@@ -121,6 +121,7 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
         while (hexBytes.size() < BLOCK_SIZE) {
             hexBytes.add("00");
         }
+        System.out.println(hexBytes);
         return hexBytes;
     }
 
@@ -134,4 +135,5 @@ public class AESPasswordArray extends VBox { // A custom JavaFX component
         }
         return grid;
     }
+
 }

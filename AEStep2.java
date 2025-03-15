@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 
 public class AEStep2 extends VBox {
+    @SuppressWarnings("unused")
     public AEStep2() {
         setAlignment(Pos.CENTER);
         setPrefSize(600, 600);
