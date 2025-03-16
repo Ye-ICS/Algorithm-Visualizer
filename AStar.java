@@ -24,13 +24,15 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.util.Duration;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import javafx.scene.control.ProgressBar;
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * A* Pathfinding Visualization UI.
+ * A* Pathfinding Visualization UI with Timeline Slider.
  */
 public class AStar extends BorderPane {
     private static final int GRID_SIZE = 40;
@@ -60,6 +62,10 @@ public class AStar extends BorderPane {
     private static boolean paused = false; // Move paused to class level
     private static Timeline currentTimeline; // Add this field at the class level
 
+    // New fields for algorithm progress tracking
+    private static List<AlgorithmStep> algorithmSteps = new ArrayList<>();
+    private static int currentStepIndex = 0;
+    
     public AStar() {
         paused = false; // Initialize paused in the constructor
         
@@ -103,7 +109,6 @@ public class AStar extends BorderPane {
         Button clearButton = new Button("Clear Grid");
         Button backButton = new Button("Back");
         Button generateMaze = new Button("Generate Maze");
-        Button allowDiagonal = new Button("Allow Diagonal");
 
         HBox buttonbox = new HBox(10, clearButton, generateMaze, pauseBtn);
         clearButton.setPrefWidth(90);
@@ -116,9 +121,13 @@ public class AStar extends BorderPane {
 
         VBox titleBox = new VBox(10, title);
 
-        setCenter(gridPane);
-        gridPane.setAlignment(Pos.CENTER_LEFT);
-        gridPane.setPadding(new Insets(20, 0, 20, 20));
+        // Just create the gridWithControls without the progress controls
+        VBox gridWithControls = new VBox(10);
+        gridWithControls.getChildren().addAll(gridPane);
+        gridWithControls.setAlignment(Pos.CENTER_LEFT);
+        gridWithControls.setPadding(new Insets(20, 0, 20, 20));
+        
+        setCenter(gridWithControls);
 
         titleBox.setAlignment(Pos.TOP_LEFT);
         titleBox.setTranslateX(275);
@@ -222,6 +231,7 @@ public class AStar extends BorderPane {
                 updateExplanation("Running A* Algorithm...");
                 pauseBtn.setDisable(false); // Enable the pause button
                 pauseBtn.setText("Pause"); // Ensure the pause button text is set to "Pause"
+                
                 runAStar(startNode, endNode, pauseBtn);
             }
         });
@@ -264,24 +274,51 @@ public class AStar extends BorderPane {
         nodesExplored = 0;
         pathLength = 0;
         paused = false;  // Reset pause state
+        algorithmSteps.clear(); // Clear algorithm steps
+        currentStepIndex = 0;
         updateExplanation("Grid Cleared");
         updateInfoPanel();
     }
 
+    /**
+     * Class to store the state of the algorithm at each step
+     */
+    private static class AlgorithmStep {
+        private Cell currentNode;
+        private Set<Cell> openList;
+        private Set<Cell> closedList;
+        private String message;
+        private boolean isPathFound;
+        
+        public AlgorithmStep(Cell currentNode, Set<Cell> openList, Set<Cell> closedList, String message, boolean isPathFound) {
+            this.currentNode = currentNode;
+            this.openList = new HashSet<>(openList);
+            this.closedList = new HashSet<>(closedList);
+            this.message = message;
+            this.isPathFound = isPathFound;
+        }
+    }
+    
     public static void runAStar(Cell start, Cell end, Button pauseBtn) {
         // Make sure any existing timeline is stopped
         if (currentTimeline != null) {
             currentTimeline.stop();
         }
         
+        // Reset algorithm steps and disable slider at start
+        algorithmSteps.clear();
+        currentStepIndex = 0;
+        
         PriorityQueue<Cell> openList = new PriorityQueue<>(
                 Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
-        Set<Cell> closedList = new HashSet<>();
+        Set<Cell> openSet = new HashSet<>(); // For tracking open nodes more efficiently
+        Set<Cell> closedSet = new HashSet<>();
 
         // Reset states
         paused = false;
         start.distance = 0;
         openList.add(start);
+        openSet.add(start);
 
         startTime = System.currentTimeMillis();
 
@@ -303,17 +340,23 @@ public class AStar extends BorderPane {
 
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(speed), event -> {
             if (openList.isEmpty()) {
-                updateExplanation("No path found.");
+                String message = "No path found.";
+                updateExplanation(message);
                 endTime = System.currentTimeMillis();
                 updateInfoPanel();
                 timeline.stop();
                 pauseBtn.setDisable(true); // Disable the pause button
+                
+                // Add final step
+                algorithmSteps.add(new AlgorithmStep(null, openSet, closedSet, message, false));
                 return;
             }
 
             Cell current = openList.poll();
+            openSet.remove(current);
             nodesExplored++;
-            updateExplanation("Checking node (" + current.row + ", " + current.col + ")");
+            String message = "Checking node (" + current.row + ", " + current.col + ")";
+            updateExplanation(message);
 
             if (current == end) {
                 end.getRectangle().setFill(Color.RED); // Ensure end node stays red
@@ -322,16 +365,19 @@ public class AStar extends BorderPane {
                 updateInfoPanel();
                 timeline.stop();
                 pauseBtn.setDisable(true); // Disable the pause button
+                
+                // Add final step with path found
+                algorithmSteps.add(new AlgorithmStep(current, openSet, closedSet, "Path found!", true));
                 return;
             }
 
-            closedList.add(current);
+            closedSet.add(current);
             if (current != start && current != end) {
                 current.getRectangle().setFill(Color.YELLOW); // Highlight current node
             }
 
             for (Cell neighbor : getNeighbors(current)) {
-                if (closedList.contains(neighbor) || neighbor.isWall()) {
+                if (closedSet.contains(neighbor) || neighbor.isWall()) {
                     updateInfoPanel();
                     continue;
                 }
@@ -341,9 +387,11 @@ public class AStar extends BorderPane {
                 if (tentativeG < neighbor.distance) {
                     neighbor.distance = tentativeG;
                     neighbor.parent = current;
-                    if (!openList.contains(neighbor)) {
+                    if (!openSet.contains(neighbor)) {
                         openList.add(neighbor);
-                        updateExplanation("Adding node (" + neighbor.row + ", " + neighbor.col + ") to open list");
+                        openSet.add(neighbor);
+                        String neighborMessage = "Adding node (" + neighbor.row + ", " + neighbor.col + ") to open list";
+                        updateExplanation(neighborMessage);
                         if (neighbor != start && neighbor != end) {
                             neighbor.getRectangle().setFill(Color.BLUE); // Highlight open list nodes
                         }
@@ -351,6 +399,9 @@ public class AStar extends BorderPane {
                 }
             }
 
+            // Store current algorithm state
+            algorithmSteps.add(new AlgorithmStep(current, openSet, closedSet, message, false));
+            
             Platform.runLater(() -> {
                 if (current != start && current != end) {
                     current.getRectangle().setFill(Color.BLUE); // Mark as visited
@@ -375,12 +426,13 @@ public class AStar extends BorderPane {
         currentPath.clear();
 
         // Highlight the new path
-        while (current != null) {
-            if (current != startNode && current != endNode) {
-                current.getRectangle().setFill(Color.YELLOW); // Highlight the path
-                currentPath.add(current);
+        Cell pathNode = current;
+        while (pathNode != null) {
+            if (pathNode != startNode && pathNode != endNode) {
+                pathNode.getRectangle().setFill(Color.YELLOW); // Highlight the path
+                currentPath.add(pathNode);
             }
-            current = current.parent;
+            pathNode = pathNode.parent;
         }
     }
 
@@ -506,6 +558,11 @@ public class AStar extends BorderPane {
         }
 
         private void cellClicked() {
+            if (isWall) {
+                setWall(false);  // Allow removing walls by clicking
+                return;
+            }
+            
             if (startNode == null) {
                 startNode = this;
                 rect.setFill(Color.GREEN);
@@ -542,6 +599,7 @@ public class AStar extends BorderPane {
             infoPanel.setText("Nodes Explored: " + nodesExplored + "\n");
             infoPanel.appendText("Path Length: " + pathLength + "\n");
             infoPanel.appendText("Execution Time: " + (endTime - startTime) + " ms\n");
+            infoPanel.appendText("Current Step: " + currentStepIndex + "/" + algorithmSteps.size() + "\n");
         });
     }
 
@@ -555,6 +613,8 @@ public class AStar extends BorderPane {
         nodesExplored = 0;
         pathLength = 0;
         paused = false;
+        algorithmSteps.clear();
+        currentStepIndex = 0;
         
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
