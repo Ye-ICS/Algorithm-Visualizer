@@ -16,6 +16,6 @@ public class MazeSortLayout extends StackPane{
 
         getChildren().add(gridView);
 
-        //DeclanJones.start(writer);
+        DeclanJones.run(gridImage, writer);
     }
 }
