@@ -10,9 +10,6 @@ import javafx.scene.text.Text;
  * Custom layout based on VBox for a menu to select which algorithm to visualize.
  */
 class MenuLayout extends VBox {
-    /**
-     * Basic constructor, initializes the menu with a button to each algorithm.
-     */
     MenuLayout() {
         setAlignment(Pos.CENTER);
 
@@ -22,10 +19,17 @@ class MenuLayout extends VBox {
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
+        // Buttons for each sorting algorithm
         Button bubbleSortBtn = new Button("Bubble Sort");
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
+        Button selectionSortBtn = new Button("Selection Sort");
+        //selectionSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SelectionSortLayout()));
+
+        Button quickSortBtn = new Button("Quick Sort");
+        //quickSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new QuickSortLayout()));
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, selectionSortBtn, quickSortBtn);
         getChildren().addAll(title, buttonsBox);
     }
 }
