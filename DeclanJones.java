@@ -8,22 +8,30 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class DeclanJones {
+
+    // Keep track of whether there is a possible path
     static boolean pathFindable;
 
+    // The grid of walls
     static boolean[][] wallGrid;
 
+    // The path grid to be found later
     static boolean[][] pathGrid;
 
+    // Whether a spot has been checked yet
     static boolean[][] checked;
 
+    // Grids containing the distance from the start and goal, to be populated later
     static int[][] distanceGridStart;
-
     static int[][] distanceGridGoal;
 
+    // The array of coordinates to check
     static int[][] coordsToCheck;
 
+    // Coordinates of the square that has the shortest path to the start
     static int[][][] cameFrom;
 
+    // Scaling factor, assigned when run
     static int scale;
 
     public static void run(boolean displayProgress, WritableImage gridImage, PixelWriter writer, int inScale) {
@@ -33,6 +41,7 @@ public class DeclanJones {
 
         populateGrids();
 
+        // Create a grid and make sure it is solveable
         while (!pathFindable) {
             for (int i = 0; i < wallGrid.length; i++) {
                 for (int j = 0; j < wallGrid[0].length; j++) {
@@ -50,6 +59,7 @@ public class DeclanJones {
             }
         }
 
+        // If displayProgress is false, don't bother creating a timeline
         if (displayProgress) {
             populateGrids();
 
@@ -77,6 +87,23 @@ public class DeclanJones {
         }
     }
 
+    /**
+     * Prints two boolean grids onto a PixelWriter, coloring pixels based on their
+     * values in the grids.
+     * The method iterates through each cell of the grids, applying different colors
+     * based on the following conditions:
+     * - If the cell is at the top-left (0, 0) or bottom-right corner (grid1.length
+     * - 1, grid1[0].length - 1), it's colored red.
+     * - If the cell is true in grid1, it's colored gray.
+     * - If the cell is true in grid2, it's colored white.
+     * - Otherwise, the cell is colored black.
+     * The method only executes if grid2 is not null and both grids have the same
+     * dimensions.
+     *
+     * @param grid1  The first boolean grid.
+     * @param grid2  The second boolean grid. Can be null.
+     * @param writer The PixelWriter to draw the grids onto.
+     */
     public static void printGrid(boolean[][] grid1, boolean[][] grid2, PixelWriter writer) {
         if (grid2 != null && grid1.length == grid2.length && grid1[0].length == grid2[0].length) {
             for (int i = 0; i < grid1.length; i++) {
@@ -95,6 +122,17 @@ public class DeclanJones {
         }
     }
 
+    /**
+     * Writes a scaled pixel to the given PixelWriter with the specified color.
+     * The method iterates through a square region defined by the 'scale' factor,
+     * setting each pixel within that region to the provided color. This effectively
+     * creates a larger, scaled pixel at the given (x, y) coordinates.
+     *
+     * @param x      The x-coordinate of the pixel to scale.
+     * @param y      The y-coordinate of the pixel to scale.
+     * @param writer The PixelWriter object used to write the color to the image.
+     * @param color  The color to set for the scaled pixel.
+     */
     public static void writerToScale(int x, int y, PixelWriter writer, Color color) {
         for (int i = 0; i < scale; i++) {
             for (int j = 0; j < scale; j++) {
@@ -103,6 +141,20 @@ public class DeclanJones {
         }
     }
 
+    /**
+     * populates the grids required for pathfinding.
+     * This method resets the 'checked' boolean grid, the 'cameFrom' grid,
+     * the 'distanceGridStart', and the 'distanceGridGoal' grids.
+     * The 'checked' grid is initialized to all false values, indicating that no
+     * cells have been visited.
+     * The 'cameFrom' grid is initialized to all zero values, representing that no
+     * path has been established.
+     * The 'distanceGridStart' is initialized to all zero values.
+     * The 'distanceGridGoal' is populated with heuristic distance values,
+     * calculated based on the Manhattan distance from the goal.
+     * Finally, 'coordsToCheck' is initialized with the starting coordinate {0, 0},
+     * and 'pathFindable' is set to false.
+     */
     public static void populateGrids() {
 
         checked = new boolean[wallGrid.length][wallGrid[0].length];
@@ -140,6 +192,19 @@ public class DeclanJones {
         pathFindable = false;
     }
 
+    /**
+     * Reconstructs the path found by the A* search algorithm, using the 'cameFrom'
+     * array to trace back from the end node to the start node.
+     *
+     * The method iterates backwards from the end node, marking each cell in the
+     * 'foundPathGrid' as part of the path.
+     * It stops when it reaches the start node (0, 0).
+     *
+     * @return A 2D boolean array representing the grid, where 'true' indicates a
+     *         cell is part of the path, and 'false' indicates it is not.
+     *         Returns 'null' if no path was found (i.e., 'cameFrom' is null or the
+     *         end node in 'cameFrom' points to null).
+     */
     private static boolean[][] findPathGrid() {
         if (cameFrom == null || cameFrom[cameFrom.length - 1][cameFrom[0].length - 1][0] == 0) {
             return null;
@@ -162,6 +227,15 @@ public class DeclanJones {
         return foundPathGrid;
     }
 
+    /**
+     * Explores the grid around a given coordinate to find the shortest path from a
+     * start point.
+     * It checks adjacent cells, updates their distances from the start point, and
+     * records the path.
+     * The method uses a heuristic approach, prioritizing cells closer to the goal.
+     * It also maintains a list of coordinates to check, sorting them based on their
+     * estimated distance to the goal.
+     */
     private static void checkCoords() {
         checked[coordsToCheck[0][0]][coordsToCheck[0][1]] = true;
 
@@ -180,7 +254,7 @@ public class DeclanJones {
                 coordsToCheck[coordsToCheck.length - 1] = new int[] { XToCheck, YToCheck };
                 distanceGridStart[XToCheck][YToCheck] = distance;
                 cameFrom[XToCheck][YToCheck] = new int[] { coordsToCheck[0][0], coordsToCheck[0][1] };
-                
+
             }
         }
 
