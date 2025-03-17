@@ -49,4 +49,11 @@ public class BruteSudoku extends FlowPane{
 
         getChildren().addAll(title, backsBtn, sudokuTable);
     }
+
+    void BruteForceNumbers() {
+        for (int i = 0; i < 9; i++) {
+            
+        }
+    }
+
 }
