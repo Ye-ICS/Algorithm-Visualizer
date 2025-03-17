@@ -65,6 +65,9 @@ public class AStar extends BorderPane {
     // New fields for algorithm progress tracking
     private static List<AlgorithmStep> algorithmSteps = new ArrayList<>();
     private static int currentStepIndex = 0;
+    private static Slider progressSlider;
+    private static boolean userAdjustingSlider = false;
+    private static int totalSteps = 0;
     
     public AStar() {
         paused = false; // Initialize paused in the constructor
@@ -121,9 +124,40 @@ public class AStar extends BorderPane {
 
         VBox titleBox = new VBox(10, title);
 
-        // Just create the gridWithControls without the progress controls
+        // Create progress slider that spans underneath the grid
+        progressSlider = new Slider(0, 100, 0);
+        progressSlider.setPrefWidth(GRID_SIZE * CELL_SIZE); // Match grid width
+        progressSlider.setShowTickLabels(true);
+        progressSlider.setShowTickMarks(true);
+        progressSlider.setMajorTickUnit(25);
+        progressSlider.setMinorTickCount(5);
+        progressSlider.setDisable(true); // Initially disabled
+        
+        // Listen for user-driven changes to the slider
+        progressSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (progressSlider.isValueChanging()) {
+                    userAdjustingSlider = true;
+                    int step = (int)((newValue.doubleValue() / 100) * (algorithmSteps.size() - 1));
+                    if (step >= 0 && step < algorithmSteps.size()) {
+                        jumpToStep(step);
+                        
+                    }
+                } else if (userAdjustingSlider) {
+                    userAdjustingSlider = false;
+                }
+            }
+        });
+        
+        // Create a container for the progress controls
+        HBox progressControls = new HBox(10, progressSlider);
+        progressControls.setAlignment(Pos.CENTER);
+        progressControls.setPadding(new Insets(10, 20, 0, 20));
+        
+        // Add grid and progress controls to a vertical layout
         VBox gridWithControls = new VBox(10);
-        gridWithControls.getChildren().addAll(gridPane);
+        gridWithControls.getChildren().addAll(gridPane, progressControls);
         gridWithControls.setAlignment(Pos.CENTER_LEFT);
         gridWithControls.setPadding(new Insets(20, 0, 20, 20));
         
@@ -232,6 +266,9 @@ public class AStar extends BorderPane {
                 pauseBtn.setDisable(false); // Enable the pause button
                 pauseBtn.setText("Pause"); // Ensure the pause button text is set to "Pause"
                 
+                // Reset and enable the progress slider
+                progressSlider.setValue(0);
+                progressSlider.setDisable(false);
                 runAStar(startNode, endNode, pauseBtn);
             }
         });
@@ -276,6 +313,8 @@ public class AStar extends BorderPane {
         paused = false;  // Reset pause state
         algorithmSteps.clear(); // Clear algorithm steps
         currentStepIndex = 0;
+        progressSlider.setValue(0);
+        progressSlider.setDisable(true); // Ensure slider is disabled when grid is reset
         updateExplanation("Grid Cleared");
         updateInfoPanel();
     }
@@ -299,6 +338,60 @@ public class AStar extends BorderPane {
         }
     }
     
+    /**
+     * Jump to a specific step in the algorithm execution
+     */
+    private static void jumpToStep(int stepIndex) {
+        if (stepIndex < 0 || stepIndex >= algorithmSteps.size()) {
+            return;
+        }
+        
+        currentStepIndex = stepIndex;
+        AlgorithmStep step = algorithmSteps.get(stepIndex);
+        
+        // Reset grid visuals
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                Cell cell = grid[row][col];
+                if (cell != startNode && cell != endNode && !cell.isWall()) {
+                    cell.getRectangle().setFill(Color.LIGHTGRAY);
+                }
+            }
+        }
+        
+        // First show open list nodes (blue)
+        for (Cell cell : step.openList) {
+            if (cell != startNode && cell != endNode && !step.closedList.contains(cell)) {
+                cell.getRectangle().setFill(Color.BLUE);
+            }
+        }
+        
+        // Then show closed list nodes (also blue)
+        for (Cell cell : step.closedList) {
+            if (cell != startNode && cell != endNode) {
+                cell.getRectangle().setFill(Color.BLUE);
+            }
+        }
+        
+        // Finally highlight current node and path
+        if (step.currentNode != null && step.currentNode != startNode && step.currentNode != endNode) {
+            step.currentNode.getRectangle().setFill(Color.YELLOW);
+            highlightPath(step.currentNode);
+        }
+        
+        // If path found, reconstruct final path
+        if (step.isPathFound) {
+            reconstructPath();
+        }
+        
+        updateExplanation(step.message);
+        updateInfoPanel();
+        
+        if (step.currentNode != null) {
+            updateThreeByThreeGrid(step.currentNode);
+        }
+    }
+
     public static void runAStar(Cell start, Cell end, Button pauseBtn) {
         // Make sure any existing timeline is stopped
         if (currentTimeline != null) {
@@ -308,6 +401,7 @@ public class AStar extends BorderPane {
         // Reset algorithm steps and disable slider at start
         algorithmSteps.clear();
         currentStepIndex = 0;
+        progressSlider.setDisable(true);
         
         PriorityQueue<Cell> openList = new PriorityQueue<>(
                 Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
@@ -349,6 +443,8 @@ public class AStar extends BorderPane {
                 
                 // Add final step
                 algorithmSteps.add(new AlgorithmStep(null, openSet, closedSet, message, false));
+                updateProgressSlider(algorithmSteps.size() - 1, algorithmSteps.size());
+                progressSlider.setDisable(false); // Enable slider when algorithm finishes
                 return;
             }
 
@@ -368,6 +464,8 @@ public class AStar extends BorderPane {
                 
                 // Add final step with path found
                 algorithmSteps.add(new AlgorithmStep(current, openSet, closedSet, "Path found!", true));
+                updateProgressSlider(algorithmSteps.size() - 1, algorithmSteps.size());
+                progressSlider.setDisable(false); // Enable slider when path is found
                 return;
             }
 
@@ -401,6 +499,7 @@ public class AStar extends BorderPane {
 
             // Store current algorithm state
             algorithmSteps.add(new AlgorithmStep(current, openSet, closedSet, message, false));
+            updateProgressSlider(algorithmSteps.size() - 1, algorithmSteps.size());
             
             Platform.runLater(() -> {
                 if (current != start && current != end) {
@@ -414,6 +513,20 @@ public class AStar extends BorderPane {
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
         pauseBtn.setDisable(false); // Ensure the pause button is enabled when the algorithm starts
+    }
+    
+    /**
+     * Update the progress slider position
+     */
+    private static void updateProgressSlider(int currentStep, int totalSteps) {
+        if (totalSteps > 0) {
+            double progress = (double) currentStep / totalSteps * 100;
+            Platform.runLater(() -> {
+                if (!userAdjustingSlider) {
+                    progressSlider.setValue(progress);
+                }
+            });
+        }
     }
 
     private static void highlightPath(Cell current) {
@@ -615,6 +728,8 @@ public class AStar extends BorderPane {
         paused = false;
         algorithmSteps.clear();
         currentStepIndex = 0;
+        progressSlider.setValue(0);
+        progressSlider.setDisable(true); // Ensure slider is disabled when algorithm resets
         
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
