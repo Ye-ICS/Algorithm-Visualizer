@@ -8,19 +8,22 @@ import javafx.scene.text.Text;
 
 public class BruteSudoku extends FlowPane{
     
-
+    TextField[][] sudokuCells = new TextField[9][9];
 
     /**
      * Constructs layout for brute force sudoku solver
      */
     BruteSudoku() {
+
+        Text title = new Text("Brute Force Sudoku Solver");
+
         GridPane sudokuTable = new GridPane();
         sudokuTable.setPadding(new Insets(10));
-        sudokuTable.setVgap(5);
-        sudokuTable.setHgap(5);
+        sudokuTable.setVgap(2);
+        sudokuTable.setHgap(2);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; i++) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
                 TextField sudokuNumbers = new TextField();
                 sudokuNumbers.setPrefHeight(40);
                 sudokuNumbers.setPrefWidth(40);
@@ -29,7 +32,7 @@ public class BruteSudoku extends FlowPane{
                     sudokuNumbers.setText("5");
                     sudokuNumbers.setEditable(false);
                 }
-
+                sudokuCells[i][j] = sudokuNumbers;
                 sudokuTable.add(sudokuNumbers, i, j);
             }
         }
@@ -44,6 +47,6 @@ public class BruteSudoku extends FlowPane{
         Button backsBtn = new Button("Back");
         backsBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
 
-        getChildren().addAll(description, backsBtn);
+        getChildren().addAll(title, backsBtn, sudokuTable);
     }
 }
