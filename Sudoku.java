@@ -15,7 +15,7 @@ public class Sudoku extends GridPane {
 
         // Solve button below the grid
         Button solveButton = new Button("Solve Sudoku");
-        solveButton.setOnAction(e -> new Thread(() -> solveSudoku()).start());
+        solveButton.setOnAction(e -> new Thread(() -> solveSudoku(gridNumbers)).start());
 
         add(solveButton, 0, 9, 9, 1); // Span across all 9 columns
         GridPane.setHalignment(solveButton, HPos.CENTER); // Center horizontally
@@ -79,7 +79,20 @@ public class Sudoku extends GridPane {
         }
     }
 
-    public void solveSudoku() {
-        // Sudoku solving logic to be implemented
+    public void solveSudoku(int[][] board) {
+        backtrack(board, 0, 0);
     }
+
+    private boolean backtrack(int[][] board, int row, int col) {
+        return false;
+    }
+
+    private boolean isValid (int[][] board, int row, int col, int num) {
+        return false;
+    }
+
+    private boolean updateCell (int row, int col, int num) {
+        return false;
+    }
+
 }
