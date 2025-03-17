@@ -1,6 +1,5 @@
 import java.util.Arrays;
 import java.util.Comparator;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.PixelWriter;
@@ -25,12 +24,14 @@ public class DeclanJones {
 
     static int[][][] cameFrom;
 
-    static int scale = 1;
+    static int scale;
 
-    public static void run(WritableImage gridImage, PixelWriter writer, int newScale) {
+    public static void run(boolean display, WritableImage gridImage, PixelWriter writer, int newScale) {
         scale = newScale;
 
         wallGrid = new boolean[(int) gridImage.getWidth() / scale][(int) gridImage.getHeight() / scale];
+
+        populate();
 
         while (!pathFound) {
             for (int i = 0; i < wallGrid.length; i++) {
@@ -49,37 +50,42 @@ public class DeclanJones {
             }
         }
 
-        populate();
+        if (display) {
+            populate();
 
-        final Timeline timeline = new Timeline();
+            final Timeline timeline = new Timeline();
 
-        KeyFrame periodicEvent = new KeyFrame(Duration.millis(300), event -> {
-            checkNeighbours();
-            printGrid(checked, wallGrid, writer);
-            if (pathFound) {
-                pathGrid = findPathGrid();
-                printGrid(wallGrid, pathGrid, writer);
-                timeline.stop();
-            }
-        });
+            KeyFrame periodicEvent = new KeyFrame(Duration.millis(150), event -> {
+                checkNeighbours();
+                printGrid(wallGrid, checked, writer);
+                if (pathFound) {
+                    pathGrid = findPathGrid();
+                    printGrid(wallGrid, pathGrid, writer);
+                    timeline.stop();
+                }
+            });
 
-        timeline.getKeyFrames().add(periodicEvent);
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+            timeline.getKeyFrames().add(periodicEvent);
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            timeline.play();
+        } else {
+            pathGrid = findPathGrid();
+            printGrid(wallGrid, pathGrid, writer);
+        }
     }
 
-    public static void printGrid(boolean[][] wallGrid, boolean[][] pathGrid, PixelWriter writer) {
-        if (pathGrid != null && wallGrid.length == pathGrid.length && wallGrid[0].length == pathGrid[0].length) {
-            for (int i = 0; i < wallGrid.length; i++) {
-                for (int j = 0; j < wallGrid[0].length; j++) {
-                    if (i + j == 0 || i == wallGrid.length - 1 && j == wallGrid[0].length - 1) {
-                        writer.setColor(i, j, Color.rgb(50, 50, 50));
-                    } else if (wallGrid[i][j]) {
-                        writer.setColor(i, j, Color.rgb(150, 150, 150));
-                    } else if (pathGrid[i][j]) {
-                        writer.setColor(i, j, Color.rgb(255, 255, 255));
+    public static void printGrid(boolean[][] grid1, boolean[][] grid2, PixelWriter writer) {
+        if (grid2 != null && grid1.length == grid2.length && grid1[0].length == grid2[0].length) {
+            for (int i = 0; i < grid1.length; i++) {
+                for (int j = 0; j < grid1[0].length; j++) {
+                    if (i + j == 0 || i == grid1.length - 1 && j == grid1[0].length - 1) {
+                        writerLarge(i, j, writer, Color.rgb(255, 0, 0));
+                    } else if (grid1[i][j]) {
+                        writerLarge(i, j, writer, Color.rgb(150, 150, 150));
+                    } else if (grid2[i][j]) {
+                        writerLarge(i, j, writer, Color.rgb(255, 255, 255));
                     } else {
-                        writer.setColor(i, j, Color.rgb(0, 0, 0));
+                        writerLarge(i, j, writer, Color.rgb(0, 0, 0));
                     }
                 }
             }
@@ -87,12 +93,11 @@ public class DeclanJones {
     }
 
     public static void writerLarge(int x, int y, PixelWriter writer, Color color) {
-
-        writer.setColor(x * scale, y * scale, color);
-        writer.setColor(x * scale + 1, y * scale, color);
-        writer.setColor(x * scale, y * scale + 1, color);
-        writer.setColor(x * scale + 1, y * scale + 1, color);
-
+        for (int i = 0; i < scale; i++) {
+            for (int j = 0; j < scale; j++) {
+                writer.setColor(x * scale + j, y * scale + i, color);
+            }
+        }
     }
 
     public static void populate() {
