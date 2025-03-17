@@ -8,7 +8,7 @@ public class MazeSortLayout extends StackPane{
     MazeSortLayout() {
         setAlignment(Pos.CENTER);
 
-        WritableImage gridImage = new WritableImage(20, 20);
+        WritableImage gridImage = new WritableImage(40, 40);
 
         ImageView gridView = new ImageView(gridImage);
 
@@ -16,6 +16,6 @@ public class MazeSortLayout extends StackPane{
 
         getChildren().add(gridView);
 
-        DeclanJones.run(gridImage, writer);
+        DeclanJones.run(gridImage, writer, 2);
     }
 }

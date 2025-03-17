@@ -9,28 +9,63 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class DeclanJones {
-    public static void run(WritableImage gridImage, PixelWriter writer) {
-        boolean[][] wallGrid = new boolean[(int) gridImage.getWidth()][(int) gridImage.getHeight()];
+    static boolean pathFound;
 
-        boolean[][] pathGrid = null;
+    static boolean[][] wallGrid;
 
-        while (pathGrid == null) {
+    static boolean[][] pathGrid;
+
+    static boolean[][] checked;
+
+    static int[][] distanceGrid;
+
+    static int[][] distanceGridGoal;
+
+    static int[][] coords;
+
+    static int[][][] cameFrom;
+
+    static int scale = 1;
+
+    public static void run(WritableImage gridImage, PixelWriter writer, int newScale) {
+        scale = newScale;
+
+        wallGrid = new boolean[(int) gridImage.getWidth() / scale][(int) gridImage.getHeight() / scale];
+
+        while (!pathFound) {
             for (int i = 0; i < wallGrid.length; i++) {
                 for (int j = 0; j < wallGrid[0].length; j++) {
                     if ((int) (Math.random() * 2) != 0 && (i != 0 || j != 0)
                             && (i != wallGrid.length - 1 || j != wallGrid[0].length - 1)) {
-                        wallGrid[i][j] = false;
+                        wallGrid[i][j] = true;
                     } else {
                         wallGrid[i][j] = false;
                     }
                 }
             }
-            pathGrid = pathFind(wallGrid, false, writer);
+            populate();
+            while (!pathFound && (coords.length >= 1)) {
+                checkNeighbours();
+            }
         }
 
-        pathGrid = null;
+        populate();
 
-        printGrid(wallGrid, pathGrid, writer);
+        final Timeline timeline = new Timeline();
+
+        KeyFrame periodicEvent = new KeyFrame(Duration.millis(300), event -> {
+            checkNeighbours();
+            printGrid(checked, wallGrid, writer);
+            if (pathFound) {
+                pathGrid = findPathGrid();
+                printGrid(wallGrid, pathGrid, writer);
+                timeline.stop();
+            }
+        });
+
+        timeline.getKeyFrames().add(periodicEvent);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     public static void printGrid(boolean[][] wallGrid, boolean[][] pathGrid, PixelWriter writer) {
@@ -51,11 +86,21 @@ public class DeclanJones {
         }
     }
 
-    public static boolean[][] pathFind(boolean[][] wallGrid, boolean debug, PixelWriter writer) {
+    public static void writerLarge(int x, int y, PixelWriter writer, Color color) {
 
-        boolean[][] checked = new boolean[wallGrid.length][wallGrid[0].length];
+        writer.setColor(x * scale, y * scale, color);
+        writer.setColor(x * scale + 1, y * scale, color);
+        writer.setColor(x * scale, y * scale + 1, color);
+        writer.setColor(x * scale + 1, y * scale + 1, color);
 
-        int[][][] cameFrom = new int[wallGrid.length][wallGrid[0].length][2];
+    }
+
+    public static void populate() {
+
+        checked = new boolean[wallGrid.length][wallGrid[0].length];
+
+        cameFrom = new int[wallGrid.length][wallGrid[0].length][2];
+
         for (int i = 0; i < checked.length; i++) {
             for (int j = 0; j < checked[i].length; j++) {
                 checked[i][j] = false;
@@ -65,7 +110,7 @@ public class DeclanJones {
             }
         }
 
-        int[][] distanceGrid = new int[wallGrid.length][wallGrid[0].length];
+        distanceGrid = new int[wallGrid.length][wallGrid[0].length];
 
         for (int i = 0; i < distanceGrid.length; i++) {
             for (int j = 0; j < distanceGrid[0].length; j++) {
@@ -73,7 +118,7 @@ public class DeclanJones {
             }
         }
 
-        int[][] distanceGridGoal = new int[wallGrid.length][wallGrid[0].length];
+        distanceGridGoal = new int[wallGrid.length][wallGrid[0].length];
 
         for (int i = 0; i < distanceGridGoal.length; i++) {
             for (int j = 0; j < distanceGridGoal[0].length; j++) {
@@ -82,30 +127,12 @@ public class DeclanJones {
             }
         }
 
-        int[][] coords = new int[][] { { 0, 0 } };
+        coords = new int[][] { { 0, 0 } };
 
-        if (debug) {
-            // Set up periodic event: duration/delay and action when finished.
-            KeyFrame periodicEvent = new KeyFrame(Duration.millis(1000), event -> {
-                checkNeighbours(coords, wallGrid, distanceGrid, distanceGridGoal,
-                        checked, cameFrom, true, writer);
-            });
-
-            // Must place KeyFrame on a Timeline in order to play it.
-            Timeline timeline = new Timeline(periodicEvent);
-            timeline.setCycleCount(Timeline.INDEFINITE); // Set to loop indefinitely.
-            timeline.play();
-        } else {
-            while (findPathGrid(cameFrom) == null) {
-                checkNeighbours(coords, wallGrid, distanceGrid, distanceGridGoal,
-                        checked, cameFrom, false, writer);
-            }
-        }
-
-        return findPathGrid(cameFrom);
+        pathFound = false;
     }
 
-    private static boolean[][] findPathGrid(int[][][] cameFrom) {
+    private static boolean[][] findPathGrid() {
         if (cameFrom == null || cameFrom[cameFrom.length - 1][cameFrom[0].length - 1][0] == 0) {
             return null;
         }
@@ -127,9 +154,7 @@ public class DeclanJones {
         return foundPathGrid;
     }
 
-    private static void checkNeighbours(int[][] coords, boolean[][] wallGrid, int[][] distanceGrid,
-            int[][] distanceGridGoal, boolean[][] checked, int[][][] cameFrom, boolean debug, PixelWriter writer) {
-
+    private static void checkNeighbours() {
         checked[coords[0][0]][coords[0][1]] = true;
 
         for (int i = 0; i < 9; i++) {
@@ -164,8 +189,8 @@ public class DeclanJones {
             }
         });
 
-        if (debug) {
-            printGrid(wallGrid, checked, writer);
+        if (cameFrom[cameFrom.length - 1][cameFrom[0].length - 1][0] != 0) {
+            pathFound = true;
         }
     }
 }
