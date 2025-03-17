@@ -20,7 +20,7 @@ public class RecursiveDivisionLayout extends FlowPane{
         setAlignment(Pos.CENTER);
 
         Button drawRecDevMazeBtn = new Button("Draw Recursive Division Maze");
-        drawRecDevMazeBtn.setOnAction(event -> RecursiveDivisionW.drawMaze(canvas.getGraphicsContext2D(), 500, 0, 600, levelSpinner.getValue()));
+        drawRecDevMazeBtn.setOnAction(event -> RecursiveDivisionW.drawMaze(canvas.getGraphicsContext2D(), 100, 0, 150, levelSpinner.getValue()));
 
         Button backBtn = new Button("Back");
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
