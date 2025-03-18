@@ -1,7 +1,11 @@
 import java.util.Arrays;
 import java.util.Comparator;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class DeclanJones {
     // Keep track of whether there is a possible path
@@ -14,7 +18,7 @@ public class DeclanJones {
     static boolean[][] pathGrid;
 
     // Whether a spot has been checked yet
-    static boolean[][] checked;
+    volatile static boolean[][] checked;
 
     // Grids containing the distance from the start and goal, to be populated later
     static int[][] distanceGridStart;
@@ -32,10 +36,10 @@ public class DeclanJones {
     static Thread pathfindingThread;
 
     public static void run(int height, int width, int speed, int inScale) {
+
         try {
             pathfindingThread.interrupt();
-        } catch (NullPointerException e) {
-            System.err.println(e.getStackTrace());
+        } catch (Exception e) {
         }
 
         scale = inScale;
@@ -66,16 +70,19 @@ public class DeclanJones {
 
         populateGrids();
 
-        Thread drawThread = new Thread(() -> {
-            while (pathGrid == null) {
-                printGrid(wallGrid, checked, MazeSortLayout.writer);
-            }
-            printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+        KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
+            printGrid(wallGrid, checked, MazeSortLayout.writer);
         });
+
+        Timeline timeline = new Timeline(drawEvent);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
         pathfindingThread = new Thread(() -> {
             while (!pathFindable) {
-                checkCoords();
+                synchronized (checked) {
+                    checkCoords();
+                }
                 try {
                     Thread.sleep(speed);
                 } catch (InterruptedException e) {
@@ -84,11 +91,12 @@ public class DeclanJones {
                     break;
                 }
             }
+            timeline.stop();
             pathGrid = findPathGrid();
+            printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
             return;
         });
 
-        drawThread.start();
         pathfindingThread.start();
     }
 
@@ -105,26 +113,32 @@ public class DeclanJones {
      * The method only executes if grid2 is not null and both grids have the same
      * dimensions.
      *
-     * @param grid1  The first boolean grid.
-     * @param grid2  The second boolean grid. Can be null.
-     * @param writer The PixelWriter to draw the grids onto.
+     * @param wallGrid    The grid of walls to display.
+     * @param displayGrid The second grid to display. Can be null.
+     * @param writer      The PixelWriter to draw the grids onto.
      */
-    public static void printGrid(boolean[][] grid1, boolean[][] grid2, PixelWriter writer) {
-        if (grid2 != null && grid1.length == grid2.length && grid1[0].length == grid2[0].length) {
-            for (int i = 0; i < grid1.length; i++) {
-                for (int j = 0; j < grid1[0].length; j++) {
-                    if (i + j == 0 || i == grid1.length - 1 && j == grid1[0].length - 1) {
+    public static void printGrid(boolean[][] wallGrid, boolean[][] displayGrid, PixelWriter writer) {
+        if (displayGrid == null || wallGrid.length != displayGrid.length
+                || wallGrid[0].length != displayGrid[0].length) {
+            return;
+        }
+
+        //synchronized (displayGrid) {
+        for (int i = 0; i < wallGrid.length; i++) {
+            for (int j = 0; j < wallGrid[0].length; j++) {
+                    if (i + j == 0 || i == wallGrid.length - 1 && j == wallGrid[0].length - 1) {
                         writerToScale(i, j, writer, Color.rgb(0, 255, 0));
-                    } else if (grid1[i][j]) {
+                    } else if (wallGrid[i][j]) {
                         writerToScale(i, j, writer, Color.rgb(124, 0, 0));
-                    } else if (grid2[i][j]) {
+                    } else if (displayGrid[i][j]) {
                         writerToScale(i, j, writer, Color.rgb(255, 255, 255));
                     } else {
                         writerToScale(i, j, writer, Color.rgb(0, 0, 0));
                     }
                 }
             }
-        }
+        //}
+
     }
 
     /**
