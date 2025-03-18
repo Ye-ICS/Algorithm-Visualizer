@@ -3,42 +3,48 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 public class VisualSortingAlgorithms extends BorderPane {
     VisualSortingAlgorithms() {
-        VBox selectionBox = new VBox();
-        HBox displayBox = new HBox();
+        FlowPane selectionBox = new FlowPane();
+        Canvas canvas = new Canvas(500, 500);
 
-        Label valueLabel = new Label("Number of values:");
-
-        Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 25, 1);
+        Label valueLabel = new Label("");
+        Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 32, 1);
         valueSpinner.setEditable(true);
-
-        // int numSwaps;
-
         Button submitBtn = new Button();
         submitBtn.setText("Submit");
-        submitBtn.setOnAction(event -> calculateValues(displayBox, valueSpinner));
+        submitBtn.setOnAction(event -> calculateValues(canvas, valueSpinner, canvas.getGraphicsContext2D()));
 
-        setLeft(selectionBox);
-        setCenter(displayBox);
+        Label timeLabel = new Label("                 ");
+        Spinner<Integer> timeSpinner = new Spinner<Integer>(2, 32, 1);
+        timeSpinner.setEditable(true);
+        Button startBtn = new Button();
+        startBtn.setText("Start");
+        //startBtn.setOnAction(event -> );
+        Button pauseBtn = new Button();
+        pauseBtn.setText("Pause");
+        // pauseBtn.setOnAction(event -> );
 
-        selectionBox.getChildren().addAll(valueLabel, valueSpinner, submitBtn);
+        setBottom(selectionBox);
+        setCenter(canvas);
+
+        selectionBox.getChildren().addAll(valueLabel, valueSpinner, submitBtn, timeLabel, timeSpinner, startBtn, pauseBtn);
     }
 
-    void calculateValues(HBox displayBox, Spinner<Integer> valueSpinner) {
+    void calculateValues(Canvas canvas, Spinner<Integer> valueSpinner, GraphicsContext graphicsContext) {
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         int[] values = new int[valueSpinner.getValue()];
-        displayBox.getChildren().clear();
-        Label[] valueLabels = new Label[values.length];
         for (int i = 0; i < values.length; i++) {
-            valueLabels[i] = new Label();
             values[i] = (int) (500 * Math.random()) + 1;
-            displayBox.getChildren().add(valueLabels[i]);
-            valueLabels[i].setText("  " + values[i] + "  ");
+            graphicsContext.fillRect((i * 10) + i, canvas.getHeight() - values[i], 10, values[i]);
         }
     }
 }
