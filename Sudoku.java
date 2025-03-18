@@ -5,11 +5,24 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.control.Button;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import javafx.geometry.HPos;
 
 public class Sudoku extends GridPane {
 
+    private int[][] gridNumbers;
+
     public Sudoku() {
+        try {
+            gridNumbers = getTable("data/sudoku/Example.txt"); // Handle exception properly
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(); // Print error message to console
+            gridNumbers = new int[9][9]; // Default empty grid in case of failure
+        }
 
         createSudokuGrid();
 
@@ -19,23 +32,9 @@ public class Sudoku extends GridPane {
 
         add(solveButton, 0, 9, 9, 1); // Span across all 9 columns
         GridPane.setHalignment(solveButton, HPos.CENTER); // Center horizontally
-
     }
 
-    private int[][] gridNumbers = {
-        {8, 0, 1, 3, 4, 0, 0, 2, 0},
-        {0, 5, 0, 6, 0, 0, 8, 0, 3},
-        {0, 0, 0, 0, 9, 5, 1, 0, 0},
-        {6, 0, 0, 0, 5, 9, 0, 0, 4},
-        {0, 0, 3, 0, 0, 0, 7, 5, 0},
-        {0, 0, 5, 2, 3, 0, 6, 8, 0},
-        {0, 0, 9, 5, 0, 8, 4, 0, 6},
-        {5, 7, 0, 1, 0, 0, 2, 0, 8},
-        {3, 0, 6, 0, 0, 0, 0, 0, 0},
-    };
-
     private void createSudokuGrid() {
-
         int subGridSize = 3; // Size of subgrid (3x3)
         int cellSize = 60; // Size of each cell
 
@@ -79,6 +78,24 @@ public class Sudoku extends GridPane {
         }
     }
 
+    int[][] getTable(String filename) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(filename));
+
+        int[][] gridNumbers = new int[9][9];
+
+        for (int k = 0; k < 9; k++) {
+            String row = scanner.nextLine();
+            String[] rowStrings = row.split(",");
+
+            for (int j = 0; j < 9; j++) {
+                gridNumbers[k][j] = Integer.parseInt(rowStrings[j]); // Properly populate grid
+            }
+        }
+
+        scanner.close(); 
+        return gridNumbers;
+    }
+
     public void solveSudoku(int[][] board) {
         backtrack(board, 0, 0);
     }
@@ -87,12 +104,36 @@ public class Sudoku extends GridPane {
         return false;
     }
 
-    private boolean isValid (int[][] board, int row, int col, int num) {
-        return false;
+    private boolean isValid(int[][] board, int row, int col, int numExists) {
+        
+        //  Check if 'numExists' already exists in the same row/col
+        for (int i = 0; i < 9; i++) {
+            if (numExists == board[row][i] || numExists == board[i][col]) // If number is found in the row/col, it's invalid
+            {
+                return false;
+            }    
+        }
+    
+        // Calculate starting row and column index of 3x3 subgrid that contains (row, col)
+        int startRow = (row / 3) * 3; 
+        int startCol = (col / 3) * 3; 
+    
+        // Checking if 'numExists' already exists in the same 3x3 subgrid
+        for (int i = 0; i < 3; i++) { // Loop over 3 rows of subgrid
+            for (int j = 0; j < 3; j++) { // Loop over 3 columns of subgrid
+                
+                if (numExists == board[startRow + i][startCol + j]) // If number is found in subgrid, invalid
+                {
+                    return false;
+                }
+            }
+        }
+    
+        // If number doesn't exist in row, column, and subgrid, it is a valid placement
+        return true;
     }
 
-    private boolean updateCell (int row, int col, int num) {
+    private boolean updateCell (int row, int col, int numExists) {
         return false;
     }
-
 }
