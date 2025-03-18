@@ -1,3 +1,4 @@
+// AESStart.java
 import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
@@ -14,10 +15,15 @@ import java.awt.Toolkit;
 import javafx.scene.text.TextAlignment;
 
 public class AEStart extends VBox {
-    private static String password = ""; // Store the password
+    private static String password = "";
+    private static String plaintext = ""; // Store plaintext
 
     public static String getPassword() {
         return password;
+    }
+
+    public static String getPlaintext() {
+        return plaintext;
     }
 
     @SuppressWarnings("unused")
@@ -25,58 +31,66 @@ public class AEStart extends VBox {
         setAlignment(Pos.CENTER);
         setPrefSize(600, 600);
         setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        setSpacing(50); // Set vertical spacing between elements
+        setSpacing(50);
 
+        // Description Box
         VBox descriptionBox = new VBox();
         descriptionBox.setAlignment(Pos.CENTER);
         descriptionBox.setPrefSize(600, 200);
-
         Text descriptionText = new Text(
-                "Welcome to our AES-256 Encryption Algorithm Visualizer! AES-256 (Advanced Encryption Standard) is a military standard encryption algorithm used to protect the most sensitive data on the planet. Not only that, you use it every day to protect your ZIP files! Go ahead and enter your password here and click the button below:");
+                "Welcome to the AES-256 Encryption Algorithm Visualizer! Enter your password and plaintext message below.");
         descriptionText.setStyle("-fx-padding: 10px;");
-
         javafx.scene.text.TextFlow description = new javafx.scene.text.TextFlow(descriptionText);
         description.setTextAlignment(TextAlignment.CENTER);
         description.prefWidthProperty().bind(descriptionBox.widthProperty());
 
+        // Password Input
         VBox passBox = new VBox();
         passBox.setAlignment(Pos.CENTER);
         passBox.setSpacing(10);
         TextField passwordBox = new TextField();
         passwordBox.setMaxWidth(200);
-        passwordBox.setStyle("-fx-padding: 10px;");
+        passwordBox.setPromptText("Enter Password (Max 16 Characters)");
 
+        // Plaintext Input
+        TextField plaintextBox = new TextField();
+        plaintextBox.setMaxWidth(200);
+        plaintextBox.setPromptText("Enter Plaintext");
+
+        // Start Button
         VBox startBox = new VBox();
         startBox.setAlignment(Pos.CENTER);
         startBox.setSpacing(10);
-
         Button startBtn = new Button("Start Animation !");
-        startBtn.setMinSize(200, 50); // Adjust as needed
-        startBtn.getStyleClass().add("StartButton"); // Apply CSS class
-        getStylesheets().add(getClass().getResource("css/StartButton.css").toExternalForm()); // Load CSS file
-
+        startBtn.setMinSize(200, 50);
+        startBtn.getStyleClass().add("StartButton");
+        getStylesheets().add(getClass().getResource("css/StartButton.css").toExternalForm());
 
         startBtn.setOnAction(event -> {
-            password = passwordBox.getText(); // Store the password
-            if (password.length() == 0) {
+            password = passwordBox.getText();
+            plaintext = plaintextBox.getText();
+
+            if (password.length() == 0 || plaintext.length() == 0) {
+                showError("Both password and plaintext are required.");
                 return;
             }
-            if (password.length()>16)
-            {
+
+            if (password.length() > 16) {
                 Toolkit.getDefaultToolkit().beep();
-                showError("Password length should be less than 16 characters");
+                showError("Password length should be 16 characters or less.");
                 return;
             }
-            FXUtils.setSceneRoot(getScene(), new AESPasswordArray(password)); // Pass password to next scene
+
+            FXUtils.setSceneRoot(getScene(), new AESPasswordArray(password, plaintext));
         });
 
-        passBox.getChildren().add(passwordBox);
+        passBox.getChildren().addAll(passwordBox, plaintextBox);
         descriptionBox.getChildren().add(description);
         startBox.getChildren().add(startBtn);
-        getChildren().addAll(descriptionBox, passBox, startBtn);
+        getChildren().addAll(descriptionBox, passBox, startBox);
     }
 
-        private void showError(String message) {
+    private void showError(String message) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Input Error");
         alert.setHeaderText(null);
@@ -84,3 +98,5 @@ public class AEStart extends VBox {
         alert.showAndWait();
     }
 }
+
+// Next, I will adjust AESPasswordArray.java to visualize both password and plaintext in a 4x4 matrix.

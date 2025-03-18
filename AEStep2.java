@@ -22,8 +22,10 @@ public class AEStep2 extends VBox {
         // Back button to return to AESPasswordArray
         Button backButton = new Button("Back");
         backButton.getStyleClass().add("nav-button"); // Apply CSS class
-        backButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new AESPasswordArray(AEStart.getPassword())));
+        backButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new AESPasswordArray(AEStart.getPassword(), ""))); // Assuming plaintext is empty on back
 
         getChildren().addAll(title, backButton);
+
+        //TODO : ARROW pointing at 4x4 matrix calling it a state array
     }
 }
