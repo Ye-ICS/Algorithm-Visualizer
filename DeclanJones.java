@@ -72,6 +72,9 @@ public class DeclanJones {
 
         KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
             printGrid(wallGrid, checked, MazeSortLayout.writer);
+            if (pathGrid != null) {
+                printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+            }
         });
 
         Timeline timeline = new Timeline(drawEvent);
@@ -80,9 +83,7 @@ public class DeclanJones {
 
         pathfindingThread = new Thread(() -> {
             while (!pathFindable) {
-                synchronized (checked) {
-                    checkCoords();
-                }
+                checkCoords();
                 try {
                     Thread.sleep(speed);
                 } catch (InterruptedException e) {
@@ -91,9 +92,7 @@ public class DeclanJones {
                     break;
                 }
             }
-            timeline.stop();
             pathGrid = findPathGrid();
-            printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
             return;
         });
 
@@ -123,21 +122,21 @@ public class DeclanJones {
             return;
         }
 
-        //synchronized (displayGrid) {
+        // synchronized (displayGrid) {
         for (int i = 0; i < wallGrid.length; i++) {
             for (int j = 0; j < wallGrid[0].length; j++) {
-                    if (i + j == 0 || i == wallGrid.length - 1 && j == wallGrid[0].length - 1) {
-                        writerToScale(i, j, writer, Color.rgb(0, 255, 0));
-                    } else if (wallGrid[i][j]) {
-                        writerToScale(i, j, writer, Color.rgb(124, 0, 0));
-                    } else if (displayGrid[i][j]) {
-                        writerToScale(i, j, writer, Color.rgb(255, 255, 255));
-                    } else {
-                        writerToScale(i, j, writer, Color.rgb(0, 0, 0));
-                    }
+                if (i + j == 0 || i == wallGrid.length - 1 && j == wallGrid[0].length - 1) {
+                    writerToScale(i, j, writer, Color.rgb(0, 255, 0));
+                } else if (wallGrid[i][j]) {
+                    writerToScale(i, j, writer, Color.rgb(124, 0, 0));
+                } else if (displayGrid[i][j]) {
+                    writerToScale(i, j, writer, Color.rgb(255, 255, 255));
+                } else {
+                    writerToScale(i, j, writer, Color.rgb(0, 0, 0));
                 }
             }
-        //}
+        }
+        // }
 
     }
 
