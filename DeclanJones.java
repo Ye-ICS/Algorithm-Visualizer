@@ -1,14 +1,13 @@
 import java.util.Arrays;
 import java.util.Comparator;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class DeclanJones {
-
     // Keep track of whether there is a possible path
     static boolean pathFindable;
 
@@ -19,7 +18,7 @@ public class DeclanJones {
     static boolean[][] pathGrid;
 
     // Whether a spot has been checked yet
-    static boolean[][] checked;
+    volatile static boolean[][] checked;
 
     // Grids containing the distance from the start and goal, to be populated later
     static int[][] distanceGridStart;
@@ -34,10 +33,27 @@ public class DeclanJones {
     // Scaling factor, assigned when run
     static int scale;
 
-    public static void run(boolean displayProgress, WritableImage gridImage, PixelWriter writer, int inScale) {
+    static Thread pathfindingThread;
+
+    static Timeline timeline;
+
+    public static void run(int height, int width, int speed, int inScale) {
+
+        try {
+            pathfindingThread.interrupt();
+        } catch (Exception e) {
+        }
+
+        try {
+            timeline.stop();
+        } catch (Exception e) {
+        }
+
         scale = inScale;
 
-        wallGrid = new boolean[(int) gridImage.getWidth() / scale][(int) gridImage.getHeight() / scale];
+        pathGrid = null;
+
+        wallGrid = new boolean[height / scale][width / scale];
 
         populateGrids();
 
@@ -59,32 +75,45 @@ public class DeclanJones {
             }
         }
 
-        // If displayProgress is false, don't bother creating a timeline
-        if (displayProgress) {
-            populateGrids();
+        populateGrids();
 
-            final Timeline timeline = new Timeline();
-
-            KeyFrame periodicEvent = new KeyFrame(Duration.millis(100), event -> {
-                checkCoords();
-                printGrid(wallGrid, checked, writer);
-                if (pathFindable) {
-                    pathGrid = findPathGrid();
-                    printGrid(wallGrid, pathGrid, writer);
-                    timeline.stop();
+        KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
+            printGrid(wallGrid, checked, MazeSortLayout.writer);
+            if (pathGrid != null) {
+                synchronized (pathGrid) {
+                    printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+                    pathGrid.notifyAll();
                 }
-            });
+            }
+        });
 
-            timeline.getKeyFrames().add(periodicEvent);
-            timeline.setCycleCount(Timeline.INDEFINITE);
-            timeline.play();
+        timeline = new Timeline(drawEvent);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
-        } else {
-
+        pathfindingThread = new Thread(() -> {
+            while (!pathFindable) {
+                checkCoords();
+                try {
+                    Thread.sleep(speed);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.err.println(e.getStackTrace());
+                    break;
+                }
+            }
             pathGrid = findPathGrid();
-            printGrid(wallGrid, pathGrid, writer);
+            synchronized (pathGrid) {
+                try {
+                    pathGrid.wait();
+                } catch (InterruptedException e) {
+                }
+            }
+            timeline.stop();
+            return;
+        });
 
-        }
+        pathfindingThread.start();
     }
 
     /**
@@ -100,26 +129,32 @@ public class DeclanJones {
      * The method only executes if grid2 is not null and both grids have the same
      * dimensions.
      *
-     * @param grid1  The first boolean grid.
-     * @param grid2  The second boolean grid. Can be null.
-     * @param writer The PixelWriter to draw the grids onto.
+     * @param wallGrid    The grid of walls to display.
+     * @param displayGrid The second grid to display. Can be null.
+     * @param writer      The PixelWriter to draw the grids onto.
      */
-    public static void printGrid(boolean[][] grid1, boolean[][] grid2, PixelWriter writer) {
-        if (grid2 != null && grid1.length == grid2.length && grid1[0].length == grid2[0].length) {
-            for (int i = 0; i < grid1.length; i++) {
-                for (int j = 0; j < grid1[0].length; j++) {
-                    if (i + j == 0 || i == grid1.length - 1 && j == grid1[0].length - 1) {
-                        writerToScale(i, j, writer, Color.rgb(255, 0, 0));
-                    } else if (grid1[i][j]) {
-                        writerToScale(i, j, writer, Color.rgb(150, 150, 150));
-                    } else if (grid2[i][j]) {
-                        writerToScale(i, j, writer, Color.rgb(255, 255, 255));
-                    } else {
-                        writerToScale(i, j, writer, Color.rgb(0, 0, 0));
-                    }
+    public static void printGrid(boolean[][] wallGrid, boolean[][] displayGrid, PixelWriter writer) {
+        if (displayGrid == null || wallGrid.length != displayGrid.length
+                || wallGrid[0].length != displayGrid[0].length) {
+            return;
+        }
+
+        // synchronized (displayGrid) {
+        for (int i = 0; i < wallGrid.length; i++) {
+            for (int j = 0; j < wallGrid[0].length; j++) {
+                if (i + j == 0 || i == wallGrid.length - 1 && j == wallGrid[0].length - 1) {
+                    writerToScale(i, j, writer, Color.rgb(0, 255, 0));
+                } else if (wallGrid[i][j]) {
+                    writerToScale(i, j, writer, Color.rgb(124, 0, 0));
+                } else if (displayGrid[i][j]) {
+                    writerToScale(i, j, writer, Color.rgb(255, 255, 255));
+                } else {
+                    writerToScale(i, j, writer, Color.rgb(0, 0, 0));
                 }
             }
         }
+        // }
+
     }
 
     /**
