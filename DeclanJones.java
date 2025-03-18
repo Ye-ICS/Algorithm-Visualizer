@@ -40,6 +40,8 @@ public class DeclanJones {
 
         scale = inScale;
 
+        pathGrid = null;
+
         wallGrid = new boolean[height / scale][width / scale];
 
         populateGrids();
@@ -64,6 +66,13 @@ public class DeclanJones {
 
         populateGrids();
 
+        Thread drawThread = new Thread(() -> {
+            while (pathGrid == null) {
+                printGrid(wallGrid, checked, MazeSortLayout.writer);
+            }
+            printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+        });
+
         pathfindingThread = new Thread(() -> {
             while (!pathFindable) {
                 checkCoords();
@@ -79,6 +88,7 @@ public class DeclanJones {
             return;
         });
 
+        drawThread.start();
         pathfindingThread.start();
     }
 
@@ -104,9 +114,9 @@ public class DeclanJones {
             for (int i = 0; i < grid1.length; i++) {
                 for (int j = 0; j < grid1[0].length; j++) {
                     if (i + j == 0 || i == grid1.length - 1 && j == grid1[0].length - 1) {
-                        writerToScale(i, j, writer, Color.rgb(255, 0, 0));
+                        writerToScale(i, j, writer, Color.rgb(0, 255, 0));
                     } else if (grid1[i][j]) {
-                        writerToScale(i, j, writer, Color.rgb(150, 150, 150));
+                        writerToScale(i, j, writer, Color.rgb(124, 0, 0));
                     } else if (grid2[i][j]) {
                         writerToScale(i, j, writer, Color.rgb(255, 255, 255));
                     } else {

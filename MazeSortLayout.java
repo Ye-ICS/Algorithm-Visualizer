@@ -9,21 +9,23 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 public class MazeSortLayout extends VBox {
+    static PixelWriter writer;
+
     MazeSortLayout() {
         WritableImage gridImage = new WritableImage(600, 600);
 
         ImageView gridView = new ImageView(gridImage);
 
-        PixelWriter writer = gridImage.getPixelWriter();
+        writer = gridImage.getPixelWriter();
 
         Text speedText = new Text("Speed: ");
 
         Text scaleText = new Text("Scale:");
 
-        Spinner<Integer> scaleSpinner = new Spinner<Integer>(4, 600, 20, 2);
+        Spinner<Integer> scaleSpinner = new Spinner<Integer>(4, 200, 40, 2);
         scaleSpinner.setEditable(true);
 
-        Spinner<Integer> speedSpinner = new Spinner<Integer>(1, 1001, 10, 1);
+        Spinner<Integer> speedSpinner = new Spinner<Integer>(1, 1001, 100, 1);
         speedSpinner.setEditable(true);
 
         Button resetBtn = new Button("Run");
@@ -39,18 +41,9 @@ public class MazeSortLayout extends VBox {
 
         DeclanJones.run((int) gridImage.getHeight(), (int) gridImage.getWidth(), 0,
                 (int) gridImage.getHeight() / scaleSpinner.getValue());
+    }
 
-        Thread thread = new Thread(() -> {
-            while (true) {
-                if (DeclanJones.pathFindable) {
-                    DeclanJones.printGrid(DeclanJones.wallGrid, DeclanJones.pathGrid, writer);
-                } else {
-                    DeclanJones.printGrid(DeclanJones.wallGrid, DeclanJones.checked, writer);
-                }
-            }
-        });
+    static void createThread() {
 
-        thread.setDaemon(true);
-        thread.start();
     }
 }
