@@ -30,8 +30,13 @@ public class AEStart extends VBox {
     AEStart() {
         setAlignment(Pos.CENTER);
         setPrefSize(600, 600);
-        setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+        setStyle("-fx-background-color: #f4f4f9;"); // Light background for modern look
+
         setSpacing(50);
+        // Title Text
+         Text titleText = new Text("AES Algorithm Visualization");
+         titleText.setStyle("-fx-font-size: 30px; -fx-font-weight: bold; -fx-fill: #333333;");
+         titleText.setTextAlignment(TextAlignment.CENTER);
 
         // Description Box
         VBox descriptionBox = new VBox();
@@ -40,6 +45,8 @@ public class AEStart extends VBox {
         Text descriptionText = new Text(
                 "Welcome to the AES-256 Encryption Algorithm Visualizer! Enter your password and plaintext message below.");
         descriptionText.setStyle("-fx-padding: 10px;");
+        descriptionText.setStyle("-fx-font-size: 18px; -fx-fill: #666666;");
+        descriptionText.setTextAlignment(TextAlignment.CENTER);
         javafx.scene.text.TextFlow description = new javafx.scene.text.TextFlow(descriptionText);
         description.setTextAlignment(TextAlignment.CENTER);
         description.prefWidthProperty().bind(descriptionBox.widthProperty());
@@ -87,7 +94,9 @@ public class AEStart extends VBox {
         passBox.getChildren().addAll(passwordBox, plaintextBox);
         descriptionBox.getChildren().add(description);
         startBox.getChildren().add(startBtn);
+        getChildren().addAll(titleText, descriptionText);
         getChildren().addAll(descriptionBox, passBox, startBox);
+
     }
 
     private void showError(String message) {
@@ -99,4 +108,3 @@ public class AEStart extends VBox {
     }
 }
 
-// Next, I will adjust AESPasswordArray.java to visualize both password and plaintext in a 4x4 matrix.

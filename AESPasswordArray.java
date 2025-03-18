@@ -1,4 +1,3 @@
-// AESPasswordArray.java
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
@@ -29,10 +28,9 @@ public class AESPasswordArray extends VBox {
      * @param password  The input password to be converted into a hex grid.
      * @param plaintext The input plaintext to be converted into a hex grid.
      */
-    @SuppressWarnings("unused")
     public AESPasswordArray(String password, String plaintext) {
-        setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        
+        setBackground(new Background(new BackgroundFill(Color.web("#34495e"), CornerRadii.EMPTY, Insets.EMPTY))); // Modern dark color
+
         List<String> passwordHex = convertToHexBytes(password);
         List<String> plaintextHex = convertToHexBytes(plaintext);
 
@@ -46,20 +44,20 @@ public class AESPasswordArray extends VBox {
         // Description
         Text descriptionText = new Text(
                 "The password and plaintext have been converted to hexadecimal and organized in 4x4 matrices.");
-        descriptionText.setStyle("-fx-padding: 10px; -fx-font-size: 19px;");
+        descriptionText.setStyle("-fx-padding: 10px; -fx-font-size: 18px; -fx-font-family: 'Arial'; -fx-fill: white;");
         this.getChildren().add(descriptionText);
 
         // Display both hex sequences
         Label passwordHexLine = new Label("Password Hex: " + String.join(" ", passwordHex));
         Label plaintextHexLine = new Label("Plaintext Hex: " + String.join(" ", plaintextHex));
 
-        passwordHexLine.setStyle("-fx-font-size: 17px; -fx-padding: 10px; -fx-border-color: black; -fx-background-color: white; -fx-border-width: 1px;");
-        plaintextHexLine.setStyle("-fx-font-size: 17px; -fx-padding: 10px; -fx-border-color: black; -fx-background-color: white; -fx-border-width: 1px;");
+        passwordHexLine.setStyle("-fx-font-size: 17px; -fx-padding: 10px; -fx-border-color: black; -fx-background-color: white; -fx-border-width: 1px; -fx-text-fill: #2c3e50;");
+        plaintextHexLine.setStyle("-fx-font-size: 17px; -fx-padding: 10px; -fx-border-color: black; -fx-background-color: white; -fx-border-width: 1px; -fx-text-fill: #2c3e50;");
 
         this.getChildren().addAll(passwordHexLine, plaintextHexLine);
 
         // Pause before grid animation
-        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
 
         // Display both grids side by side
         HBox gridsContainer = new HBox(50);
@@ -93,7 +91,7 @@ public class AESPasswordArray extends VBox {
         VBox container = new VBox(10);
         container.setAlignment(Pos.CENTER);
         Label label = new Label(labelText);
-        label.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        label.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
         container.getChildren().add(label);
 
         HBox gridContainer = new HBox();
@@ -107,8 +105,15 @@ public class AESPasswordArray extends VBox {
             colBox.setSpacing(5);
             for (int row = 0; row < GRID_SIZE; row++) {
                 Label cell = new Label(grid[row][col]);
-                cell.setStyle("-fx-border-color: black; -fx-padding: 5px; -fx-background-color: white; -fx-font-size: 17px");
+                cell.setStyle("-fx-border-color: black; -fx-padding: 5px; -fx-background-color: white; -fx-font-size: 17px; -fx-text-fill: #2c3e50;");
                 colBox.getChildren().add(cell);
+
+                // Add a translate animation to each grid element
+                TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), cell);
+                transition.setFromY(50);
+                transition.setToY(0);
+                transition.setDelay(Duration.seconds(0.2 * (row + col))); // Stagger the animation
+                transition.play();
             }
             gridContainer.getChildren().add(colBox);
         }
