@@ -94,12 +94,11 @@ public class DeclanJones {
         pathfindingThread = new Thread(() -> {
             while (!pathFindable) {
                 checkCoords();
-                try {
-                    Thread.sleep(speed);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    System.err.println(e.getStackTrace());
-                    break;
+                if (speed > 0) {
+                    try {
+                        Thread.sleep(speed);
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
             pathGrid = findPathGrid();
