@@ -35,10 +35,17 @@ public class DeclanJones {
 
     static Thread pathfindingThread;
 
+    static Timeline timeline;
+
     public static void run(int height, int width, int speed, int inScale) {
 
         try {
             pathfindingThread.interrupt();
+        } catch (Exception e) {
+        }
+
+        try {
+            timeline.stop();
         } catch (Exception e) {
         }
 
@@ -73,11 +80,14 @@ public class DeclanJones {
         KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
             printGrid(wallGrid, checked, MazeSortLayout.writer);
             if (pathGrid != null) {
-                printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+                synchronized (pathGrid) {
+                    printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+                    pathGrid.notifyAll();
+                }
             }
         });
 
-        Timeline timeline = new Timeline(drawEvent);
+        timeline = new Timeline(drawEvent);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
@@ -93,6 +103,13 @@ public class DeclanJones {
                 }
             }
             pathGrid = findPathGrid();
+            synchronized (pathGrid) {
+                try {
+                    pathGrid.wait();
+                } catch (InterruptedException e) {
+                }
+            }
+            timeline.stop();
             return;
         });
 
