@@ -65,7 +65,7 @@ public class DeclanJones {
 
             final Timeline timeline = new Timeline();
 
-            KeyFrame periodicEvent = new KeyFrame(Duration.millis(150), event -> {
+            KeyFrame periodicEvent = new KeyFrame(Duration.millis(100), event -> {
                 checkCoords();
                 printGrid(wallGrid, checked, writer);
                 if (pathFindable) {

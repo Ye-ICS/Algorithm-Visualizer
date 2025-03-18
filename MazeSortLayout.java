@@ -25,7 +25,7 @@ public class MazeSortLayout extends VBox {
 
         Text scaleText = new Text("Scale:");
 
-        Spinner<Integer> scaleSpinner = new Spinner<Integer>(5, 200, 20, 1);
+        Spinner<Integer> scaleSpinner = new Spinner<Integer>(3, 200, 20, 1);
         scaleSpinner.setEditable(true);
 
         Button resetBtn = new Button("Run");
