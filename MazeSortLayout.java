@@ -42,8 +42,4 @@ public class MazeSortLayout extends VBox {
         DeclanJones.run((int) gridImage.getHeight(), (int) gridImage.getWidth(), 0,
                 (int) gridImage.getHeight() / scaleSpinner.getValue());
     }
-
-    static void createThread() {
-
-    }
 }
