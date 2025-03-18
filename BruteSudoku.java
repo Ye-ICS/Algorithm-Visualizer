@@ -29,7 +29,7 @@ public class BruteSudoku extends FlowPane{
                 sudokuNumbers.setPrefWidth(40);
 
                 if (i == 0 && j == 0) {
-                    sudokuNumbers.setText("5");
+                    sudokuNumbers.setText("5"); // math.random this later
                     sudokuNumbers.setEditable(false);
                 }
                 sudokuCells[i][j] = sudokuNumbers;
@@ -51,9 +51,21 @@ public class BruteSudoku extends FlowPane{
     }
 
     void BruteForceNumbers() {
-        for (int i = 0; i < 9; i++) {
-            
-        }
-    }
+        int[][] board = new int[9][9];
 
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                String text = sudokuCells[i][j].getText().trim();
+                if (!text.isEmpty() && text.matches("[1-9]")) {
+                    board[i][j] = Integer.parseInt(text);
+                } else {
+                    board[i][j] = 0; 
+                }
+            }
+        }
+        
+
+
+
+}
 }
