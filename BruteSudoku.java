@@ -1,3 +1,5 @@
+import java.util.Random;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,6 +11,7 @@ import javafx.scene.text.Text;
 public class BruteSudoku extends FlowPane{
     
     TextField[][] sudokuCells = new TextField[9][9];
+     Random random = new Random();
 
     /**
      * Constructs layout for brute force sudoku solver
@@ -28,16 +31,15 @@ public class BruteSudoku extends FlowPane{
                 sudokuNumbers.setPrefHeight(40);
                 sudokuNumbers.setPrefWidth(40);
 
-                if (i == 0 && j == 0) {
-                    sudokuNumbers.setText("5"); // math.random this later
-                    sudokuNumbers.setEditable(false);
-                }
+
                 sudokuCells[i][j] = sudokuNumbers;
                 sudokuTable.add(sudokuNumbers, i, j);
             }
         }
 
         setAlignment(Pos.CENTER);
+
+        fillRandomNumbers();
 
         Text description = new Text("");
 
@@ -63,9 +65,40 @@ public class BruteSudoku extends FlowPane{
                 }
             }
         }
-        
+
 
 
 
 }
+
+    void solveSudoku() {
+
+    }
+
+    void fillRandomNumbers() {
+        clearTable();
+
+        int numbersToPlace = random.nextInt(20) + 10;
+
+        for (int k = 0; k < numbersToPlace; k++) {
+            int i, j;
+            do {
+                i = random.nextInt(9);
+                j = random.nextInt(9);
+            } while (!sudokuCells[i][j].getText().isEmpty());
+
+            int randomNum = random.nextInt(9) + 1;
+            sudokuCells[i][j].setText(String.valueOf(randomNum));
+            sudokuCells[i][j].setEditable(false);
+        }
+    }
+
+    void clearTable() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                sudokuCells[i][j].setText("");
+                sudokuCells[i][j].setEditable(true);
+            }
+        }
+    }
 }
