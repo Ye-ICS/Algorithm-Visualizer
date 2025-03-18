@@ -1,19 +1,13 @@
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.canvas.Canvas;
 
 public class RecursiveDivisionW {
-    public static void drawMaze(GraphicsContext graphicsContext, int x, int y, int size, int level) {
-        if (level <= 0) {
-            graphicsContext.fillRect(x, y, size, size);
-            return; //skip rest of method
+    public static void drawMaze(Canvas canvas, int level) {
+        if(level == 0){
+            FXUtils.drawLine(canvas, 0, 0, 170, 0);
+            FXUtils.drawLine(canvas, 0, 0, 0, 250);
+            FXUtils.drawLine(canvas, 0, 250, 170, 250);
+            FXUtils.drawLine(canvas, 170, 0, 170, 250);
         }
-
-        if (level == 1){
-            //draw 2 walls
-            graphicsContext.strokeLine(x, y, size, y);
-            graphicsContext.strokeLine(x, y, x, size);
-            return;
-        }
-        drawMaze(graphicsContext, x, y, size, level);
     }
 }
 
