@@ -1,14 +1,9 @@
 import java.util.Arrays;
 import java.util.Comparator;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 public class DeclanJones {
-
     // Keep track of whether there is a possible path
     static boolean pathFindable;
 
@@ -34,10 +29,18 @@ public class DeclanJones {
     // Scaling factor, assigned when run
     static int scale;
 
-    public static void run(boolean displayProgress, WritableImage gridImage, PixelWriter writer, int inScale) {
+    static Thread pathfindingThread;
+
+    public static void run(int height, int width, int speed, int inScale) {
+        try {
+            pathfindingThread.interrupt();
+        } catch (NullPointerException e) {
+            System.err.println(e.getStackTrace());
+        }
+
         scale = inScale;
 
-        wallGrid = new boolean[(int) gridImage.getWidth() / scale][(int) gridImage.getHeight() / scale];
+        wallGrid = new boolean[height / scale][width / scale];
 
         populateGrids();
 
@@ -59,32 +62,24 @@ public class DeclanJones {
             }
         }
 
-        // If displayProgress is false, don't bother creating a timeline
-        if (displayProgress) {
-            populateGrids();
+        populateGrids();
 
-            final Timeline timeline = new Timeline();
-
-            KeyFrame periodicEvent = new KeyFrame(Duration.millis(100), event -> {
+        pathfindingThread = new Thread(() -> {
+            while (!pathFindable) {
                 checkCoords();
-                printGrid(wallGrid, checked, writer);
-                if (pathFindable) {
-                    pathGrid = findPathGrid();
-                    printGrid(wallGrid, pathGrid, writer);
-                    timeline.stop();
+                try {
+                    Thread.sleep(speed);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.err.println(e.getStackTrace());
+                    break;
                 }
-            });
-
-            timeline.getKeyFrames().add(periodicEvent);
-            timeline.setCycleCount(Timeline.INDEFINITE);
-            timeline.play();
-
-        } else {
-
+            }
             pathGrid = findPathGrid();
-            printGrid(wallGrid, pathGrid, writer);
+            return;
+        });
 
-        }
+        pathfindingThread.start();
     }
 
     /**
