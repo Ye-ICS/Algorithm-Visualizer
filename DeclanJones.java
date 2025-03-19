@@ -18,7 +18,7 @@ public class DeclanJones {
     static boolean[][] pathGrid;
 
     // Whether a spot has been checked yet
-    volatile static boolean[][] checked;
+    static boolean[][] checked;
 
     // Grids containing the distance from the start and goal, to be populated later
     static int[][] distanceGridStart;
