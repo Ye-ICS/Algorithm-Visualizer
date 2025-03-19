@@ -10,17 +10,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 
 public class Sudoku extends GridPane {
 
     private int[][] gridNumbers;
+    private StackPane[][] cellStacks = new StackPane[9][9]; // Store references to UI cells
 
     public Sudoku() {
         try {
             gridNumbers = getTable("data/sudoku/Example.txt"); // Handle exception properly
         } catch (FileNotFoundException e) {
-            e.printStackTrace(); // Print error message to console
+            e.printStackTrace(); 
             gridNumbers = new int[9][9]; // Default empty grid in case of failure
         }
 
@@ -168,7 +170,29 @@ public class Sudoku extends GridPane {
         return true;
     }
 
-    private void updateCell (int row, int col, int number) {
+    private void updateCell(int row, int col, int number) {
         
-    }
+        Platform.runLater(() -> {
+            StackPane cellStack = cellStacks[row][col];
+            cellStack.getChildren().clear();
+   
+            Rectangle innerCell = new Rectangle(60, 60);
+            innerCell.setFill(Color.WHITE);
+            innerCell.setStroke(Color.LIGHTGRAY);
+            cellStack.getChildren().add(innerCell);
+   
+            if (number != 0) {
+                Text text = new Text(String.valueOf(number));
+                text.setFont(Font.font(24));
+                cellStack.getChildren().add(text);
+            }
+        });
+   
+        try {
+            Thread.sleep(10); 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    } 
+
 }
