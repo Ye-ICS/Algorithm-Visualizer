@@ -1,12 +1,24 @@
-import javafx.scene.canvas.Canvas;
+
 
 public class RecursiveDivisionW {
-    public static void drawGraid() {
-       
+
+    private static final Integer WIDTH = 500;
+    private static final Integer HEIGHT = 800;
+
+    public static void drawGrid() {
+        String[][] grid = new String[WIDTH][HEIGHT];
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                grid[i][j] = ".";
+            }
+        }
+        System.out.println(grid);
+    }
+
+    public static void main(String[] args) {
+        drawGrid();
     }
 }
-
-
 
 // needs to make interior walls
 // needs to make the two openings, one per wall
