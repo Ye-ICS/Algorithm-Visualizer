@@ -101,12 +101,47 @@ public class Sudoku extends GridPane {
     }
 
     private boolean backtrack(int[][] board, int row, int col) {
+        
+        if (row == 9) 
+        {
+            return true; // If we reach past the last row, the Sudoku is solved
+        }
+        if (col == 9) 
+        {
+            return backtrack(board, row + 1, 0); // Move to the next row
+        }
+
+        if (board[row][col] != 0) 
+        {
+            return backtrack(board, row, col + 1); // Skip filled cells
+        }
+
+        // Trying to place numbers 1-9 in the current empty cell.
+        for (int number = 1; number <= 9; number++) {
+            if (isValid(board, row, col, number)) { // Check if the number is valid in this position
+                
+                number = board[row][col]; // Place the number
+                updateCell(row, col, number); 
+                
+                // Recursively attempt to solve the rest of the board.
+                if (backtrack(board, row, col + 1)) {
+                    return true; // solution found
+                }
+
+                // If placing 'number' didn't work, backtrack by resetting the cell to 0.
+                board[row][col] = 0;
+                updateCell(row, col, 0); 
+            }
+        }
+        
+        // No valid number found
         return false;
     }
 
+
     private boolean isValid(int[][] board, int row, int col, int numExists) {
         
-        //  Check if 'numExists' already exists in the same row/col
+        //  Check if number (numExists) already exists in the same row/col
         for (int i = 0; i < 9; i++) {
             if (numExists == board[row][i] || numExists == board[i][col]) // If number is found in the row/col, it's invalid
             {
@@ -133,7 +168,7 @@ public class Sudoku extends GridPane {
         return true;
     }
 
-    private boolean updateCell (int row, int col, int numExists) {
-        return false;
+    private void updateCell (int row, int col, int number) {
+        
     }
 }
