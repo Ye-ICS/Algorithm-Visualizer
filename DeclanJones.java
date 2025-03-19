@@ -1,6 +1,4 @@
-import java.util.Arrays;
-import java.util.Comparator;
-
+import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.PixelWriter;
@@ -25,7 +23,7 @@ public class DeclanJones {
     static int[][] distanceGridGoal;
 
     // The array of coordinates to check
-    static int[][] coordsToCheck;
+    static ArrayList<int[]> coordsToCheck;
 
     // Coordinates of the square that has the shortest path to the start
     static int[][][] cameFrom;
@@ -70,7 +68,7 @@ public class DeclanJones {
                 }
             }
             populateGrids();
-            while (!pathFindable && (coordsToCheck.length >= 1)) {
+            while (!pathFindable && (coordsToCheck.size() >= 1)) {
                 checkCoords();
             }
         }
@@ -221,7 +219,8 @@ public class DeclanJones {
             }
         }
 
-        coordsToCheck = new int[][] { { 0, 0 } };
+        coordsToCheck = new ArrayList<int[]>();
+        coordsToCheck.add(new int[] { 0, 0 });
 
         pathFindable = false;
     }
@@ -271,43 +270,30 @@ public class DeclanJones {
      * estimated distance to the goal.
      */
     private static void checkCoords() {
-        checked[coordsToCheck[0][0]][coordsToCheck[0][1]] = true;
+        checked[coordsToCheck.get(0)[0]][coordsToCheck.get(0)[1]] = true;
 
         for (int i = 0; i < 9; i++) {
 
-            int distance = distanceGridStart[coordsToCheck[0][0]][coordsToCheck[0][1]] + 10 + 4 * ((i + 1) % 2);
-            int XToCheck = coordsToCheck[0][0] - 1 + (i % 3);
-            int YToCheck = coordsToCheck[0][1] - 1 + (i / 3);
+            int distance = distanceGridStart[coordsToCheck.get(0)[0]][coordsToCheck.get(0)[1]] + 10 + 4 * ((i + 1) % 2);
+            int XToCheck = coordsToCheck.get(0)[0] - 1 + (i % 3);
+            int YToCheck = coordsToCheck.get(0)[1] - 1 + (i / 3);
 
             if (XToCheck >= 0 && YToCheck >= 0 && XToCheck < wallGrid.length && YToCheck < wallGrid[0].length
                     && !checked[XToCheck][YToCheck] && !wallGrid[XToCheck][YToCheck]
                     && (distanceGridStart[XToCheck][YToCheck] > distance || distanceGridStart[XToCheck][YToCheck] == 0)
-                    && !Arrays.asList(coordsToCheck).contains(new int[] { XToCheck, YToCheck })) {
+                    && !coordsToCheck.contains(new int[] { XToCheck, YToCheck })) {
 
-                coordsToCheck = Arrays.copyOf(coordsToCheck, coordsToCheck.length + 1);
-                coordsToCheck[coordsToCheck.length - 1] = new int[] { XToCheck, YToCheck };
+                coordsToCheck.add(new int[] { XToCheck, YToCheck });
                 distanceGridStart[XToCheck][YToCheck] = distance;
-                cameFrom[XToCheck][YToCheck] = new int[] { coordsToCheck[0][0], coordsToCheck[0][1] };
+                cameFrom[XToCheck][YToCheck] = new int[] { coordsToCheck.get(0)[0], coordsToCheck.get(0)[1] };
 
             }
         }
 
-        int[][] tempCoords = Arrays.copyOf(coordsToCheck, coordsToCheck.length - 1);
-        for (int i = 0; i < tempCoords.length; i++) {
-            tempCoords[i] = Arrays.copyOf(coordsToCheck[i + 1], 2);
-        }
+        coordsToCheck.remove(0);
 
-        coordsToCheck = new int[tempCoords.length][2];
-        for (int i = 0; i < tempCoords.length; i++) {
-            coordsToCheck[i] = Arrays.copyOf(tempCoords[i], 2);
-        }
-
-        Arrays.sort(coordsToCheck, new Comparator<int[]>() {
-            public int compare(int[] a, int[] b) {
-                return distanceGridGoal[a[0]][a[1]] - distanceGridGoal[b[0]][b[1]] + distanceGridStart[a[0]][a[1]]
-                        - distanceGridStart[b[0]][b[1]];
-            }
-        });
+        coordsToCheck.sort((a, b) -> distanceGridGoal[a[0]][a[1]] - distanceGridGoal[b[0]][b[1]]
+                + distanceGridStart[a[0]][a[1]] - distanceGridStart[b[0]][b[1]]);
 
         if (cameFrom[cameFrom.length - 1][cameFrom[0].length - 1][0] != 0) {
             pathFindable = true;
