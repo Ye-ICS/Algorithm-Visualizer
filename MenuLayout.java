@@ -26,6 +26,7 @@ class MenuLayout extends VBox {
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
         Button recursiveDivisionBtn = new Button("Recursive Division");
+        // fix this to properly call the RecursiveDivisionLayout
         recursiveDivisionBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new RecursiveDivisionLayout()));
 
         buttonsBox.getChildren().addAll(bubbleSortBtn, recursiveDivisionBtn);

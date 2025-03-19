@@ -1,13 +1,8 @@
 import javafx.scene.canvas.Canvas;
 
 public class RecursiveDivisionW {
-    public static void drawMaze(Canvas canvas, int level) {
-        if(level == 0){
-            FXUtils.drawLine(canvas, 0, 0, 170, 0);
-            FXUtils.drawLine(canvas, 0, 0, 0, 250);
-            FXUtils.drawLine(canvas, 0, 250, 170, 250);
-            FXUtils.drawLine(canvas, 170, 0, 170, 250);
-        }
+    public static void drawGraid() {
+       
     }
 }
 
