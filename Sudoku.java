@@ -39,41 +39,42 @@ public class Sudoku extends GridPane {
     private void createSudokuGrid() {
         int subGridSize = 3; // Size of subgrid (3x3)
         int cellSize = 60; // Size of each cell
-
-        // 3x3 grid UI with nested 3x3 cells inside each main cell
-        for (int row = 0; row < subGridSize; row++) { //Bigger 3x3 cell
+   
+        for (int row = 0; row < subGridSize; row++) { // Bigger 3x3 cell
             for (int col = 0; col < subGridSize; col++) {
-
+   
                 GridPane innerGrid = new GridPane();
-
-                for (int i = 0; i < subGridSize; i++) {  //3x3 cell inside each bigger 3x3 cell
+   
+                for (int i = 0; i < subGridSize; i++) {  // 3x3 cell inside each bigger 3x3 cell
                     for (int j = 0; j < subGridSize; j++) {
-
+   
                         Rectangle innerCell = new Rectangle(cellSize, cellSize);
                         innerCell.setFill(Color.WHITE);
                         innerCell.setStroke(Color.LIGHTGRAY);
-
-                        StackPane cellStack = new StackPane(innerCell);
-
-                        int globalRow = row * subGridSize + i; //globalRow is the full row of 9x9
-                        int globalCol = col * subGridSize + j; //globalCol is the full coloumn of 9x9
-                        int number = gridNumbers[globalRow][globalCol]; // Get the number for the current cell in the full 9x9 grid
-
-                        if (number != 0) { //Pasting numbers
+   
+                        int globalRow = row * subGridSize + i; // Full 9x9 row index
+                        int globalCol = col * subGridSize + j; // Full 9x9 column index
+   
+                        cellStacks[globalRow][globalCol] = new StackPane(innerCell);
+                        StackPane cellStack = cellStacks[globalRow][globalCol];
+   
+                        int number = gridNumbers[globalRow][globalCol];
+   
+                        if (number != 0) {
                             Text text = new Text(String.valueOf(number));
                             text.setFont(Font.font(24));
                             cellStack.getChildren().add(text);
                         }
-
+   
                         innerGrid.add(cellStack, j, i);
                     }
                 }
-
+   
                 // Outer thick border
                 Rectangle outerCell  = new Rectangle(cellSize * subGridSize, cellSize * subGridSize);
                 outerCell .setStroke(Color.BLACK);
                 outerCell .setStrokeWidth(7);
-
+   
                 StackPane stack = new StackPane(outerCell, innerGrid);
                 add(stack, col, row);
             }
@@ -189,7 +190,7 @@ public class Sudoku extends GridPane {
         });
    
         try {
-            Thread.sleep(10); 
+            Thread.sleep(10);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
