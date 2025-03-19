@@ -23,21 +23,13 @@ public class Maze extends BorderPane {
         Button runBtn = new Button("run");
         FlowPane bottomPannel = new FlowPane(backBtn, runBtn);
         int mazeSize = 500;
-        
-        setCenter(stack);
-        setBottom(bottomPannel);
-        
-        backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
-        runBtn.setOnAction(event -> Maze.run(canvas.getGraphicsContext2D(), 25, mazeSize, 100, 100));
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.fillRect(0, 0, mazeSize, mazeSize);
-        
-    }
-    
-    static void run(GraphicsContext graphicsContext, int nodeSize, int mazeSize, double w, double h) {
-        
+        int nodeSize = 25;
         int[] x = new int[mazeSize/nodeSize];
         int[] y = new int[mazeSize/nodeSize];
+        int[] xArch = new int[5000];
+        int[] yArch = new int[5000];
+        int steps = 0;
+        int back = 0;
         
         for (int i = 0; i < mazeSize/nodeSize; i++) {
             x[i] = i;
@@ -45,61 +37,191 @@ public class Maze extends BorderPane {
         }
 
         boolean [][] path = new boolean[x.length][y.length];
-        boolean [][] wall = new boolean[x.length][y.length];
+        boolean [][] wallA = new boolean[x.length][y.length];
+        boolean [][] wallB = new boolean[x.length][y.length];
         
-        for (int i = 0; i < wall.length; i++) {
-            wall[0][i] = true;
-            wall[i][0] = true;
-            wall[mazeSize/nodeSize - 1][i] = true;
-            wall[i][y.length - 1] = true;
+        for (int i = 0; i < wallB.length; i++) {
+            wallB[0][i] = true;
+            wallB[i][0] = true;
+            wallB[mazeSize/nodeSize - 1][i] = true;
+            wallB[i][y.length - 1] = true;
         }
 
-        wall[0][1] = false;
+        wallB[0][1] = false;
         path[0][1] = true;
         int posX = 0;
         int posY = 1;
         boolean complete = false;
-        int direction;
-
-        graphicsContext.clearRect(x[0]*nodeSize, y[1]*nodeSize, nodeSize, nodeSize);
-
+        
+        setCenter(stack);
+        setBottom(bottomPannel);
+        
+        backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        runBtn.setOnAction(event -> Maze.run(canvas.getGraphicsContext2D(), nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back));
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.fillRect(0, 0, mazeSize, mazeSize);
+        
+    }
+    
+    static void run(GraphicsContext graphicsContext, int nodeSize, int mazeSize, int[] x, int[] y, boolean[][] path, boolean[][] wallA, boolean[][] wallB, int posX, int posY, boolean complete, int[] xArch, int[] yArch, int steps, int back) {     
+              
+        
+        graphicsContext.clearRect(x[posX]*nodeSize, y[posY]*nodeSize, nodeSize, nodeSize);
+       
         if (posX == 0 && posY == 1) {
+            xArch[steps] = posX;
+            yArch[steps] = posY;
             posX ++;
-        }
-        while (complete == false) {
-
-            direction = 0 + (int) (Math.random() * (3 - 0 + 1));
             graphicsContext.clearRect(x[posX]*nodeSize, y[posY]*nodeSize, nodeSize, nodeSize);
-            if (direction == 0 && wall[posX + 1][posY] == false && path[posX + 1][posY] == false) {
-                posX ++;
-                path[posX][posY] = true;
-                wall[posX - 1][posY + 1] = true;
-                wall[posX - 1][posY - 1] = true;
-            } else if (direction == 1 && wall[posX][posY + 1] == false && path[posX][posY + 1] == false) {
-                posY ++;
-                path[posX][posY] = true;
-                wall[posX + 1][posY - 1] = true;
-                wall[posX - 1][posY - 1] = true;
-            } else if (direction == 2 && wall[posX - 1][posY] == false && path[posX - 1][posY] == false) {
-                posX --;
-                path[posX][posY] = true;
-                wall[posX + 1][posY + 1] = true;
-                wall[posX + 1][posY - 1] = true;
-            } else if (direction == 3 && wall[posX][posY - 1] == false && path[posX][posY - 1] == false) {
-                posY --;
-                path[posX][posY] = true;
-                wall[posX - 1][posY + 1] = true;
-                wall[posX + 1][posY + 1] = true;
+        }
+
+        int direction = 0 + (int) (Math.random() * (3 - 0 + 1));
+
+        if (wallB[posX + 1][posY] == true || path[posX + 1][posY] == true) {
+            if (wallB[posX - 1][posY] == true || path[posX - 1][posY] == true) {
+                if (wallB[posX][posY + 1] == true || path[posX][posY + 1] == true) {
+                    if (wallB[posX][posY - 1] == true || path[posX][posY - 1] == true) {
+                        back --;
+                        posX = xArch[back];
+                        posY = yArch[back];
+                        run(graphicsContext, nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back);
+                    }
+                }
             }
-            if (posX == 0 && posY == 1) {
-                complete = true;
+        }
+       
+        if (direction == 0 && wallB[posX + 1][posY] == false && path[posX + 1][posY] == false) {
+            
+            path[posX][posY] = true;
+            steps ++;
+            back = steps;
+            xArch[steps] = posX;
+            yArch[steps] = posY;
+            posX ++;
+            
+            if (wallA[posX][posY + 1] == true) {
+                wallB[posX][posY + 1] = true;
+            }  
+            if (wallA[posX][posY - 1] == true) {
+                wallB[posX][posY - 1] = true;
+            }
+            if (wallA[posX + 1][posY] == true) {
+                wallB[posX + 1][posY] = true;
+            }
+            if (wallA[posX + 1][posY - 1] == true) {
+                wallB[posX + 1][posY - 1] = true;
+            }
+            if (wallA[posX + 1][posY + 1] == true) {
+                wallB[posX + 1][posY + 1] = true;
             }
             
+            wallA[posX][posY + 1] = true;
+            wallA[posX][posY - 1] = true;
+            wallA[posX + 1][posY] = true;
+
+            run(graphicsContext, nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back);
+        
+        } else if (direction == 1 && wallB[posX][posY + 1] == false && path[posX][posY + 1] == false) {
+          
+            path[posX][posY] = true;
+            steps ++;
+            back = steps;
+            xArch[steps] = posX;
+            yArch[steps] = posY;
+            posY ++;
+
+            if (wallA[posX + 1][posY] == true) {
+                wallB[posX + 1][posY] = true;
+            }  
+            if (wallA[posX - 1][posY] == true) {
+                wallB[posX - 1][posY] = true;
+            }
+            if (wallA[posX][posY + 1] == true) {
+                wallB[posX][posY + 1] = true;
+            }
+            if (wallA[posX + 1][posY + 1] == true) {
+                wallB[posX + 1][posY + 1] = true;
+            }
+            if (wallA[posX - 1][posY + 1] == true) {
+                wallB[posX - 1][posY + 1] = true;
+            }
+
+            wallA[posX + 1][posY] = true;
+            wallA[posX - 1][posY] = true;
+            wallA[posX][posY + 1] = true;
+
+            run(graphicsContext, nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back);
+     
+        } else if (direction == 2 && wallB[posX - 1][posY] == false && path[posX - 1][posY] == false) {
+           
+            path[posX][posY] = true;
+            steps ++;
+            back = steps;
+            xArch[steps] = posX;
+            yArch[steps] = posY;
+            posX --;
+
+            if (wallA[posX][posY + 1] == true) {
+                wallB[posX][posY + 1] = true;
+            }  
+            if (wallA[posX][posY - 1] == true) {
+                wallB[posX][posY - 1] = true;
+            }
+            if (wallA[posX - 1][posY] == true) {
+                wallB[posX - 1][posY] = true;
+            }
+            if (wallA[posX - 1][posY - 1] == true) {
+                wallB[posX - 1][posY - 1] = true;
+            }
+            if (wallA[posX - 1][posY + 1] == true) {
+                wallB[posX - 1][posY + 1] = true;
+            }
+
+            wallA[posX][posY + 1] = true;
+            wallA[posX][posY - 1] = true;
+            wallA[posX - 1][posY] = true;
+
+            run(graphicsContext, nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back);
+      
+        } else if (direction == 3 && wallB[posX][posY - 1] == false && path[posX][posY - 1] == false) {
+           
+            path[posX][posY] = true;
+            steps ++;
+            back = steps;
+            xArch[steps] = posX;
+            yArch[steps] = posY;
+            posY --;
+
+            if (wallA[posX - 1][posY] == true) {
+                wallB[posX - 1][posY] = true;
+            }  
+            if (wallA[posX + 1][posY] == true) {
+                wallB[posX + 1][posY] = true;
+            }
+            if (wallA[posX][posY - 1] == true) {
+                wallB[posX][posY - 1] = true;
+            }
+            if (wallA[posX + 1][posY - 1] == true) {
+                wallB[posX + 1][posY - 1] = true;
+            }
+            if (wallA[posX - 1][posY - 1] == true) {
+                wallB[posX - 1][posY - 1] = true;
+            }
+            
+            wallA[posX - 1][posY] = true;
+            wallA[posX + 1][posY] = true;
+            wallA[posX][posY - 1] = true;
+            
+            run(graphicsContext, nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back);
+        
+        } else if (posX == 0 && posY == 1) {
+
+            return;
+
+        } else {
+            run(graphicsContext, nodeSize, mazeSize, x, y, path, wallA, wallB, posX, posY, complete, xArch, yArch, steps, back);
         }
-
-
-
-
-
+        
+        
     }
 }
