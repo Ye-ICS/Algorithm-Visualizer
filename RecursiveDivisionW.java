@@ -22,12 +22,14 @@ public class RecursiveDivisionW {
         int randHeight = 2 + (int) (Math.random() * (HEIGHT - 2));
         boolean full = false;
         do {
-            for (int i = 0; i < randWidth; i++) {
+
+            for (int i = 0; i == WIDTH - 1; i++) {
                 array[randHeight][i] = "-";
             }
-            for (int j = 0; j < randHeight; j++) {
+            for (int j = 0; j == HEIGHT - 1; j++) {
                 array[j][randWidth] = "|";
             }
+            array[randHeight][randWidth] = "+";
             full = true;
         } while (full == false);
 
