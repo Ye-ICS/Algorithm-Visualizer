@@ -6,8 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class DeclanJones {
-    // Keep track of whether there is a possible path
-    static boolean pathFindable;
 
     // The grid of walls
     static boolean[][] wallGrid;
@@ -48,7 +46,7 @@ public class DeclanJones {
         populateGrids();
 
         // Create a grid and make sure it is solveable
-        while (!pathFindable) {
+        while (!checkCoords()) {
             for (int i = 0; i < wallGrid.length; i++) {
                 for (int j = 0; j < wallGrid[0].length; j++) {
                     if ((int) (Math.random() * 2) != 0 && (i != 0 || j != 0)
@@ -60,8 +58,8 @@ public class DeclanJones {
                 }
             }
             populateGrids();
-            while (!pathFindable && (nodesToCheck.size() >= 1)) {
-                checkCoords();
+            while (!checkCoords() && (nodesToCheck.size() >= 1)){
+
             }
         }
 
@@ -82,8 +80,7 @@ public class DeclanJones {
         renderTimeline.play();
 
         pathfindingThread = new Thread(() -> {
-            while (!pathFindable) {
-                checkCoords();
+            while (!checkCoords()) {
                 if (speed > 0) {
                     try {
                         Thread.sleep(speed);
@@ -225,8 +222,6 @@ public class DeclanJones {
 
         nodesToCheck = new ArrayList<int[]>();
         nodesToCheck.add(new int[] { 0, 0 });
-
-        pathFindable = false;
     }
 
     /**
@@ -276,6 +271,9 @@ public class DeclanJones {
      * @return True if the end has been reached, false otherwise.
      */
     private static boolean checkCoords() {
+        if(nodesToCheck.size() == 0){
+            return false;
+        }
         neighboursChecked[nodesToCheck.get(0)[0]][nodesToCheck.get(0)[1]] = true;
 
         for (int i = 0; i < 9; i++) {
@@ -302,7 +300,6 @@ public class DeclanJones {
                 + startDistance[a[0]][a[1]] - startDistance[b[0]][b[1]]);
 
         if (previousNode[previousNode.length - 1][previousNode[0].length - 1][0] != 0) {
-            pathFindable = true;
             return true;
         }
 
