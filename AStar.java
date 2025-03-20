@@ -34,6 +34,7 @@ import java.util.ArrayList;
 /**
  * A* Pathfinding Visualization UI with Timeline Slider.
  */
+
 public class AStar extends BorderPane {
     private static final int GRID_SIZE = 40;
     private static final int CELL_SIZE = 20;
@@ -280,17 +281,17 @@ public class AStar extends BorderPane {
     }
 
     private static double heuristic(Cell a, Cell b) {
-        switch (choice) {
-            case 0:
-                // Euclidean distance
+        if (choice == 0){
+            // Euclidean distance
                 return Math.sqrt(Math.pow(a.row - b.row, 2) + Math.pow(a.col - b.col, 2));
-            case 2:
-                // Chebyshev distance
+        } else if (choice == 1){
+            // Chebyshev distance
                 return Math.max(Math.abs(a.row - b.row), Math.abs(a.col - b.col));
-            default:
-                // Manhattan distance
-                return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+        } else if (choice == 2){
+            // Manhattan distance
+            return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
         }
+    return choice;
     }
 
     public static void resetGrid() {
@@ -337,11 +338,8 @@ public class AStar extends BorderPane {
             this.isPathFound = isPathFound;
         }
     }
-    
-    /**
-     * Jump to a specific step in the algorithm execution
-     */
-    private static void jumpToStep(int stepIndex) {
+
+    private static void jumpToStep(int stepIndex) { // Jump to a certain time
         if (stepIndex < 0 || stepIndex >= algorithmSteps.size()) {
             return;
         }
@@ -404,7 +402,7 @@ public class AStar extends BorderPane {
         progressSlider.setDisable(true);
         
         PriorityQueue<Cell> openList = new PriorityQueue<>(
-                Comparator.comparingDouble(c -> c.distance + heuristic(c, end)));
+                Comparator.comparingDouble(c -> c.distance + heuristic(c, end))); //Decides which node to access
         Set<Cell> openSet = new HashSet<>(); // For tracking open nodes more efficiently
         Set<Cell> closedSet = new HashSet<>();
 
@@ -630,7 +628,7 @@ public class AStar extends BorderPane {
         }
     }
 
-    private static class Cell {
+    private static class Cell { //Contains information on the state, location, and colour of each cell
         private int row, col;
         private Rectangle rect;
         private boolean isWall = false;
