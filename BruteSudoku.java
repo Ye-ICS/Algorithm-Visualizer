@@ -44,12 +44,16 @@ public class BruteSudoku extends FlowPane{
         Text description = new Text("");
 
         Button sudokuBox = new Button("");
+
+        Button solveButton = new Button("Solve");
         
 
         Button backsBtn = new Button("Back");
         backsBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
 
-        getChildren().addAll(title, backsBtn, sudokuTable);
+        solveButton.setOnAction(event -> solveSudoku());
+
+        getChildren().addAll(title, backsBtn, sudokuTable, solveButton);
     }
 
     void BruteForceNumbers() {
@@ -71,9 +75,76 @@ public class BruteSudoku extends FlowPane{
 
 }
 
-    void solveSudoku() {
+void solveSudoku() {
+    int[][] board = new int[9][9];
 
+    // 
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            String text = sudokuCells[i][j].getText().trim();
+            if (!text.isEmpty() && text.matches("[1-9]")) {
+                board[i][j] = Integer.parseInt(text);
+            } else {
+                board[i][j] = 0;
+            }
+        }
     }
+
+    // Solve the Sudoku
+    if (solve(board)) {
+        
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                sudokuCells[i][j].setText(String.valueOf(board[i][j]));
+            }
+        }
+    } else {
+        System.out.println("No solution exists.");
+    }
+}
+
+// 
+boolean solve(int[][] board) {
+    for (int row = 0; row < 9; row++) {
+        for (int col = 0; col < 9; col++) {
+            if (board[row][col] == 0) {
+                for (int num = 1; num <= 9; num++) {
+                    if (isValid(board, row, col, num)) {
+                        board[row][col] = num;
+                        if (solve(board)) {
+                            return true;
+                        }
+                        board[row][col] = 0; // 
+                    }
+                }
+                return false; // No valid number found
+            }
+        }
+    }
+    return true; // Solved
+}
+
+//
+boolean isValid(int[][] board, int row, int col, int num) {
+    for (int i = 0; i < 9; i++) {
+        if (board[row][i] == num || board[i][col] == num) {
+            return false;
+        }
+    }
+
+    // 
+    int startRow = (row / 3) * 3;
+    int startCol = (col / 3) * 3;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[startRow + i][startCol + j] == num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
     void fillRandomNumbers() {
         clearTable();
