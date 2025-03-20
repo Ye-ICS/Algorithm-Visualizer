@@ -21,6 +21,8 @@ public class BruteSudoku extends FlowPane{
         Text title = new Text("Brute Force Sudoku Solver");
 
         GridPane sudokuTable = new GridPane();
+        sudokuTable.setAlignment(Pos.CENTER);
+        sudokuTable.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
         sudokuTable.setPadding(new Insets(10));
         sudokuTable.setVgap(2);
         sudokuTable.setHgap(2);
@@ -30,6 +32,7 @@ public class BruteSudoku extends FlowPane{
                 TextField sudokuNumbers = new TextField();
                 sudokuNumbers.setPrefHeight(40);
                 sudokuNumbers.setPrefWidth(40);
+                sudokuNumbers.setAlignment(Pos.CENTER);
 
 
                 sudokuCells[i][j] = sudokuNumbers;
