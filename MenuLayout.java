@@ -13,7 +13,7 @@ class MenuLayout extends VBox {
     MenuLayout() {
         setAlignment(Pos.CENTER);
 
-        Text title = new Text("Algorithm Visualizer");
+        Text title = new Text("Maxim's Algorithm Visualizer");
         title.setFont(Font.font(24));
         
         FlowPane buttonsBox = new FlowPane();
@@ -24,7 +24,7 @@ class MenuLayout extends VBox {
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
         Button selectionSortBtn = new Button("Selection Sort");
-        //selectionSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SelectionSortLayout()));
+        selectionSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SelectionSortLayout()));
 
         Button quickSortBtn = new Button("Quick Sort");
         //quickSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new QuickSortLayout()));

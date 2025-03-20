@@ -14,7 +14,7 @@ public class Main extends Application {
         Parent rootNode = new MenuLayout(); // Construct custom layout as root node
         Scene scene = new Scene(rootNode);
         stage.setScene(scene);
-        stage.setTitle("Algorithm Visualizer");
+        stage.setTitle("Maxim's Algorithm Visualizer");
         stage.show();
     }
 }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-class BubbleSortLayout extends BorderPane {
+class SelectionSortLayout extends BorderPane {
     private List<Rectangle> bars = new ArrayList<>();
     private List<Integer> values = new ArrayList<>();
     private Timeline timeline;
@@ -38,11 +38,17 @@ class BubbleSortLayout extends BorderPane {
     private boolean isDragging = false;
     private double dragStartY;
     private double barStartHeight;
+    
+    // Variables specific to selection sort
+    private int currentIndex = 0;
+    private int minIndex = 0;
+    private int searchIndex = 0;
+    private boolean isSearching = true;
 
-    BubbleSortLayout() {
+    SelectionSortLayout() {
         setPrefSize(800, 600); // Size for entire layout
 
-        Text title = new Text("Bubble Sort");
+        Text title = new Text("Selection Sort");
         title.setFont(Font.font("System", FontWeight.BOLD, 24));
         BorderPane.setAlignment(title, Pos.CENTER);
         setTop(title);
@@ -136,7 +142,7 @@ class BubbleSortLayout extends BorderPane {
         
         Button startBtn = new Button("Start Sorting");
         startBtn.setPrefSize(150, 30);
-        startBtn.setOnAction(event -> startBubbleSort());
+        startBtn.setOnAction(event -> startSelectionSort());
         
         pauseResumeBtn = new Button("Pause");
         pauseResumeBtn.setPrefSize(100, 30);
@@ -234,8 +240,6 @@ class BubbleSortLayout extends BorderPane {
         }
         
         // Add selection highlight rectangle to the container
-        // Add it first so it's underneath the bars
-        //CLAUDE ADDDED
         barsContainer.getChildren().add(0, selectedBarHighlight);
         
         // Add mouse tracking for the entire pane to handle cases where the user drags outside the bar
@@ -277,7 +281,7 @@ class BubbleSortLayout extends BorderPane {
         // Reset step counter
         resetStepCounter();
     }
-    //CLAUDE ADDED 
+    
     private void updateHighlightRectangle() {
         if (selectedBarIndex != -1) {
             Rectangle selectedBar = bars.get(selectedBarIndex);
@@ -363,7 +367,7 @@ class BubbleSortLayout extends BorderPane {
         stepCounterLabel.setText("Steps: " + stepCounter);
     }
 
-    private void startBubbleSort() {
+    private void startSelectionSort() {
         if (timeline != null) {
             timeline.stop();
         }
@@ -380,13 +384,23 @@ class BubbleSortLayout extends BorderPane {
         pauseResumeBtn.setText("Pause");
         isPaused = false;
 
+        // Reset selection sort variables
+        currentIndex = 0;
+        searchIndex = currentIndex + 1;
+        minIndex = currentIndex;
+        isSearching = true;
+
+        // Reset bar colors
+        for (Rectangle bar : bars) {
+            bar.setFill(Color.rgb(0, 102, 204, 0.8));
+        }
+
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
         double speed = speedSlider.getValue();
-        //CHATGPT Given, to show higher speeds on the scale.
         double duration = speed <= 500 ? 600 - speed : Math.max(1, 100 - (speed - 500) * 0.2);
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(duration), event -> bubbleSortStep());
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(duration), event -> selectionSortStep());
         
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
@@ -410,34 +424,78 @@ class BubbleSortLayout extends BorderPane {
         }
     }
 
-    private void bubbleSortStep() {
-        boolean swapped = false;
-        for (int i = 0; i < values.size() - 1; i++) {
-            if (values.get(i) > values.get(i + 1)) {
-                swap(i, i + 1);
-                swapped = true;
-                
-                highlightBar(bars.get(i), Color.GREEN);
-                highlightBar(bars.get(i + 1), Color.GREEN);
-                
-                // Increment step counter
-                incrementStepCounter();
-                
-                break; // Stops to make it go slower
-            }
+    private void selectionSortStep() {
+        int n = values.size();
+        
+        // Reset all colors first (except sorted section)
+        for (int i = currentIndex; i < n; i++) {
+            bars.get(i).setFill(Color.rgb(0, 102, 204, 0.8));
         }
-
-        if (!swapped) {
-            timeline.stop(); // if no swaps made, stop
-            // Completed! change color to green
-            for (Rectangle bar : bars) {
-                highlightBar(bar, Color.rgb(40, 180, 40));
+        
+        // Highlight current position
+        highlightBar(bars.get(currentIndex), Color.ORANGE);
+        
+        // Highlight current minimum
+        highlightBar(bars.get(minIndex), Color.RED);
+        
+        if (isSearching) {
+            // We're in the searching phase - looking for minimum
+            if (searchIndex < n) {
+                // Highlight the current comparison element
+                highlightBar(bars.get(searchIndex), Color.YELLOW);
+                
+                // If we found a new minimum
+                if (values.get(searchIndex) < values.get(minIndex)) {
+                    // Reset old minimum color
+                    bars.get(minIndex).setFill(Color.rgb(0, 102, 204, 0.8));
+                    
+                    // Update minimum
+                    minIndex = searchIndex;
+                    
+                    // Highlight new minimum
+                    highlightBar(bars.get(minIndex), Color.RED);
+                }
+                
+                // Move to next element
+                searchIndex++;
+                incrementStepCounter();
+            } else {
+                // Finished searching for this iteration
+                isSearching = false;
+            }
+        } else {
+            // We're in the swapping phase
+            // Only swap if minIndex is not the same as currentIndex
+            if (minIndex != currentIndex) {
+                swap(currentIndex, minIndex);
             }
             
-            // Disable pause button
-            pauseResumeBtn.setDisable(true);
-            pauseResumeBtn.setText("Pause");
-            isPaused = false;
+            // Mark currentIndex as sorted
+            bars.get(currentIndex).setFill(Color.rgb(40, 180, 40));
+            
+            // Move to next position
+            currentIndex++;
+            
+            // If we've sorted everything, we're done
+            if (currentIndex >= n - 1) {
+                // Mark the last element as sorted
+                bars.get(n - 1).setFill(Color.rgb(40, 180, 40));
+                
+                // Stop the animation
+                timeline.stop();
+                
+                // Disable pause button
+                pauseResumeBtn.setDisable(true);
+                pauseResumeBtn.setText("Pause");
+                isPaused = false;
+                
+                return;
+            }
+            
+            // Reset for next iteration
+            minIndex = currentIndex;
+            searchIndex = currentIndex + 1;
+            isSearching = true;
         }
     }
 
@@ -459,17 +517,13 @@ class BubbleSortLayout extends BorderPane {
         
         bar2.setHeight(tempHeight);
         bar2.setY(tempY);
+        
+        // Increment step counter for the swap operation
+        incrementStepCounter();
     }
     
     private void highlightBar(Rectangle bar, Color color) {
-        //Highlight bar temporarily
-        Color originalColor = (Color) bar.getFill();
+        // Highlight bar 
         bar.setFill(color);
-        
-        //Reset colour after delay
-        Timeline resetTimeline = new Timeline(
-            new KeyFrame(Duration.millis(300), e -> bar.setFill(originalColor))
-        );
-        resetTimeline.play();
     }
 }
