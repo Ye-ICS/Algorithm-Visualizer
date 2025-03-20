@@ -8,10 +8,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
-public class MazeSortLayout extends VBox {
+public class DeclanJonesLayout extends VBox {
     static PixelWriter writer;
 
-    MazeSortLayout() {
+    DeclanJonesLayout() {
         WritableImage gridImage = new WritableImage(600, 600);
 
         ImageView gridView = new ImageView(gridImage);

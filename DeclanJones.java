@@ -76,10 +76,10 @@ public class DeclanJones {
         populateGrids();
 
         KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
-            printGrid(wallGrid, checked, MazeSortLayout.writer);
+            printGrid(wallGrid, checked, DeclanJonesLayout.writer);
             if (pathGrid != null) {
                 synchronized (pathGrid) {
-                    printGrid(wallGrid, pathGrid, MazeSortLayout.writer);
+                    printGrid(wallGrid, pathGrid, DeclanJonesLayout.writer);
                     pathGrid.notifyAll();
                 }
             }
