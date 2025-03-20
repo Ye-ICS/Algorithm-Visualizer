@@ -15,43 +15,35 @@ public class DeclanJones {
     // The path grid to be found later
     static boolean[][] pathGrid;
 
-    // Whether a spot has been checked yet
-    static boolean[][] checked;
+    // Whether a spot has been checked for its neighbours yet
+    static boolean[][] neighboursChecked;
 
     // Grids containing the distance from the start and goal, to be populated later
-    static int[][] distanceGridStart;
-    static int[][] distanceGridGoal;
+    static int[][] startDistance;
+    static int[][] goalDistance;
 
     // The array of coordinates to check
-    static ArrayList<int[]> coordsToCheck;
+    static ArrayList<int[]> nodesToCheck;
 
     // Coordinates of the square that has the shortest path to the start
-    static int[][][] cameFrom;
+    static int[][][] previousNode;
 
     // Scaling factor, assigned when run
-    static int scale;
+    static int renderScale;
 
     static Thread pathfindingThread;
 
-    static Timeline timeline;
+    static Timeline renderTimeline;
 
-    public static void run(int height, int width, int speed, int inScale) {
+    public static void run(int height, int width, int speed, int inputScale) {
 
-        try {
-            pathfindingThread.interrupt();
-        } catch (Exception e) {
-        }
+        stopThreads();
 
-        try {
-            timeline.stop();
-        } catch (Exception e) {
-        }
-
-        scale = inScale;
+        renderScale = inputScale;
 
         pathGrid = null;
 
-        wallGrid = new boolean[height / scale][width / scale];
+        wallGrid = new boolean[height / renderScale][width / renderScale];
 
         populateGrids();
 
@@ -68,7 +60,7 @@ public class DeclanJones {
                 }
             }
             populateGrids();
-            while (!pathFindable && (coordsToCheck.size() >= 1)) {
+            while (!pathFindable && (nodesToCheck.size() >= 1)) {
                 checkCoords();
             }
         }
@@ -76,7 +68,7 @@ public class DeclanJones {
         populateGrids();
 
         KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
-            printGrid(wallGrid, checked, DeclanJonesLayout.writer);
+            printGrid(wallGrid, neighboursChecked, DeclanJonesLayout.writer);
             if (pathGrid != null) {
                 synchronized (pathGrid) {
                     printGrid(wallGrid, pathGrid, DeclanJonesLayout.writer);
@@ -85,9 +77,9 @@ public class DeclanJones {
             }
         });
 
-        timeline = new Timeline(drawEvent);
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        renderTimeline = new Timeline(drawEvent);
+        renderTimeline.setCycleCount(Timeline.INDEFINITE);
+        renderTimeline.play();
 
         pathfindingThread = new Thread(() -> {
             while (!pathFindable) {
@@ -106,11 +98,23 @@ public class DeclanJones {
                 } catch (InterruptedException e) {
                 }
             }
-            timeline.stop();
+            renderTimeline.stop();
             return;
         });
 
         pathfindingThread.start();
+    }
+
+    public static void stopThreads() {
+        try {
+            pathfindingThread.interrupt();
+        } catch (Exception e) {
+        }
+
+        try {
+            renderTimeline.stop();
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -166,9 +170,9 @@ public class DeclanJones {
      * @param color  The color to set for the scaled pixel.
      */
     public static void writerToScale(int x, int y, PixelWriter writer, Color color) {
-        for (int i = 0; i < scale; i++) {
-            for (int j = 0; j < scale; j++) {
-                writer.setColor(x * scale + j, y * scale + i, color);
+        for (int i = 0; i < renderScale; i++) {
+            for (int j = 0; j < renderScale; j++) {
+                writer.setColor(x * renderScale + j, y * renderScale + i, color);
             }
         }
     }
@@ -189,38 +193,38 @@ public class DeclanJones {
      */
     public static void populateGrids() {
 
-        checked = new boolean[wallGrid.length][wallGrid[0].length];
+        neighboursChecked = new boolean[wallGrid.length][wallGrid[0].length];
 
-        cameFrom = new int[wallGrid.length][wallGrid[0].length][2];
+        previousNode = new int[wallGrid.length][wallGrid[0].length][2];
 
-        for (int i = 0; i < checked.length; i++) {
-            for (int j = 0; j < checked[i].length; j++) {
-                checked[i][j] = false;
+        for (int i = 0; i < neighboursChecked.length; i++) {
+            for (int j = 0; j < neighboursChecked[i].length; j++) {
+                neighboursChecked[i][j] = false;
                 for (int k = 0; k < 2; k++) {
-                    cameFrom[i][j][k] = 0;
+                    previousNode[i][j][k] = 0;
                 }
             }
         }
 
-        distanceGridStart = new int[wallGrid.length][wallGrid[0].length];
+        startDistance = new int[wallGrid.length][wallGrid[0].length];
 
-        for (int i = 0; i < distanceGridStart.length; i++) {
-            for (int j = 0; j < distanceGridStart[0].length; j++) {
-                distanceGridStart[i][j] = 0;
+        for (int i = 0; i < startDistance.length; i++) {
+            for (int j = 0; j < startDistance[0].length; j++) {
+                startDistance[i][j] = 0;
             }
         }
 
-        distanceGridGoal = new int[wallGrid.length][wallGrid[0].length];
+        goalDistance = new int[wallGrid.length][wallGrid[0].length];
 
-        for (int i = 0; i < distanceGridGoal.length; i++) {
-            for (int j = 0; j < distanceGridGoal[0].length; j++) {
-                distanceGridGoal[distanceGridGoal.length - 1 - i][distanceGridGoal[0].length - 1 - j] = 14
+        for (int i = 0; i < goalDistance.length; i++) {
+            for (int j = 0; j < goalDistance[0].length; j++) {
+                goalDistance[goalDistance.length - 1 - i][goalDistance[0].length - 1 - j] = 14
                         * Math.min(i, j) + 10 * (Math.max(i, j) - Math.min(i, j));
             }
         }
 
-        coordsToCheck = new ArrayList<int[]>();
-        coordsToCheck.add(new int[] { 0, 0 });
+        nodesToCheck = new ArrayList<int[]>();
+        nodesToCheck.add(new int[] { 0, 0 });
 
         pathFindable = false;
     }
@@ -239,11 +243,11 @@ public class DeclanJones {
      *         end node in 'cameFrom' points to null).
      */
     private static boolean[][] findPathGrid() {
-        if (cameFrom == null || cameFrom[cameFrom.length - 1][cameFrom[0].length - 1][0] == 0) {
+        if (previousNode == null || previousNode[previousNode.length - 1][previousNode[0].length - 1][0] == 0) {
             return null;
         }
 
-        boolean[][] foundPathGrid = new boolean[cameFrom.length][cameFrom[0].length];
+        boolean[][] foundPathGrid = new boolean[previousNode.length][previousNode[0].length];
         for (int i = 0; i < foundPathGrid.length; i++) {
             for (int j = 0; j < foundPathGrid[0].length; j++) {
                 foundPathGrid[i][j] = false;
@@ -254,7 +258,7 @@ public class DeclanJones {
 
         while (!foundPathGrid[0][0]) {
             foundPathGrid[find[0]][find[1]] = true;
-            find = cameFrom[find[0]][find[1]];
+            find = previousNode[find[0]][find[1]];
         }
 
         return foundPathGrid;
@@ -262,41 +266,46 @@ public class DeclanJones {
 
     /**
      * Explores the grid around a given coordinate to find the shortest path from a
-     * start point.
+     * start point to the end.
      * It checks adjacent cells, updates their distances from the start point, and
-     * records the path.
+     * records the path in previousNode.
      * The method uses a heuristic approach, prioritizing cells closer to the goal.
      * It also maintains a list of coordinates to check, sorting them based on their
-     * estimated distance to the goal.
+     * estimated distance to the goal, and distance from the start.
+     *
+     * @return True if the end has been reached, false otherwise.
      */
-    private static void checkCoords() {
-        checked[coordsToCheck.get(0)[0]][coordsToCheck.get(0)[1]] = true;
+    private static boolean checkCoords() {
+        neighboursChecked[nodesToCheck.get(0)[0]][nodesToCheck.get(0)[1]] = true;
 
         for (int i = 0; i < 9; i++) {
 
-            int distance = distanceGridStart[coordsToCheck.get(0)[0]][coordsToCheck.get(0)[1]] + 10 + 4 * ((i + 1) % 2);
-            int XToCheck = coordsToCheck.get(0)[0] - 1 + (i % 3);
-            int YToCheck = coordsToCheck.get(0)[1] - 1 + (i / 3);
+            int distance = startDistance[nodesToCheck.get(0)[0]][nodesToCheck.get(0)[1]] + 10 + 4 * ((i + 1) % 2);
+            int XToCheck = nodesToCheck.get(0)[0] - 1 + (i % 3);
+            int YToCheck = nodesToCheck.get(0)[1] - 1 + (i / 3);
 
             if (XToCheck >= 0 && YToCheck >= 0 && XToCheck < wallGrid.length && YToCheck < wallGrid[0].length
-                    && !checked[XToCheck][YToCheck] && !wallGrid[XToCheck][YToCheck]
-                    && (distanceGridStart[XToCheck][YToCheck] > distance || distanceGridStart[XToCheck][YToCheck] == 0)
-                    && !coordsToCheck.contains(new int[] { XToCheck, YToCheck })) {
+                    && !neighboursChecked[XToCheck][YToCheck] && !wallGrid[XToCheck][YToCheck]
+                    && (startDistance[XToCheck][YToCheck] > distance || startDistance[XToCheck][YToCheck] == 0)
+                    && !nodesToCheck.contains(new int[] { XToCheck, YToCheck })) {
 
-                coordsToCheck.add(new int[] { XToCheck, YToCheck });
-                distanceGridStart[XToCheck][YToCheck] = distance;
-                cameFrom[XToCheck][YToCheck] = new int[] { coordsToCheck.get(0)[0], coordsToCheck.get(0)[1] };
+                nodesToCheck.add(new int[] { XToCheck, YToCheck });
+                startDistance[XToCheck][YToCheck] = distance;
+                previousNode[XToCheck][YToCheck] = new int[] { nodesToCheck.get(0)[0], nodesToCheck.get(0)[1] };
 
             }
         }
 
-        coordsToCheck.remove(0);
+        nodesToCheck.remove(0);
 
-        coordsToCheck.sort((a, b) -> distanceGridGoal[a[0]][a[1]] - distanceGridGoal[b[0]][b[1]]
-                + distanceGridStart[a[0]][a[1]] - distanceGridStart[b[0]][b[1]]);
+        nodesToCheck.sort((a, b) -> goalDistance[a[0]][a[1]] - goalDistance[b[0]][b[1]]
+                + startDistance[a[0]][a[1]] - startDistance[b[0]][b[1]]);
 
-        if (cameFrom[cameFrom.length - 1][cameFrom[0].length - 1][0] != 0) {
+        if (previousNode[previousNode.length - 1][previousNode[0].length - 1][0] != 0) {
             pathFindable = true;
+            return true;
         }
+
+        return false;
     }
 }
