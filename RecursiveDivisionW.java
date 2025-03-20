@@ -13,22 +13,22 @@ public class RecursiveDivisionW {
                 array[i][j] = ".";
             }
         }
-        System.out.println(Arrays.deepToString(array));
         return (array);
     }
 
     public static void drawWalls(String[][] array) {
         // draw the walls
-        int randWidth = 0 + (int) (Math.random() * (WIDTH - 0 + 1));
-        int randHeight = 0 + (int) (Math.random() * (HEIGHT - 0 + 1));
+        int randWidth = 2 + (int) (Math.random() * (WIDTH - 2));
+        int randHeight = 2 + (int) (Math.random() * (HEIGHT - 2));
         boolean full = false;
         do {
-            for (int i = 0; i < randHeight; i++) {
-                array[randWidth][i] = "|";
-            }
             for (int i = 0; i < randWidth; i++) {
-                array[i][randHeight] = "-";
+                array[randHeight][i] = "-";
             }
+            for (int j = 0; j < randHeight; j++) {
+                array[j][randWidth] = "|";
+            }
+            full = true;
         } while (full == false);
 
     }
@@ -36,7 +36,9 @@ public class RecursiveDivisionW {
     public static void main(String[] args) {
         String[][] grid = new String[WIDTH][HEIGHT];
         RecursiveDivisionW.drawGrid(grid);
+        System.out.println(Arrays.deepToString(grid));
         RecursiveDivisionW.drawWalls(grid);
+        System.out.println(Arrays.deepToString(grid));
     }
 }
 
