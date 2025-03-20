@@ -1,5 +1,3 @@
-
-
 public class RecursiveDivisionW {
 
     private static final Integer WIDTH = 500;
@@ -16,7 +14,7 @@ public class RecursiveDivisionW {
     }
 
     public static void main(String[] args) {
-        drawGrid();
+        RecursiveDivisionW.drawGrid();
     }
 }
 
