@@ -1,7 +1,9 @@
+import java.util.Arrays;
+
 public class RecursiveDivisionW {
 
-    private static final Integer WIDTH = 500;
-    private static final Integer HEIGHT = 800;
+    private static final Integer WIDTH = 10;
+    private static final Integer HEIGHT = 10;
 
     public static String[][] drawGrid(String[][] array) {
         // draw a grid
@@ -11,14 +13,14 @@ public class RecursiveDivisionW {
                 array[i][j] = ".";
             }
         }
-        System.out.println(array);
+        System.out.println(Arrays.deepToString(array));
         return (array);
     }
 
     public static void drawWalls(String[][] array) {
         // draw the walls
-        int randWidth = 0 + (int) (Math.random() * (500 - 0 + 1));
-        int randHeight = 0 + (int) (Math.random() * (800 - 0 + 1));
+        int randWidth = 0 + (int) (Math.random() * (WIDTH - 0 + 1));
+        int randHeight = 0 + (int) (Math.random() * (HEIGHT - 0 + 1));
         boolean full = false;
         do {
             for (int i = 0; i < randHeight; i++) {
