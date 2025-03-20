@@ -5,32 +5,36 @@ public class RecursiveDivisionW {
 
     public static String[][] drawGrid(String[][] array) {
         // draw a grid
-        
+
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
                 array[i][j] = ".";
             }
         }
         System.out.println(array);
-        return(array);
+        return (array);
     }
 
     public static void drawWalls(String[][] array) {
         // draw the walls
-        int randWidth = 0 + (int)(Math.random() * (500 - 0 + 1));
-        int randHeight = 0 + (int)(Math.random() * (800 - 0 + 1));
+        int randWidth = 0 + (int) (Math.random() * (500 - 0 + 1));
+        int randHeight = 0 + (int) (Math.random() * (800 - 0 + 1));
         boolean full = false;
-        do{
-            //
+        do {
+            for (int i = 0; i < randHeight; i++) {
+                array[randWidth][i] = "|";
+            }
+            for (int i = 0; i < randWidth; i++) {
+                array[i][randHeight] = "-";
+            }
         } while (full == false);
-        
-        
+
     }
 
     public static void main(String[] args) {
         String[][] grid = new String[WIDTH][HEIGHT];
         RecursiveDivisionW.drawGrid(grid);
-        //RecursiveDivisionW.drawWalls(grid);
+        RecursiveDivisionW.drawWalls(grid);
     }
 }
 
