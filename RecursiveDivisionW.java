@@ -3,18 +3,34 @@ public class RecursiveDivisionW {
     private static final Integer WIDTH = 500;
     private static final Integer HEIGHT = 800;
 
-    public static void drawGrid() {
-        String[][] grid = new String[WIDTH][HEIGHT];
+    public static String[][] drawGrid(String[][] array) {
+        // draw a grid
+        
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                grid[i][j] = ".";
+                array[i][j] = ".";
             }
         }
-        System.out.println(grid);
+        System.out.println(array);
+        return(array);
+    }
+
+    public static void drawWalls(String[][] array) {
+        // draw the walls
+        int randWidth = 0 + (int)(Math.random() * (500 - 0 + 1));
+        int randHeight = 0 + (int)(Math.random() * (800 - 0 + 1));
+        boolean full = false;
+        do{
+            //
+        } while (full == false);
+        
+        
     }
 
     public static void main(String[] args) {
-        RecursiveDivisionW.drawGrid();
+        String[][] grid = new String[WIDTH][HEIGHT];
+        RecursiveDivisionW.drawGrid(grid);
+        //RecursiveDivisionW.drawWalls(grid);
     }
 }
 
