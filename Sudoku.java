@@ -5,11 +5,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.control.Button;
-
+import javafx.scene.text.FontWeight;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 
@@ -17,6 +16,7 @@ public class Sudoku extends GridPane {
 
     private int[][] gridNumbers;
     private StackPane[][] cellStacks = new StackPane[9][9]; // Store references to UI cells
+    private boolean[][] isOriginal = new boolean[9][9];
 
     public Sudoku() {
         try {
@@ -37,6 +37,7 @@ public class Sudoku extends GridPane {
     }
 
     private void createSudokuGrid() {
+        
         int subGridSize = 3; // Size of subgrid (3x3)
         int cellSize = 60; // Size of each cell
    
@@ -62,8 +63,9 @@ public class Sudoku extends GridPane {
    
                         if (number != 0) {
                             Text text = new Text(String.valueOf(number));
-                            text.setFont(Font.font(24));
+                            text.setFont(Font.font("Arial", FontWeight.BOLD, 24)); // Keep original numbers bold
                             cellStack.getChildren().add(text);
+                            isOriginal[globalRow][globalCol] = true; // Mark as an original number
                         }
    
                         innerGrid.add(cellStack, j, i);
@@ -72,8 +74,8 @@ public class Sudoku extends GridPane {
    
                 // Outer thick border
                 Rectangle outerCell  = new Rectangle(cellSize * subGridSize, cellSize * subGridSize);
-                outerCell .setStroke(Color.BLACK);
-                outerCell .setStrokeWidth(7);
+                outerCell.setStroke(Color.BLACK);
+                outerCell.setStrokeWidth(7);
    
                 StackPane stack = new StackPane(outerCell, innerGrid);
                 add(stack, col, row);
@@ -123,7 +125,7 @@ public class Sudoku extends GridPane {
         for (int number = 1; number <= 9; number++) {
             if (isValid(board, row, col, number)) { // Check if the number is valid in this position
                 
-                number = board[row][col]; // Place the number
+                board[row][col] = number; // Place the number
                 updateCell(row, col, number); 
                 
                 // Recursively attempt to solve the rest of the board.
@@ -140,7 +142,6 @@ public class Sudoku extends GridPane {
         // No valid number found
         return false;
     }
-
 
     private boolean isValid(int[][] board, int row, int col, int numExists) {
         
@@ -172,28 +173,53 @@ public class Sudoku extends GridPane {
     }
 
     private void updateCell(int row, int col, int number) {
-        
         Platform.runLater(() -> {
+           
             StackPane cellStack = cellStacks[row][col];
             cellStack.getChildren().clear();
-   
+    
             Rectangle innerCell = new Rectangle(60, 60);
             innerCell.setFill(Color.WHITE);
             innerCell.setStroke(Color.LIGHTGRAY);
             cellStack.getChildren().add(innerCell);
-   
+    
             if (number != 0) {
                 Text text = new Text(String.valueOf(number));
-                text.setFont(Font.font(24));
+    
+                // Reset all previously placed numbers to normal black
+                for (int i = 0; i < 9; i++) {
+                    for (int j = 0; j < 9; j++) {
+                        
+                        if (!isOriginal[i][j] && cellStacks[i][j].getChildren().size() > 1) {
+                            Text previousText = (Text) cellStacks[i][j].getChildren().get(1);
+                            previousText.setFill(Color.BLACK);
+                            previousText.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
+                        }
+
+                    }
+                }
+    
+                if (isOriginal[row][col]) 
+                { 
+                    // Keep original numbers bold and black
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+                    text.setFill(Color.BLACK);
+                } 
+                else 
+                {
+                    // Make only the currently placed number bold and green
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+                    text.setFill(Color.GREEN);
+                }
+    
                 cellStack.getChildren().add(text);
             }
         });
-   
+    
         try {
-            Thread.sleep(10);
+            Thread.sleep(400);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    } 
-
+    }
 }
