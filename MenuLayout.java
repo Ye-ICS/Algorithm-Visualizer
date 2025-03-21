@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
@@ -25,7 +27,19 @@ class MenuLayout extends VBox {
         Button bubbleSortBtn = new Button("Bubble Sort");
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
+        Button sudokuBtn = new Button("Sudoku Solver");
+        sudokuBtn.setOnAction(event -> {
+            try {
+                FXUtils.setSceneRoot(getScene(), new SudokuLayout());
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, sudokuBtn);
         getChildren().addAll(title, buttonsBox);
+
+       
     }
 }
