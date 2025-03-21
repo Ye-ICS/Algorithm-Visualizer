@@ -107,7 +107,7 @@ public class AStar extends BorderPane {
         
         Button aStarButton = new Button("Run A*");
         aStarButton.setPrefSize(300, 110);
-        aStarButton.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        aStarButton.setStyle("-fx-font-size: 19px; -fx-font-weight: bold;");
         aStarButton.setTranslateY(2);
 
         Button clearButton = new Button("Clear Grid");
@@ -281,13 +281,13 @@ public class AStar extends BorderPane {
     }
 
     private static double heuristic(Cell a, Cell b) {
-        if (choice == 0){
+        if (choice == 1){
             // Euclidean distance
                 return Math.sqrt(Math.pow(a.row - b.row, 2) + Math.pow(a.col - b.col, 2));
-        } else if (choice == 1){
+        } else if (choice == 2){
             // Chebyshev distance
                 return Math.max(Math.abs(a.row - b.row), Math.abs(a.col - b.col));
-        } else if (choice == 2){
+        } else if (choice == 0){
             // Manhattan distance
             return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
         }
