@@ -16,23 +16,30 @@ public class RecursiveDivisionW {
         return (array);
     }
 
-    public static void drawWalls(String[][] array) {
+    public static String[][] drawWalls(String[][] array) {
         // draw the walls
-        int randWidth = 2 + (int) (Math.random() * (WIDTH - 2));
-        int randHeight = 2 + (int) (Math.random() * (HEIGHT - 2));
+        int randWidth = 1 + (int) (Math.random() * (WIDTH - 2 + 1));
+        int randHeight = 1 + (int) (Math.random() * (HEIGHT - 2 + 1));
+        int randNum;
         boolean full = false;
         do {
-
-            for (int i = 0; i == WIDTH - 1; i++) {
+            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
+            for (int i = 0; i < WIDTH; i++) {
                 array[randHeight][i] = "-";
             }
-            for (int j = 0; j == HEIGHT - 1; j++) {
+            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
+            array[randHeight][randNum] = " ";
+
+            for (int j = 0; j < HEIGHT; j++) {
                 array[j][randWidth] = "|";
             }
+            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
+            array[randNum][randWidth] = " ";
+
             array[randHeight][randWidth] = "+";
             full = true;
         } while (full == false);
-
+        return (array);
     }
 
     public static void main(String[] args) {
@@ -44,8 +51,6 @@ public class RecursiveDivisionW {
     }
 }
 
-// needs to make interior walls
-// needs to make the two openings, one per wall
 // need to go down into 1 of the 4 new quadrants
 // need to repeat the process
 // need to stop when when its like 3 or 4 levels in
