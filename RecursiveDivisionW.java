@@ -42,25 +42,24 @@ public class RecursiveDivisionW {
 
     public static String[][] drawMaze(String[][] array, Integer horiz, Integer vert) {
         // draw the maze
-        int inwidth = horiz;
-        int inheight = vert;
+        int randWidth = 1 + (int) (Math.random() * (horiz - 2 + 1));
+        int randHeight = 1 + (int) (Math.random() * (vert - 2 + 1));
         int randNum;
         boolean full = false;
         do {
-            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
-            for (int i = 0; i < WIDTH; i++) {
-                array[vert][i] = "-";
+            for (int i = 0; i < randWidth; i++) {
+                array[randHeight][i] = "-";
             }
-            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
-            array[vert][randNum] = " ";
+            randNum = 1 + (int) (Math.random() * (randWidth - 2 + 1));
+            array[randHeight][randNum] = " ";
 
-            for (int j = 0; j < HEIGHT; j++) {
-                array[j][horiz] = "|";
+            for (int j = 0; j < randHeight; j++) {
+                array[j][randWidth] = "|";
             }
-            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
-            array[randNum][horiz] = " ";
+            randNum = 1 + (int) (Math.random() * (randHeight - 2 + 1));
+            array[randNum][randWidth] = " ";
 
-            array[vert][horiz] = "+";
+            array[randHeight][randWidth] = "+";
             full = true;
         } while (full == false);
         return (array);
@@ -68,11 +67,16 @@ public class RecursiveDivisionW {
 
     public static void main(String[] args) {
         String[][] grid = new String[WIDTH][HEIGHT];
-        int randWidth = 1 + (int) (Math.random() * (WIDTH - 2 + 1));
-        int randHeight = 1 + (int) (Math.random() * (HEIGHT - 2 + 1));
+        int randHoriz = 1 + (int) (Math.random() * (WIDTH - 2 + 1));
+        int randVert = 1 + (int) (Math.random() * (HEIGHT - 2 + 1));
+
         RecursiveDivisionW.drawGrid(grid);
         System.out.println(Arrays.deepToString(grid));
-        RecursiveDivisionW.drawWalls(grid, randWidth, randHeight);
+
+        RecursiveDivisionW.drawWalls(grid, randHoriz, randVert);
+        System.out.println(Arrays.deepToString(grid));
+
+        RecursiveDivisionW.drawMaze(grid, randHoriz, randVert);
         System.out.println(Arrays.deepToString(grid));
     }
 }
