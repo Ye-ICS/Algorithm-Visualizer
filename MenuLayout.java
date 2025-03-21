@@ -28,7 +28,12 @@ class MenuLayout extends VBox {
         Button bruteforceBtn = new Button("Sudoku");
         bruteforceBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BruteSudoku()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, bruteforceBtn);
+        Button aStarBtn = new Button("A*");
+        aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
+
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, bruteforceBtn);
+
         getChildren().addAll(title, buttonsBox);
     }
 }
