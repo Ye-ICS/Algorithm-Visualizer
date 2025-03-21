@@ -16,27 +16,51 @@ public class RecursiveDivisionW {
         return (array);
     }
 
-    public static String[][] drawWalls(String[][] array) {
+    public static String[][] drawWalls(String[][] array, Integer horiz, Integer vert) {
         // draw the walls
-        int randWidth = 1 + (int) (Math.random() * (WIDTH - 2 + 1));
-        int randHeight = 1 + (int) (Math.random() * (HEIGHT - 2 + 1));
         int randNum;
         boolean full = false;
         do {
             randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
             for (int i = 0; i < WIDTH; i++) {
-                array[randHeight][i] = "-";
+                array[vert][i] = "-";
             }
             randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
-            array[randHeight][randNum] = " ";
+            array[vert][randNum] = " ";
 
             for (int j = 0; j < HEIGHT; j++) {
-                array[j][randWidth] = "|";
+                array[j][horiz] = "|";
             }
             randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
-            array[randNum][randWidth] = " ";
+            array[randNum][horiz] = " ";
 
-            array[randHeight][randWidth] = "+";
+            array[vert][horiz] = "+";
+            full = true;
+        } while (full == false);
+        return (array);
+    }
+
+    public static String[][] drawMaze(String[][] array, Integer horiz, Integer vert) {
+        // draw the maze
+        int inwidth = horiz;
+        int inheight = vert;
+        int randNum;
+        boolean full = false;
+        do {
+            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
+            for (int i = 0; i < WIDTH; i++) {
+                array[vert][i] = "-";
+            }
+            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
+            array[vert][randNum] = " ";
+
+            for (int j = 0; j < HEIGHT; j++) {
+                array[j][horiz] = "|";
+            }
+            randNum = 1 + (int) (Math.random() * (10 - 2 + 1));
+            array[randNum][horiz] = " ";
+
+            array[vert][horiz] = "+";
             full = true;
         } while (full == false);
         return (array);
@@ -44,9 +68,11 @@ public class RecursiveDivisionW {
 
     public static void main(String[] args) {
         String[][] grid = new String[WIDTH][HEIGHT];
+        int randWidth = 1 + (int) (Math.random() * (WIDTH - 2 + 1));
+        int randHeight = 1 + (int) (Math.random() * (HEIGHT - 2 + 1));
         RecursiveDivisionW.drawGrid(grid);
         System.out.println(Arrays.deepToString(grid));
-        RecursiveDivisionW.drawWalls(grid);
+        RecursiveDivisionW.drawWalls(grid, randWidth, randHeight);
         System.out.println(Arrays.deepToString(grid));
     }
 }
