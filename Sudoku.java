@@ -24,9 +24,9 @@ public class Sudoku extends GridPane {
 
     private Slider speedSlider; // Slider to control solving speed
     private Label speedLabel;   // Label to display speed control text
-    private volatile long stepDelay; // Default sleep time (500ms)
+    private volatile long stepDelay; //sleep time
 
-    boolean pressed = false;
+    private volatile boolean solving = false; // Prevents multiple simultaneous executions
 
     public Sudoku() {
         try {
@@ -39,18 +39,26 @@ public class Sudoku extends GridPane {
         createSudokuGrid();
         
         Button solveButton = new Button("Solve Sudoku");
-        solveButton.setOnAction(e -> {
-            if (!pressed) {
-                pressed = true;
-                new Thread(() -> solveSudoku(gridNumbers)).start();
+        solveButton.setOnAction(e -> { //cant press more than once
+            if (!solving) {
+                solving = true;
+                new Thread(() -> {
+                    solveSudoku(gridNumbers);
+                    solving = false;
+                }).start();
             }
         });
 
-        // Speed control label
+        Button resetButton = new Button("Reset"); //cant press when solving
+        resetButton.setOnAction(e -> {
+            if (!solving) {
+                resetGrid();
+            }
+        });
+
         speedLabel = new Label("Speed Control");
         speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-        // Speed control slider (1x to 10x)
         speedSlider = new Slider(1, 10, 1);
         speedSlider.setShowTickLabels(true);
         speedSlider.setShowTickMarks(true);
@@ -63,18 +71,56 @@ public class Sudoku extends GridPane {
             stepDelay = (long)(15000 / Math.pow(3, speedFactor));
         });
 
-        // Default speed value
+        // Default speed
         speedSlider.setValue(10); 
         speedSlider.setValue(1);
 
-        VBox controls = new VBox(10, solveButton, speedLabel, speedSlider);
+        VBox controls = new VBox(10, solveButton, resetButton, speedLabel, speedSlider);
         controls.setAlignment(Pos.CENTER);
 
         add(controls, 0, 9, 9, 1);
         GridPane.setHalignment(solveButton, HPos.CENTER);
     }
 
-    int[][] getTable(String filename) throws FileNotFoundException {
+    private void resetGrid() {
+        solving = false;
+        Platform.runLater(() -> {
+            getChildren().clear(); // Clears the grid along with the controls
+    
+            try {
+                gridNumbers = getTable("data/sudoku/Example.txt");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+    
+            createSudokuGrid(); // Rebuilds the Sudoku grid
+    
+            // Recreate and add controls
+            Button solveButton = new Button("Solve Sudoku");
+            solveButton.setOnAction(e -> {
+                if (!solving) {
+                    solving = true;
+                    new Thread(() -> {
+                        solveSudoku(gridNumbers);
+                        solving = false;
+                    }).start();
+                }
+            });
+    
+            Button resetButton = new Button("Reset");
+            resetButton.setOnAction(e -> {
+                if (!solving) {
+                    resetGrid();
+                }
+            });
+    
+            VBox controls = new VBox(10, solveButton, resetButton, speedLabel, speedSlider);
+            controls.setAlignment(Pos.CENTER);
+            add(controls, 0, 9, 9, 1);
+        });
+    }    
+
+    int[][] getTable(String filename) throws FileNotFoundException { //getting values from the file
         Scanner scanner = new Scanner(new File(filename));
 
         int[][] gridNumbers = new int[9][9];
