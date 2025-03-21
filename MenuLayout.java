@@ -29,7 +29,11 @@ class MenuLayout extends VBox {
         // fix this to properly call the RecursiveDivisionLayout
         recursiveDivisionBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new RecursiveDivisionLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, recursiveDivisionBtn);
+        Button aStarBtn = new Button("A*");
+        aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
+
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, recursiveDivisionBtn);
         getChildren().addAll(title, buttonsBox);
     }
 }
