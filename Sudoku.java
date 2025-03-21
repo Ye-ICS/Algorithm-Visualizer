@@ -3,13 +3,8 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Sudoku {
-    //place lowest number check if valid then move on
+    // place lowest number check if valid then move on
     int[][] board = new int[9][9];
-
-    public int[][] createBoard() {
-
-        return board;
-    }
 
     public static int[][] readBoard(String filename) throws FileNotFoundException {
         int[][] board = new int[9][9];
@@ -22,18 +17,18 @@ public class Sudoku {
         return board;
     }
 
-    public int placeNum(int [] numTry, int step) {
+    public int placeNum(int[] numTry, int step) {
         int num = 0;
-        if(numTry[step] < 9){
+        if (numTry[step] < 9) {
             num = numTry[step]++;
-        }
-        else{
+        } else {
             num = -1;
         }
         return num;
     }
 
     public void solve(int[][] board) {
+
         int steps = 0;
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
@@ -43,25 +38,27 @@ public class Sudoku {
             }
         }
         // maybe add something for last placed number
+
         int[][][] boardState = new int[steps][9][9];
-        int [] numTry = new int[steps];
+        int[] numTry = new int[steps];
         int step = 0;
         int x = 0;
         int y = 0;
-        while(isSolved(board) == false){
-            //find out what x should be
+        while (solved(board) == false) {
+            // find out what x should be
             int temp = placeNum(numTry, step);
-            if(temp < 0){
+            if (temp < 0) {
                 step--;
-            }
-            else{
+                numTry[step]++;
+            } else {
                 boardState[step][x][y] = temp;
+                step++;
             }
         }
     }
 
-    public boolean isSolved(int[][] board) {
-        boolean solved = true;
+    public boolean validPlacement(int[][] board) {
+        boolean valid = true;
 
         for (int i = 0; i < 9; i++) {
             // constant num
@@ -72,17 +69,13 @@ public class Sudoku {
                     // if()
                     if (board[j][i] == board[k][i] && (j != k)) {
                         // row
-                        solved = false;
+                        valid = false;
                     }
                     if (board[i][j] == board[i][k] && (j != k)) {
                         // col
-                        solved = false;
+                        valid = false;
                     }
 
-                }
-                // check for any 0s
-                if (board[i][j] == 0) {
-                    solved = false;
                 }
             }
         }
@@ -94,38 +87,44 @@ public class Sudoku {
                     for (int k = 0; k < 3; k++) {
                         for (int l = 0; l < 3; l++) {
                             if (board[i + placement][j = placement] == board[i + placement][k + placement]) {
-                                solved = false;
+                                valid = false;
                             }
                             if (board[j + placement][i + placement] == board[k + placement][i + placement]) {
-                                solved = false;
+                                valid = false;
                             }
                             if (board[i + placement][j + placement] == board[k + placement][l + placement]) {
-                                solved = false;
+                                valid = false;
                             }
                         }
                     }
                 }
             }
         }
+        /*
+         * for (int i = 0; i < 3; i++) {
+         * for (int j = 0; j < 3; j++) {
+         * for (int k = 0; k < 3; k++) {
+         * for (int l = 0; l < 3; l++) {
+         * if (board[i][j] == board[i][k]) {
+         * valid = false;
+         * }
+         * if (board[j][i] == board[k][i]) {
+         * valid = false;
+         * }
+         * if (board[i][j] == board[k][l]) {
+         * valid = false;
+         * }
+         * }
+         * }
+         * }
+         * }
+         */
+        // hklsdhjldjs
+        return valid;
+    }
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++) {
-                        if (board[i][j] == board[i][k]) {
-                            solved = false;
-                        }
-                        if (board[j][i] == board[k][i]) {
-                            solved = false;
-                        }
-                        if (board[i][j] == board[k][l]) {
-                            solved = false;
-                        }
-                    }
-                }
-            }
-        }
-        //hklsdhjldjs
+    public boolean solved(int[][] board) {
+        boolean solved = false;
         return solved;
     }
 }
