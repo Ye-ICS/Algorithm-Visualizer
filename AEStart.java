@@ -31,7 +31,7 @@ public class AEStart extends VBox {
     AEStart() {
         setAlignment(Pos.CENTER);
         setPrefSize(600, 600);
-        setStyle("-fx-background-color: #f4f4f9;"); // Light background for modern look
+        setStyle("-fx-background-color: #f4f4f9;"); // Light background for modern look f4f4f9
 
         setSpacing(30);
         // Title Text

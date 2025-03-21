@@ -74,7 +74,7 @@ public class AESPasswordArray extends VBox {
         // Navigation Buttons
         Button nextButton = new Button("Next");
         nextButton.getStyleClass().add("nav-button");
-        nextButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new AESKeyExpansion(password)));
+        nextButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new AESKeyExpansion(password, plaintext)));
 
         Button backButton = new Button("Back");
         backButton.getStyleClass().add("nav-button");
