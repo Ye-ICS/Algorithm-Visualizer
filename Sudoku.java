@@ -107,7 +107,7 @@ public class Sudoku extends GridPane {
 
     private boolean backtrack(int[][] board, int row, int col) {
         
-        if (row == 9) 
+        if (row == 9)
         {
             return true; // If we reach past the last row, the Sudoku is solved
         }
@@ -126,16 +126,18 @@ public class Sudoku extends GridPane {
             if (isValid(board, row, col, number)) { // Check if the number is valid in this position
                 
                 board[row][col] = number; // Place the number
-                updateCell(row, col, number); 
-                
-                // Recursively attempt to solve the rest of the board.
+    
+                // Check if it's the last number being placed
+                boolean isLastCell = isLastCellToBeFilled(board, row, col);
+                updateCell(row, col, number, isLastCell);
+    
                 if (backtrack(board, row, col + 1)) {
-                    return true; // solution found
+                    return true; 
                 }
-
+    
                 // If placing 'number' didn't work, backtrack by resetting the cell to 0.
                 board[row][col] = 0;
-                updateCell(row, col, 0); 
+                updateCell(row, col, 0, false);
             }
         }
         
@@ -172,9 +174,8 @@ public class Sudoku extends GridPane {
         return true;
     }
 
-    private void updateCell(int row, int col, int number) {
+    private void updateCell(int row, int col, int number, boolean isLastCell) {
         Platform.runLater(() -> {
-           
             StackPane cellStack = cellStacks[row][col];
             cellStack.getChildren().clear();
     
@@ -198,18 +199,22 @@ public class Sudoku extends GridPane {
 
                     }
                 }
-    
-                if (isOriginal[row][col]) 
-                { 
+
+                if (isOriginal[row][col]) { 
                     // Keep original numbers bold and black
                     text.setFont(Font.font("Arial", FontWeight.BOLD, 24));
                     text.setFill(Color.BLACK);
                 } 
                 else 
                 {
-                    // Make only the currently placed number bold and green
-                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-                    text.setFill(Color.GREEN);
+                    // If it's the last cell, do NOT apply green, bold, or bigger font
+                    if (isLastCell) {
+                        text.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
+                        text.setFill(Color.BLACK);
+                    } else {
+                        text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+                        text.setFill(Color.GREEN);
+                    }
                 }
     
                 cellStack.getChildren().add(text);
@@ -217,9 +222,20 @@ public class Sudoku extends GridPane {
         });
     
         try {
-            Thread.sleep(400);
+            Thread.sleep(4);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private boolean isLastCellToBeFilled(int[][] board, int row, int col) {
+        for (int i = row; i < 9; i++) {
+            for (int j = (i == row ? col : 0); j < 9; j++) {
+                if (board[i][j] == 0) {
+                    return false; // More empty cells exist
+                }
+            }
+        }
+        return true; // This is the last cell being filled
     }
 }
