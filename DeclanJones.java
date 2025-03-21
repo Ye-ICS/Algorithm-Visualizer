@@ -43,7 +43,7 @@ public class DeclanJones {
 
         wallGrid = new boolean[height / renderScale][width / renderScale];
 
-        populateGrids();
+        resetPathFinding();
 
         // Create a grid and make sure it is solveable
         while (!checkCoords()) {
@@ -57,13 +57,13 @@ public class DeclanJones {
                     }
                 }
             }
-            populateGrids();
+            resetPathFinding();
             while (!checkCoords() && (nodesToCheck.size() >= 1)){
 
             }
         }
 
-        populateGrids();
+        resetPathFinding();
 
         KeyFrame drawEvent = new KeyFrame(Duration.millis(150), event -> {
             printGrid(wallGrid, neighboursChecked, DeclanJonesLayout.writer);
@@ -188,7 +188,7 @@ public class DeclanJones {
      * Finally, 'coordsToCheck' is initialized with the starting coordinate {0, 0},
      * and 'pathFindable' is set to false.
      */
-    public static void populateGrids() {
+    public static void resetPathFinding() {
 
         neighboursChecked = new boolean[wallGrid.length][wallGrid[0].length];
 
