@@ -55,6 +55,12 @@ public class AESKeyExpansion extends VBox {
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
         fadeIn.play();
+        try {
+            generate14RoundKeys(password);
+        } catch (NoSuchAlgorithmException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }
 
     // Method to generate a 256-bit key from a password using SHA-256 hashing
@@ -166,34 +172,31 @@ public class AESKeyExpansion extends VBox {
     // Key Expansion function - Generates 15 round keys
     public static int[][] generateRoundKeys(int[] key) {
         int[][] expandedKeys = new int[60][4]; // 15 round keys (each 128 bits = 4 words)
-
+    
         // First 8 words are copied directly from the original key
         for (int i = 0; i < 8; i++) {
             expandedKeys[i] = Arrays.copyOfRange(key, i * 4, (i + 1) * 4);
         }
-
+    
         // Generate remaining words
         for (int i = 8; i < 60; i++) {
             int[] temp = expandedKeys[i - 1];
-
+    
             if (i % 8 == 0) {
                 // Apply RotWord, SubWord, and Rcon for every 8th word
-                temp = xorWords(subWord(rotWord(temp)), rcon(i / 8));
-            } else if (i % 8 == 4) {
-                // Apply SubWord for every 4th word
-                temp = subWord(temp);
+                temp = xorWords(subWord(rotWord(temp)), rcon(i / 8)); // Fix Rcon access
             }
-
+    
             // XOR with the word 8 positions before
             expandedKeys[i] = xorWords(expandedKeys[i - 8], temp);
         }
-
+    
         return expandedKeys;
     }
-
+    
     // Print the round keys (Formatted)
     public static void printRoundKeys(int[][] keys) {
-        for (int i = 3; i < 15; i++) {
+        for (int i = 2; i < 15; i++) {
             System.out.printf("Round Key %d:\n", i);
             for (int j = 0; j < 4; j++) {
                 System.out.printf("%02X %02X %02X %02X\n", keys[i * 4 + j][0], keys[i * 4 + j][1], keys[i * 4 + j][2], keys[i * 4 + j][3]);
@@ -206,7 +209,7 @@ public class AESKeyExpansion extends VBox {
         StringBuilder matrixText = new StringBuilder("Key Matrix:\n");
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                matrixText.append(String.format("%02x ", key[j][i])); // Convert to hex format
+                matrixText.append(String.format("%02x ", key[i][j])); // Convert to hex format
             }
             matrixText.append("\n");
         }
@@ -224,14 +227,17 @@ public class AESKeyExpansion extends VBox {
 
         return matrixLabel;
     }
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-    String password = "YamenSucksAtMath"; // Example password
+    public static void generate14RoundKeys(String password) throws NoSuchAlgorithmException {
+     // Example password
 
     // Generate and split the key
     byte[] aesKey = get256BitKey(password);
     int[][][] keyMatrices = splitKeyIntoMatrices(aesKey);
 
+
+    
     // Print the first two round keys (keyMatrices)
+    System.out.println(bytesToHex(aesKey));
     System.out.println("Round Key 0:");
     printMatrix(keyMatrices[0]);
     System.out.println();
