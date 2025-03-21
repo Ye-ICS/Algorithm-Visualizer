@@ -60,9 +60,12 @@ public class Sudoku extends GridPane {
 
         speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int speedFactor = newVal.intValue();
-            stepDelay = (long)(6000 / Math.pow(1.5, speedFactor));
+            stepDelay = (long)(15000 / Math.pow(3, speedFactor));
         });
-        // speedSlider.valueProperty().set(1);
+
+        // Default speed value
+        speedSlider.setValue(10); 
+        speedSlider.setValue(1);
 
         VBox controls = new VBox(10, solveButton, speedLabel, speedSlider);
         controls.setAlignment(Pos.CENTER);
