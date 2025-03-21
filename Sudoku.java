@@ -5,12 +5,16 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Label;
 import javafx.scene.text.FontWeight;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.scene.layout.VBox;
 
 public class Sudoku extends GridPane {
 
@@ -18,22 +22,64 @@ public class Sudoku extends GridPane {
     private StackPane[][] cellStacks = new StackPane[9][9]; // Store references to UI cells
     private boolean[][] isOriginal = new boolean[9][9];
 
+    private Slider speedSlider; // Slider to control solving speed
+    private Label speedLabel;   // Label to display speed control text
+    private volatile int solveSpeed = 500; // Default sleep time (500ms)
+
     public Sudoku() {
         try {
-            gridNumbers = getTable("data/sudoku/Example.txt"); // Handle exception properly
+            gridNumbers = getTable("data/sudoku/Example.txt"); 
         } catch (FileNotFoundException e) {
-            e.printStackTrace(); 
-            gridNumbers = new int[9][9]; // Default empty grid in case of failure
+            e.printStackTrace();
+            gridNumbers = new int[9][9];
         }
 
         createSudokuGrid();
 
-        // Solve button below the grid
+        // Solve button
         Button solveButton = new Button("Solve Sudoku");
         solveButton.setOnAction(e -> new Thread(() -> solveSudoku(gridNumbers)).start());
 
-        add(solveButton, 0, 9, 9, 1); // Span across all 9 columns
-        GridPane.setHalignment(solveButton, HPos.CENTER); // Center horizontally
+        // Speed control label
+        speedLabel = new Label("Speed Control");
+        speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+        // Speed control slider (1x to 10x)
+        speedSlider = new Slider(1, 10, 1);
+        speedSlider.setShowTickLabels(true);
+        speedSlider.setShowTickMarks(true);
+        speedSlider.setMajorTickUnit(1);
+        speedSlider.setMinorTickCount(0);
+        speedSlider.setSnapToTicks(true);
+
+        speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int speedFactor = newVal.intValue();
+            solveSpeed = 500 / speedFactor; // 1x -> 500ms, 2x -> 250ms, ..., 10x -> 50ms
+        });
+
+        VBox controls = new VBox(10, solveButton, speedLabel, speedSlider);
+        controls.setAlignment(Pos.CENTER);
+
+        add(controls, 0, 9, 9, 1);
+        GridPane.setHalignment(solveButton, HPos.CENTER);
+    }
+
+    int[][] getTable(String filename) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(filename));
+
+        int[][] gridNumbers = new int[9][9];
+
+        for (int k = 0; k < 9; k++) {
+            String row = scanner.nextLine();
+            String[] rowStrings = row.split(",");
+
+            for (int j = 0; j < 9; j++) {
+                gridNumbers[k][j] = Integer.parseInt(rowStrings[j]); 
+            }
+        }
+
+        scanner.close(); 
+        return gridNumbers;
     }
 
     private void createSudokuGrid() {
@@ -63,7 +109,7 @@ public class Sudoku extends GridPane {
    
                         if (number != 0) {
                             Text text = new Text(String.valueOf(number));
-                            text.setFont(Font.font("Arial", FontWeight.BOLD, 24)); // Keep original numbers bold
+                            text.setFont(Font.font("Arial", FontWeight.BOLD, 24));
                             cellStack.getChildren().add(text);
                             isOriginal[globalRow][globalCol] = true; // Mark as an original number
                         }
@@ -81,24 +127,6 @@ public class Sudoku extends GridPane {
                 add(stack, col, row);
             }
         }
-    }
-
-    int[][] getTable(String filename) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(filename));
-
-        int[][] gridNumbers = new int[9][9];
-
-        for (int k = 0; k < 9; k++) {
-            String row = scanner.nextLine();
-            String[] rowStrings = row.split(",");
-
-            for (int j = 0; j < 9; j++) {
-                gridNumbers[k][j] = Integer.parseInt(rowStrings[j]); // Properly populate grid
-            }
-        }
-
-        scanner.close(); 
-        return gridNumbers;
     }
 
     public void solveSudoku(int[][] board) {
@@ -222,7 +250,7 @@ public class Sudoku extends GridPane {
         });
     
         try {
-            Thread.sleep(4);
+            Thread.sleep(solveSpeed); // sleep time based on slider value
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
