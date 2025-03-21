@@ -24,7 +24,9 @@ public class Sudoku extends GridPane {
 
     private Slider speedSlider; // Slider to control solving speed
     private Label speedLabel;   // Label to display speed control text
-    private volatile int solveSpeed = 500; // Default sleep time (500ms)
+    private volatile long stepDelay; // Default sleep time (500ms)
+
+    boolean pressed = false;
 
     public Sudoku() {
         try {
@@ -35,10 +37,14 @@ public class Sudoku extends GridPane {
         }
 
         createSudokuGrid();
-
-        // Solve button
+        
         Button solveButton = new Button("Solve Sudoku");
-        solveButton.setOnAction(e -> new Thread(() -> solveSudoku(gridNumbers)).start());
+        solveButton.setOnAction(e -> {
+            if (!pressed) {
+                pressed = true;
+                new Thread(() -> solveSudoku(gridNumbers)).start();
+            }
+        });
 
         // Speed control label
         speedLabel = new Label("Speed Control");
@@ -54,8 +60,9 @@ public class Sudoku extends GridPane {
 
         speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int speedFactor = newVal.intValue();
-            solveSpeed = 500 / speedFactor; // 1x -> 500ms, 2x -> 250ms, ..., 10x -> 50ms
+            stepDelay = (long)(6000 / Math.pow(1.5, speedFactor));
         });
+        // speedSlider.valueProperty().set(1);
 
         VBox controls = new VBox(10, solveButton, speedLabel, speedSlider);
         controls.setAlignment(Pos.CENTER);
@@ -250,7 +257,7 @@ public class Sudoku extends GridPane {
         });
     
         try {
-            Thread.sleep(solveSpeed); // sleep time based on slider value
+            Thread.sleep(stepDelay); // sleep time based on slider value
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
