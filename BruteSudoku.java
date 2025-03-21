@@ -12,6 +12,7 @@ public class BruteSudoku extends FlowPane{
     
     TextField[][] sudokuCells = new TextField[9][9];
      Random random = new Random();
+     Boolean noSolution = false;
 
     /**
      * Constructs layout for brute force sudoku solver
@@ -29,20 +30,22 @@ public class BruteSudoku extends FlowPane{
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                TextField sudokuNumbers = new TextField();
-                sudokuNumbers.setPrefHeight(40);
-                sudokuNumbers.setPrefWidth(40);
-                sudokuNumbers.setAlignment(Pos.CENTER);
+                TextField sudokuNumber = new TextField();
+                sudokuNumber.setPrefHeight(40);
+                sudokuNumber.setPrefWidth(40);
+                sudokuNumber.setAlignment(Pos.CENTER);
 
 
-                sudokuCells[i][j] = sudokuNumbers;
-                sudokuTable.add(sudokuNumbers, i, j);
+                sudokuCells[i][j] = sudokuNumber;
+                sudokuTable.add(sudokuNumber, i, j);
             }
         }
 
         setAlignment(Pos.CENTER);
 
         fillRandomNumbers();
+
+      
 
         Text description = new Text("");
 
@@ -103,6 +106,7 @@ void solveSudoku() {
         }
     } else {
         System.out.println("No solution exists.");
+        fillRandomNumbers();
     }
 }
 
