@@ -26,11 +26,45 @@ public class Sudoku extends GridPane {
     private Label speedLabel;   // Label to display speed control text
     private volatile long stepDelay; //sleep time
 
-    private boolean solving = false; // Prevents multiple simultaneous executions
-
+    private boolean solving = false; // keeps track of sudoku and checks if it is being solved or not
+    
     public Sudoku() {
+        showDifficultySelection();
+    }
+
+    private void showDifficultySelection() {
+
+        VBox difficultySelection = new VBox(20);
+        difficultySelection.setAlignment(Pos.CENTER);
+
+        // Label for the difficulty selection screen
+        Label difficultyLabel = new Label("Choose Sudoku Difficulty");
+        difficultyLabel.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+        difficultySelection.getChildren().add(difficultyLabel);
+
+        Button easyButton = new Button("Easy");
+        Button mediumButton = new Button("Medium");
+        Button hardButton = new Button("Hard");
+
+        // Make the difficulty buttons larger
+        easyButton.setStyle("-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 100px;");
+        mediumButton.setStyle("-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 100px;");
+        hardButton.setStyle("-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 100px;");
+
+        easyButton.setOnAction(e -> loadSudoku("data/sudoku/Easy.txt"));
+        mediumButton.setOnAction(e -> loadSudoku("data/sudoku/Medium.txt"));
+        hardButton.setOnAction(e -> loadSudoku("data/sudoku/Hard.txt"));
+
+        difficultySelection.getChildren().addAll(easyButton, mediumButton, hardButton);
+        add(difficultySelection, 0, 9, 9, 1);
+    }
+
+    private void loadSudoku(String filename) {
+
+        getChildren().clear(); // Clear difficulty buttons
+
         try {
-            gridNumbers = getTable("data/sudoku/Example.txt"); 
+            gridNumbers = getTable(filename); 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             gridNumbers = new int[9][9];
@@ -49,10 +83,10 @@ public class Sudoku extends GridPane {
             }
         });
 
-        Button resetButton = new Button("Reset"); //cant press when solving
+        Button resetButton = new Button("Reset");
         resetButton.setOnAction(e -> {
             if (!solving) {
-                resetGrid();
+                loadSudoku(filename);
             }
         });
 
@@ -80,44 +114,6 @@ public class Sudoku extends GridPane {
 
         add(controls, 0, 9, 9, 1);
         GridPane.setHalignment(solveButton, HPos.CENTER);
-    }
-
-    private void resetGrid() {
-        solving = false;
-        Platform.runLater(() -> {
-            getChildren().clear(); // Clears the grid along with the controls
-    
-            try {
-                gridNumbers = getTable("data/sudoku/Example.txt");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-    
-            createSudokuGrid(); // Rebuilds the Sudoku grid
-    
-            // Recreate and add controls
-            Button solveButton = new Button("Solve Sudoku");
-            solveButton.setOnAction(e -> {
-                if (!solving) {
-                    solving = true;
-                    new Thread(() -> {
-                        solveSudoku(gridNumbers);
-                        solving = false;
-                    }).start();
-                }
-            });
-    
-            Button resetButton = new Button("Reset");
-            resetButton.setOnAction(e -> {
-                if (!solving) {
-                    resetGrid();
-                }
-            });
-    
-            VBox controls = new VBox(10, solveButton, resetButton, speedLabel, speedSlider);
-            controls.setAlignment(Pos.CENTER);
-            add(controls, 0, 9, 9, 1);
-        });
     }    
 
     int[][] getTable(String filename) throws FileNotFoundException { //getting values from the file
