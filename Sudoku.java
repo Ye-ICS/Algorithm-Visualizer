@@ -38,30 +38,45 @@ public class Sudoku extends GridPane {
     }
 
     private void showDifficultySelection() {
-
+        
+        StackPane container = new StackPane(); // Wrap VBox for centering
         VBox difficultySelection = new VBox(20);
         difficultySelection.setAlignment(Pos.CENTER);
-
+    
+        // Match Sudoku grid's window size
+        int width = 577;  // Match Sudoku width
+        int height = 740; // Match Sudoku height
+    
+        // Set window size to match the Sudoku UI
+        Platform.runLater(() -> {
+            getScene().getWindow().setWidth(width);
+            getScene().getWindow().setHeight(height);
+        });
+    
         // Label for the difficulty selection screen
         Label difficultyLabel = new Label("Choose Sudoku Difficulty");
         difficultyLabel.setFont(Font.font("Arial", FontWeight.BOLD, 40));
-        difficultySelection.getChildren().add(difficultyLabel);
-
+    
         Button easyButton = new Button("Easy");
         Button mediumButton = new Button("Medium");
         Button hardButton = new Button("Hard");
-
-        // Make the difficulty buttons larger
-        easyButton.setStyle("-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 100px;");
-        mediumButton.setStyle("-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 100px;");
-        hardButton.setStyle("-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 100px;");
-
+    
+        // Style buttons to be uniform
+        String buttonStyle = "-fx-font-size: 30px; -fx-pref-width: 300px; -fx-pref-height: 140px;";
+        easyButton.setStyle(buttonStyle);
+        mediumButton.setStyle(buttonStyle);
+        hardButton.setStyle(buttonStyle);
+    
         easyButton.setOnAction(e -> loadSudoku("data/sudoku/Easy.txt"));
         mediumButton.setOnAction(e -> loadSudoku("data/sudoku/Medium.txt"));
         hardButton.setOnAction(e -> loadSudoku("data/sudoku/Hard.txt"));
-
-        difficultySelection.getChildren().addAll(easyButton, mediumButton, hardButton);
-        add(difficultySelection, 0, 9, 9, 1);
+    
+        difficultySelection.getChildren().addAll(difficultyLabel, easyButton, mediumButton, hardButton);
+        container.getChildren().add(difficultySelection); // Center VBox inside StackPane
+    
+        // Ensure the entire StackPane itself is centered in the GridPane
+        setAlignment(Pos.CENTER);
+        add(container, 0, 9, 9, 1);
     }
 
     private void loadSudoku(String filename) {
