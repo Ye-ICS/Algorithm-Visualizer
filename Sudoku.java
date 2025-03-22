@@ -82,6 +82,7 @@ public class Sudoku extends GridPane {
     private void loadSudoku(String filename) {
 
         getChildren().clear(); // Clear difficulty buttons
+        isOriginal = new boolean[9][9]; // Reset isOriginal array
 
         try {
             gridNumbers = getTable(filename); 
