@@ -1,20 +1,25 @@
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.shape.Rectangle;
+
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.paint.Color;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Label;
-import javafx.scene.text.FontWeight;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+
 import javafx.application.Platform;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.scene.layout.VBox;
 
 public class Sudoku extends GridPane {
 
@@ -24,9 +29,9 @@ public class Sudoku extends GridPane {
 
     private Slider speedSlider; // Slider to control solving speed
     private Label speedLabel;   // Label to display speed control text
-    private volatile long stepDelay; //sleep time
+    private volatile long stepDelay; // Sleep time
 
-    private boolean solving = false; // keeps track of sudoku and checks if it is being solved or not
+    private boolean solving = false; // Keeps track of sudoku and checks if it is being solved or not (used for solve, reset and back button)
     
     public Sudoku() {
         showDifficultySelection();
@@ -67,15 +72,14 @@ public class Sudoku extends GridPane {
             gridNumbers = getTable(filename); 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            gridNumbers = new int[9][9];
         }
 
         createSudokuGrid();
         
         Button solveButton = new Button("Solve Sudoku");
-        solveButton.setOnAction(e -> { //cant press more than once
+        solveButton.setOnAction(e -> { 
             if (!solving) {
-                solving = true;
+                solving = true; // Cannot press more than once (to prevent being pressed during solving) 
                 new Thread(() -> {
                     solveSudoku(gridNumbers);
                     solving = false;
@@ -89,6 +93,19 @@ public class Sudoku extends GridPane {
                 loadSudoku(filename);
             }
         });
+
+        // Create a back button to go back to the difficulty selection screen
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            if (!solving) {
+                getChildren().clear(); 
+                showDifficultySelection(); // Show the difficulty selection screen again
+            }
+        });
+
+        // Align the back and reset buttons side by side in an HBox
+        HBox buttonBox = new HBox(10, resetButton, backButton);
+        buttonBox.setAlignment(Pos.CENTER);
 
         speedLabel = new Label("Speed Control");
         speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -105,11 +122,11 @@ public class Sudoku extends GridPane {
             stepDelay = (long)(15000 / Math.pow(3, speedFactor));
         });
 
-        // Default speed
+        // Default speed and start posiiton of timer
         speedSlider.setValue(10); 
         speedSlider.setValue(1);
 
-        VBox controls = new VBox(10, solveButton, resetButton, speedLabel, speedSlider);
+        VBox controls = new VBox(10, solveButton, buttonBox, speedLabel, speedSlider);
         controls.setAlignment(Pos.CENTER);
 
         add(controls, 0, 9, 9, 1);
