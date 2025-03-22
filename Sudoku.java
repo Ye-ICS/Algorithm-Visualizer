@@ -26,7 +26,7 @@ public class Sudoku extends GridPane {
     private Label speedLabel;   // Label to display speed control text
     private volatile long stepDelay; //sleep time
 
-    private volatile boolean solving = false; // Prevents multiple simultaneous executions
+    private boolean solving = false; // Prevents multiple simultaneous executions
 
     public Sudoku() {
         try {
