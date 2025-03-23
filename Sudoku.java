@@ -133,9 +133,11 @@ public class Sudoku extends GridPane {
         speedSlider.setMinorTickCount(0);
         speedSlider.setSnapToTicks(true);
 
-        speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+        speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> { //obs and oldVal are not used but are still needed for addListener
+            // Get the integer value of the new slider value to use as the speed factor
             int speedFactor = newVal.intValue();
-            stepDelay = (long)(15000 / Math.pow(3, speedFactor));
+            stepDelay = (long)(15000 / Math.pow(3, speedFactor)); 
+            // The formula adjusts the delay by dividing 15000 by 3 raised to the power of the speed factor. Exponential increase
         });
 
         // Default speed and start posiiton of timer
@@ -154,12 +156,13 @@ public class Sudoku extends GridPane {
 
         int[][] gridNumbers = new int[9][9];
 
-        for (int k = 0; k < 9; k++) {
+        // Split the row by commas to get individual values as strings and then parse it to integers to be stored in gridNumbers array
+        for (int i = 0; i < 9; i++) {
             String row = scanner.nextLine();
             String[] rowStrings = row.split(",");
 
             for (int j = 0; j < 9; j++) {
-                gridNumbers[k][j] = Integer.parseInt(rowStrings[j]); 
+                gridNumbers[i][j] = Integer.parseInt(rowStrings[j]); 
             }
         }
 
@@ -198,7 +201,6 @@ public class Sudoku extends GridPane {
                             cellStack.getChildren().add(text);
                             isOriginal[globalRow][globalCol] = true; // Mark as an original number
                         }
-   
                         innerGrid.add(cellStack, j, i);
                     }
                 }
@@ -228,7 +230,6 @@ public class Sudoku extends GridPane {
         {
             return backtrack(board, row + 1, 0); // Move to the next row
         }
-
         if (board[row][col] != 0) 
         {
             return backtrack(board, row, col + 1); // Skip filled cells
@@ -244,6 +245,7 @@ public class Sudoku extends GridPane {
                 boolean isLastCell = isLastCellToBeFilled(board, row, col);
                 updateCell(row, col, number, isLastCell);
     
+                // Recursively try to solve the next cell (move to the next column). If placing a number is possible in that cell, return true.
                 if (backtrack(board, row, col + 1)) {
                     return true; 
                 }
@@ -302,14 +304,12 @@ public class Sudoku extends GridPane {
     
                 // Reset all previously placed numbers to normal black
                 for (int i = 0; i < 9; i++) {
-                    for (int j = 0; j < 9; j++) {
-                        
+                    for (int j = 0; j < 9; j++) { 
                         if (!isOriginal[i][j] && cellStacks[i][j].getChildren().size() > 1) {
                             Text previousText = (Text) cellStacks[i][j].getChildren().get(1);
                             previousText.setFill(Color.BLACK);
                             previousText.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
                         }
-
                     }
                 }
 
@@ -329,7 +329,6 @@ public class Sudoku extends GridPane {
                         text.setFill(Color.GREEN);
                     }
                 }
-    
                 cellStack.getChildren().add(text);
             }
         });
@@ -343,7 +342,7 @@ public class Sudoku extends GridPane {
 
     private boolean isLastCellToBeFilled(int[][] board, int row, int col) {
         for (int i = row; i < 9; i++) {
-            for (int j = (i == row ? col : 0); j < 9; j++) {
+            for (int j = (i == row ? col : 0); j < 9; j++) { // If in the starting row, start from the given column; otherwise, start from the first column
                 if (board[i][j] == 0) {
                     return false; // More empty cells exist
                 }
