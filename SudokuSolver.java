@@ -5,6 +5,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.control.TextField;
 public class SudokuSolver extends FlowPane{
 
     
@@ -58,13 +59,20 @@ public class SudokuSolver extends FlowPane{
         board[8][4] = 5;
         board[8][7] = 4;
 
+
+    
+
+        TextField[][] fields = new TextField[9][9];
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
+
                 if(board[i][j] != 0){
-                    grid.add(new Text("" + board[i][j]), i, j);
+                    fields[i][j] = new TextField("" + board[i][j]);
+                    grid.add(fields[i][j], i, j);
                 }
                 else{
-                    grid.add(new Text("_"), i, j);
+                    fields[i][j] = new TextField("_");
+                    grid.add(fields[i][j], i, j);
                 }
             }
         }
@@ -74,13 +82,44 @@ public class SudokuSolver extends FlowPane{
         setAlignment(Pos.CENTER);
         Button backBtn = new Button("Back");
         Button start = new Button("start");
-        start.setOnAction(event -> solve(board));
+        start.setOnAction(event -> solve(board, 0,fields));
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
 
         getChildren().addAll(grid, backBtn, start);
 
     }
-    void solve(int board[][]){
+    static boolean solve(int board[][],int coordinate, TextField[][] fields){
+        System.out.println("coordinate: " + coordinate);
+        int x = coordinate / 9;
+        int y = coordinate % 9;
+        int new_coordinate = 0;
+        for(int i = coordinate + 1; i <= 80; i++){
+            if(board[i / 9][i % 9] <= 0){
+                new_coordinate = i;
+                break;
+            }
+        }
+        for(int i = 1; i <= 9; i++){
+            if(check(board, coordinate / 9, coordinate % 9, i)){
+                board[x][y] = -i;
+                fields[x][y].setText("" + Math.abs(board[x][y]));
+                if(coordinate == 80){
+                    System.out.println("done");
+                    return true;
+                }
+                
+                if(solve(board, new_coordinate, fields)){
+                    return true;
+                }
+            }
+            board[x][y] = 0;
+        }
+        if(coordinate == 0){
+            System.out.println("unsolvable");
+        }
+        return false;
+    }
+        /*
         int x = 0;
         int y = 0;
         int coordinate = 0;
@@ -91,8 +130,8 @@ public class SudokuSolver extends FlowPane{
             if(backtracking){
                 System.out.println("backtracking");
             }
-            x = coordinate % 9;
-            y = coordinate / 9;
+            x = coordinate / 9;
+            y = coordinate % 9;
             if(board[x][y] <= 0){
                 int previous = board[x][y];
                 board[x][y] = 0;
@@ -120,10 +159,11 @@ public class SudokuSolver extends FlowPane{
         
 
     }
+    */
     private static boolean check(int[][] board, int x, int y, int num){
         boolean provenFalse = false;
         for(int i = 0; i < 9; i++){
-            if(Math.abs(board[i][x]) == num || Math.abs(board[y][i]) == num || boxContains(board, x, y, num)){
+            if(Math.abs(board[x][i]) == num || Math.abs(board[i][y]) == num || boxContains(board, x, y, num)){
                 provenFalse = true;
                 break;
             }
@@ -138,7 +178,7 @@ public class SudokuSolver extends FlowPane{
     private static boolean boxContains(int[][] board, int x, int y, int num){
         // board[x][y]
         for(int i = 0; i < 9; i++){
-            if(Math.abs(board[x/3 * 3 + i % 3][y/3 * 3 + i / 3]) == num){
+            if(Math.abs(board[x/3 * 3 + i / 3][y/3 * 3 + i % 3]) == num){
                 return true;
             }
         }
