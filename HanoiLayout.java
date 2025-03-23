@@ -32,7 +32,7 @@ public class HanoiLayout extends FlowPane {
 
         Text description = new Text("Tower of Hanoi");
 
-        stepCounter = new Text("Steps: 0"); // Initialize step counter
+        stepCounter = new Text("Steps: 0");
 
         canvas = new Canvas(600, 200);
         gc = canvas.getGraphicsContext2D();
@@ -48,12 +48,12 @@ public class HanoiLayout extends FlowPane {
             gc.clearRect(0, 0, 600, 200);
             int numDisks = levelSpinner.getValue();
             drawDisks(numDisks);
-            generateMoves(numDisks, 0, 2, 1); // Generate move sequence
+            generateMoves(numDisks, 0, 2, 1);
             moveIndex = 0;
-            updateStepCounter(); // Reset step counter
+            updateStepCounter();
         });
 
-        nextStepBtn = new Button("Next Step"); // Store button reference
+        nextStepBtn = new Button("Next Step");
         nextStepBtn.setOnAction(event -> nextMove());
 
         getChildren().addAll(description, canvas, backBtn, setBtn, nextStepBtn, levelSpinner, stepCounter);
