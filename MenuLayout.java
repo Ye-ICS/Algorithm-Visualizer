@@ -32,7 +32,10 @@ class MenuLayout extends VBox {
         Button mergeSortBtn = new Button("Merge Sort");
         mergeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MergeSortLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, selectionSortBtn, quickSortBtn, mergeSortBtn);
+        Button bogoSortBtn = new Button("Bogo Sort");
+        bogoSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BogoSortLayout()));
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, selectionSortBtn, quickSortBtn, mergeSortBtn, bogoSortBtn);
         getChildren().addAll(title, buttonsBox);
     }
 }
