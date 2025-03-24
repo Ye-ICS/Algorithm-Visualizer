@@ -7,6 +7,7 @@ public class RecursiveDivisionW {
 
     /**
      * creates the initial grid for the Maze to be drawn on
+     * 
      * @param array The array containing the location of the grid elements
      * @return
      */
@@ -24,9 +25,10 @@ public class RecursiveDivisionW {
 
     /**
      * Method to draw the initial walls of the maze
+     * 
      * @param array The array containing the location of the grid elements
      * @param horiz The horizontal location of the wall
-     * @param vert The vertical location of the wall
+     * @param vert  The vertical location of the wall
      * @return
      */
     public static String[][] drawWalls(String[][] array, Integer horiz, Integer vert) {
@@ -55,33 +57,38 @@ public class RecursiveDivisionW {
 
     /**
      * the recursie method the draw the rest of the maze
+     * 
      * @param array The array containing the location of the grid elements
      * @param horiz The horizontal location of the original wall
-     * @param vert The vertical location of the original wall
+     * @param vert  The vertical location of the original wall
      * @return
      */
     public static String[][] drawMaze(String[][] array, Integer horiz, Integer vert) {
         // draw the maze
-        int randWidth = 1 + (int) (Math.random() * (horiz - 2 + 1));
-        int randHeight = 1 + (int) (Math.random() * (vert - 2 + 1));
+        int randWidth = 1 + (int) (Math.random() * (horiz - 3 + 1));
+        int randHeight = 1 + (int) (Math.random() * (vert - 3 + 1));
         int randNum;
-        boolean full = false;
-        do {
-            for (int i = 0; i < randWidth; i++) {
-                array[randHeight][i] = "-";
-            }
-            randNum = 1 + (int) (Math.random() * (randWidth - 2 + 1));
-            array[randHeight][randNum] = " ";
+        int remainingWidth = horiz - randWidth;
+        int remainingHeight = vert - randHeight;
 
-            for (int j = 0; j < randHeight; j++) {
-                array[j][randWidth] = "|";
-            }
-            randNum = 1 + (int) (Math.random() * (randHeight - 2 + 1));
-            array[randNum][randWidth] = " ";
+        for (int i = 0; i < randWidth; i++) {
+            array[randHeight][i] = "-";
+        }
+        randNum = 1 + (int) (Math.random() * (randWidth - 3 + 1));
+        array[randHeight][randNum] = " ";
 
-            array[randHeight][randWidth] = "+";
-            full = true;
-        } while (full == false);
+        for (int j = 0; j < randHeight; j++) {
+            array[j][randWidth] = "|";
+        }
+        randNum = 1 + (int) (Math.random() * (randHeight - 3 + 1));
+        array[randNum][randWidth] = " ";
+        array[randHeight][randWidth] = "+";
+
+        if (remainingHeight <= 2 || remainingWidth <= 2) {
+            return (array);
+        } else {
+            drawMaze(array, randWidth, randHeight);
+        }
         return (array);
     }
 
@@ -94,10 +101,10 @@ public class RecursiveDivisionW {
         int randVert = 1 + (int) (Math.random() * (HEIGHT - 2 + 1));
 
         RecursiveDivisionW.drawGrid(grid);
-        System.out.println(Arrays.deepToString(grid));
+        // System.out.println(Arrays.deepToString(grid));
 
         RecursiveDivisionW.drawWalls(grid, randHoriz, randVert);
-        System.out.println(Arrays.deepToString(grid));
+        // System.out.println(Arrays.deepToString(grid));
 
         RecursiveDivisionW.drawMaze(grid, randHoriz, randVert);
         System.out.println(Arrays.deepToString(grid));
