@@ -83,7 +83,7 @@ public class SudokuSolver extends FlowPane{
         Button backBtn = new Button("Back");
         Button start = new Button("start");
         Button resetBtn = new Button("reset");
-        start.setOnAction(event -> solve(board, 0,fields));
+        start.setOnAction(event -> {updateBoard(board, fields); solve(board, 0,fields);});
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
         resetBtn.setOnAction(event -> reset(board, fields));
 
@@ -96,6 +96,7 @@ public class SudokuSolver extends FlowPane{
         int y = coordinate % 9;
         int new_coordinate = 0;
         for(int i = coordinate + 1; i <= 80; i++){
+            updateGrid(board, fields);
             if(board[i / 9][i % 9] <= 0){
                 new_coordinate = i;
                 break;
@@ -104,8 +105,8 @@ public class SudokuSolver extends FlowPane{
         for(int i = 1; i <= 9; i++){
             if(check(board, coordinate / 9, coordinate % 9, i)){
                 board[x][y] = -i;
-                fields[x][y].setText("" + Math.abs(board[x][y]));
                 if(coordinate == 80){
+                    updateGrid(board, fields);
                     System.out.println("done");
                     return true;
                 }
@@ -191,19 +192,32 @@ public class SudokuSolver extends FlowPane{
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
                 board[i][j] = 0;
-                updateGrid(fields, board);
+                updateGrid(board, fields);
             }
         }
     }
-    private static void updateGrid(TextField[][] fields, int[][] board){
+    private static void updateGrid(int[][] board, TextField[][] fields){
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
                 if(Math.abs(board[i][j]) > 0){
-                    fields[i][j].setText("" + board[i][j]);
+                    fields[i][j].setText("" + Math.abs(board[i][j]));
                 }
                 else{
                     fields[i][j].setText("_");
                 }
+            }
+        }
+    }
+    private static void updateBoard(int[][] board, TextField[][] fields){
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                try{
+                    board[i][j] = Integer.parseInt(fields[i][j].getText());
+                }
+                catch(Exception e){
+                    board[i][j] = 0;
+                }
+
             }
         }
     }
