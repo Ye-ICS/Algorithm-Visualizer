@@ -82,10 +82,12 @@ public class SudokuSolver extends FlowPane{
         setAlignment(Pos.CENTER);
         Button backBtn = new Button("Back");
         Button start = new Button("start");
+        Button resetBtn = new Button("reset");
         start.setOnAction(event -> solve(board, 0,fields));
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        resetBtn.setOnAction(event -> reset(board, fields));
 
-        getChildren().addAll(grid, backBtn, start);
+        getChildren().addAll(grid, backBtn, start, resetBtn);
 
     }
     static boolean solve(int board[][],int coordinate, TextField[][] fields){
@@ -184,6 +186,26 @@ public class SudokuSolver extends FlowPane{
         }
         return false;
 
+    }
+    private static void reset(int[][] board, TextField[][] fields){
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                board[i][j] = 0;
+                updateGrid(fields, board);
+            }
+        }
+    }
+    private static void updateGrid(TextField[][] fields, int[][] board){
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                if(Math.abs(board[i][j]) > 0){
+                    fields[i][j].setText("" + board[i][j]);
+                }
+                else{
+                    fields[i][j].setText("_");
+                }
+            }
+        }
     }
     
 }
