@@ -2,8 +2,14 @@ import java.util.Arrays;
 
 public class RecursiveDivisionW {
 
-    private static final Integer WIDTH = 10;
-    private static final Integer HEIGHT = 10;
+    private static final Integer WIDTH = 20;
+    private static final Integer HEIGHT = 20;
+
+    /**
+     * creates the initial grid for the Maze to be drawn on
+     * @param array The array containing the location of the grid elements
+     * @return
+     */
 
     public static String[][] drawGrid(String[][] array) {
         // draw a grid
@@ -16,6 +22,13 @@ public class RecursiveDivisionW {
         return (array);
     }
 
+    /**
+     * Method to draw the initial walls of the maze
+     * @param array The array containing the location of the grid elements
+     * @param horiz The horizontal location of the wall
+     * @param vert The vertical location of the wall
+     * @return
+     */
     public static String[][] drawWalls(String[][] array, Integer horiz, Integer vert) {
         // draw the walls
         int randNum;
@@ -40,6 +53,13 @@ public class RecursiveDivisionW {
         return (array);
     }
 
+    /**
+     * the recursie method the draw the rest of the maze
+     * @param array The array containing the location of the grid elements
+     * @param horiz The horizontal location of the original wall
+     * @param vert The vertical location of the original wall
+     * @return
+     */
     public static String[][] drawMaze(String[][] array, Integer horiz, Integer vert) {
         // draw the maze
         int randWidth = 1 + (int) (Math.random() * (horiz - 2 + 1));
@@ -65,6 +85,9 @@ public class RecursiveDivisionW {
         return (array);
     }
 
+    /**
+     * Main method to run the program in the terminal
+     */
     public static void main(String[] args) {
         String[][] grid = new String[WIDTH][HEIGHT];
         int randHoriz = 1 + (int) (Math.random() * (WIDTH - 2 + 1));
@@ -81,7 +104,6 @@ public class RecursiveDivisionW {
     }
 }
 
-// need to go down into 1 of the 4 new quadrants
 // need to repeat the process
 // need to stop when when its like 3 or 4 levels in
 // needs to go back then do same for any spaces in the original subchamber
