@@ -119,47 +119,6 @@ public class SudokuSolver extends FlowPane{
         }
         return false;
     }
-        /*
-        int x = 0;
-        int y = 0;
-        int coordinate = 0;
-        boolean backtracking = false;
-        boolean condition = true;
-        while(condition){
-            System.out.println("step " + coordinate);
-            if(backtracking){
-                System.out.println("backtracking");
-            }
-            x = coordinate / 9;
-            y = coordinate % 9;
-            if(board[x][y] <= 0){
-                int previous = board[x][y];
-                board[x][y] = 0;
-                backtracking = true;
-               for(int i = Math.abs(board[x][y]) + 1; i <= 9; i++){
-                   if(check(board, x, y, i)){
-                       board[x][y] = -i;
-                       backtracking = false;
-                       if(coordinate == 80){
-                           System.out.println("done\n");
-                            condition = false;
-                       }
-                   }
-               }
-               if(board[x][y] == previous){
-                   backtracking = true;
-               }
-
-            }
-            if(backtracking){
-                coordinate-=2;
-            }
-            coordinate++; 
-        }
-        
-
-    }
-    */
     private static boolean check(int[][] board, int x, int y, int num){
         boolean provenFalse = false;
         for(int i = 0; i < 9; i++){
@@ -176,7 +135,6 @@ public class SudokuSolver extends FlowPane{
     }
 
     private static boolean boxContains(int[][] board, int x, int y, int num){
-        // board[x][y]
         for(int i = 0; i < 9; i++){
             if(Math.abs(board[x/3 * 3 + i / 3][y/3 * 3 + i % 3]) == num){
                 return true;
