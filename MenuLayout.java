@@ -25,9 +25,6 @@ class MenuLayout extends VBox {
         Button bubbleSortBtn = new Button("Bubble Sort");
         bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
-        getChildren().addAll(title, buttonsBox);
-
         Button sudokuSolverbtn = new Button("Sudoku solver");
 
         sudokuSolverbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SudokuSolver()));
