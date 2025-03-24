@@ -13,11 +13,13 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class VisualSortingAlgorithms extends BorderPane {
     boolean firstRender;
+    boolean sorted;
     int lowestLocation;
     int lowestValue = 500;
     int selectedLocation;
     int recentlySorted;
     int numSorted;
+    int timer;
 
     int[] values;
 
@@ -28,13 +30,21 @@ public class VisualSortingAlgorithms extends BorderPane {
         Label valueLabel = new Label("");
         Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 32, 1);
         valueSpinner.setEditable(true);
+
         Button submitBtn = new Button();
         submitBtn.setText("Submit");
         submitBtn.setOnAction(event -> onSubmitPress(canvas, valueSpinner.getValue()));
 
-        Label timeLabel = new Label("                                ");
-        Spinner<Integer> timeSpinner = new Spinner<Integer>(2, 32, 1);
+        Label formatLabel = new Label("                   ");
+
+        Spinner<Integer> timeSpinner = new Spinner<Integer>(1, 10, 1);
         timeSpinner.setEditable(true);
+
+        /*Button startBtn = new Button();
+        startBtn.setText("Start");
+        startBtn.setOnAction(event -> {
+            onStartPress(canvas, timeSpinner.getValue(), valueSpinner.getValue());
+        });*/
 
         Button stepBtn = new Button();
         stepBtn.setText("Step");
@@ -43,12 +53,13 @@ public class VisualSortingAlgorithms extends BorderPane {
         setBottom(selectionBox);
         setCenter(canvas);
 
-        selectionBox.getChildren().addAll(valueLabel, valueSpinner, submitBtn, timeLabel, timeSpinner, stepBtn);
+        selectionBox.getChildren().addAll(valueLabel, valueSpinner, submitBtn, formatLabel, timeSpinner, stepBtn);
     }
 
     /**
      * describe
-     * @param canvas 
+     * 
+     * @param canvas
      * @param valueSpinner spiiner containing how many bars to render
      */
     void onSubmitPress(Canvas canvas, int count) {
@@ -59,8 +70,13 @@ public class VisualSortingAlgorithms extends BorderPane {
         firstRender = false;
     }
 
+    /*void onStartPress(Canvas canvas, int time, int count) {
+        while (!sorted) {
+            selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
+        }
+    }*/
+
     void onStepPress(Canvas canvas, int count) {
-        firstRender = false;
         selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
     }
 
@@ -95,12 +111,16 @@ public class VisualSortingAlgorithms extends BorderPane {
     }
 
     void selectionSort(Canvas canvas, int count, GraphicsContext graphicsContext, int[] values) {
-
+        if (numSorted == values.length) {
+            sorted = true;
+        }
         if (selectedLocation == values.length) {
-            /* for (int i = lowestLocation; i > 0; i--) {
-                values[i] = values[i - i];
+            for (int i = lowestLocation; i > numSorted; i--) {
+                values[i] = values[i - 1];
             }
-            values[0] = lowestValue; */
+            values[numSorted] = lowestValue;
+            recentlySorted = numSorted;
+            lowestValue = 500;
             numSorted++;
             selectedLocation = numSorted;
         }
