@@ -98,12 +98,7 @@ class BogoSortLayout extends BorderPane {
         barCountSlider.setShowTickMarks(true);
         barCountSlider.setMajorTickUnit(5);
         barCountSlider.setBlockIncrement(1);
-        
-        // Warning for high bar counts
-        Label warningLabel = new Label("⚠️ Warning: High bar counts may never complete!");
-        warningLabel.setTextFill(Color.RED);
-        warningLabel.setWrapText(true);
-        
+    
         Button applyBarCountBtn = new Button("Apply");
         applyBarCountBtn.setOnAction(event -> initializeBars((int)barCountSlider.getValue()));
         
@@ -126,16 +121,13 @@ class BogoSortLayout extends BorderPane {
         Label instructionsLabel = new Label("Click on a bar to select it\nDrag the top of a bar to resize it");
         instructionsLabel.setWrapText(true);
         
-        // Explanation of BogoSort
-        Label explanationLabel = new Label("BogoSort randomly shuffles the elements until they happen to be sorted - extremely inefficient but fun to watch!");
-        explanationLabel.setWrapText(true);
         
         panel.getChildren().addAll(
             speedLabel, speedSlider,
-            barCountLabel, barCountSlider, warningLabel, applyBarCountBtn,
+            barCountLabel, barCountSlider, applyBarCountBtn,
             customValueLabel, customValueField, applyValueBtn,
             stepCounterLabel, shuffleCounterLabel,
-            instructionsLabel, explanationLabel
+            instructionsLabel
         );
         
         return panel;
