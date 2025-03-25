@@ -22,7 +22,7 @@ public class VisualSortingAlgorithms extends BorderPane {
     boolean blankRender;
     boolean sorted;
     int lowestLocation;
-    int lowestValue = 500;
+    int lowestValue = 600;
     int selectedLocation;
     int recentlySorted;
     int numSorted;
@@ -32,16 +32,16 @@ public class VisualSortingAlgorithms extends BorderPane {
 
     VisualSortingAlgorithms() {
         FlowPane selectionBox = new FlowPane();
-        Canvas canvas = new Canvas(500, 500);
+        Canvas canvas = new Canvas(1100, 500);
 
         Label valueLabel = new Label("");
-        Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 32, 1);
+        Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 100, 1);
         valueSpinner.setEditable(true);
 
         Spinner<Integer> timeSpinner = new Spinner<Integer>(1, 10, 1);
         timeSpinner.setEditable(true);
 
-        autoSort = new Timeline(new KeyFrame(Duration.millis(25),
+        autoSort = new Timeline(new KeyFrame(Duration.millis(10),
                 event -> selectionSort(canvas, valueSpinner.getValue(), canvas.getGraphicsContext2D(), values)));
         autoSort.setCycleCount(Timeline.INDEFINITE);
 
@@ -109,6 +109,8 @@ public class VisualSortingAlgorithms extends BorderPane {
             sorted = true;
         } else {
             autoSort.stop();
+            blankRender = true;
+            renderBars(canvas, count, canvas.getGraphicsContext2D(), values);
         }
     }
 
@@ -117,7 +119,7 @@ public class VisualSortingAlgorithms extends BorderPane {
         for (int i = 0; i < values.length; i++) {
             if ((selectedLocation == i || lowestLocation == i) && !blankRender && !sorted) {
                 graphicsContext.setFill(Color.RED);
-            } else if ((recentlySorted == i && !blankRender) || sorted && i <= selectedLocation) {
+            } else if ((recentlySorted == i && !blankRender) || sorted && i <= selectedLocation && !blankRender) {
                 graphicsContext.setFill(Color.GREEN);
             } else {
                 graphicsContext.setFill(Color.BLACK);
