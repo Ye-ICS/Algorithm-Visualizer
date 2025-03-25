@@ -2,8 +2,8 @@ import java.util.Arrays;
 
 public class RecursiveDivisionW {
 
-    private static final Integer WIDTH = 10;
-    private static final Integer HEIGHT = 10;
+    private static final Integer WIDTH = 20;
+    private static final Integer HEIGHT = 20;
 
     /**
      * creates the initial grid for the Maze to be drawn on
@@ -65,8 +65,8 @@ public class RecursiveDivisionW {
      */
     public static String[][] drawMaze(String[][] array, Integer horiz, Integer vert, Integer quadrant) {
         // draw the maze
-        int vertLine = 1 + (int) (Math.random() * (horiz - 3 + 1)); // vertical line
-        int horizLine = 1 + (int) (Math.random() * (vert - 3 + 1)); // horizontal line
+        int vertLine = 2 + (int) (Math.random() * (horiz - 3 + 1)); // vertical line
+        int horizLine = 2 + (int) (Math.random() * (vert - 3 + 1)); // horizontal line
         int randNum;
         int remainingWidth = horiz - vertLine;
         int remainingHeight = vert - horizLine;
@@ -76,9 +76,15 @@ public class RecursiveDivisionW {
             horizLine = 2 + (int) (Math.random() * ((vert - 2) - 2 + 1)); // horizontal line
             remainingWidth = vertLine - horiz;
         } else if (quadrant == 3) {
-            //
+            vertLine = (WIDTH + 2) + (int) (Math.random() * ((vert - 2) - (WIDTH + 2) + 1)); // vertical line
+            horizLine = (horiz + 2) + (int) (Math.random() * ((HEIGHT - 2) - (horiz + 2) + 1)); // horizontal line
+            remainingWidth = vertLine - horiz;
+            remainingHeight = horizLine - vert;
         } else if (quadrant == 4) {
-            //
+            vertLine = (vert + 2) + (int) (Math.random() * ((WIDTH - 2) - (vert + 2) + 1)); // vertical line
+            horizLine = (horiz + 2) + (int) (Math.random() * ((HEIGHT - 2) - (horiz + 2) + 1)); // horizontal line
+            remainingWidth = vertLine - horiz;
+            remainingHeight = horizLine - vert;
         }
 
         for (int i = 0; i < vertLine; i++) {
