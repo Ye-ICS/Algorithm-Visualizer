@@ -16,7 +16,7 @@ public class Maze extends BorderPane {
 
         Button backBtn = new Button("Back");
         Button runBtn = new Button("run");
-        FlowPane bottomPannel = new FlowPane(backBtn, runBtn);
+        FlowPane topPannel = new FlowPane(backBtn, runBtn);
         
         int nodeSize = 25;
         int[] x = new int[mazeSize / nodeSize];
@@ -66,7 +66,7 @@ public class Maze extends BorderPane {
         }
 
         setCenter(stack);
-        setBottom(bottomPannel);
+        setTop(topPannel);
 
         backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
         runBtn.setOnAction(event -> {
