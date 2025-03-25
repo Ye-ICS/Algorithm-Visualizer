@@ -72,9 +72,13 @@ public class Sudoku extends GridPane {
         mediumButton.setOnAction(e -> loadSudoku("data/sudoku/Medium.txt"));
         hardButton.setOnAction(e -> loadSudoku("data/sudoku/Hard.txt"));
     
-        difficultySelection.getChildren().addAll(difficultyLabel, easyButton, mediumButton, hardButton);
-        container.getChildren().add(difficultySelection); // Center VBox inside StackPane
+        Button backButton = new Button("Back to Menu");
+        backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        backButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 160px; -fx-background-color: #FF4500; -fx-text-fill: white;");
     
+        difficultySelection.getChildren().addAll(difficultyLabel, easyButton, mediumButton, hardButton, backButton);
+        container.getChildren().add(difficultySelection); // Center VBox inside StackPane
+
         // Ensure the entire StackPane itself is centered in the GridPane
         setAlignment(Pos.CENTER);
         add(container, 0, 9, 9, 1);
