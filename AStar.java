@@ -402,7 +402,7 @@ public class AStar extends BorderPane {
         progressSlider.setDisable(true);
         
         PriorityQueue<Cell> openList = new PriorityQueue<>(
-                Comparator.comparingDouble(c -> c.distance + heuristic(c, end))); //Decides which node to access
+                Comparator.comparingDouble(c -> c.distance * 0.9 + heuristic(c, end))); //Decides which node to access
         Set<Cell> openSet = new HashSet<>(); // For tracking open nodes more efficiently
         Set<Cell> closedSet = new HashSet<>();
 
@@ -480,7 +480,7 @@ public class AStar extends BorderPane {
 
                 double tentativeG = current.distance + 1; // Assuming uniform cost for moving to a neighbor
 
-                if (tentativeG < neighbor.distance) {
+                if (tentativeG <= neighbor.distance) {
                     neighbor.distance = tentativeG;
                     neighbor.parent = current;
                     if (!openSet.contains(neighbor)) {
@@ -620,7 +620,7 @@ public class AStar extends BorderPane {
                 // Double.MAX_VALUE)
                 if (neighbor.distance != Double.MAX_VALUE) {
                     double heuristicValue = heuristic(neighbor, endNode);
-                    text.setText(String.format("%.1f", neighbor.distance + heuristicValue));
+                    text.setText(String.format("%.1f", neighbor.distance * 0.9 + heuristicValue));
                 } else {
                     text.setText(""); // Leave the text empty for unscanned nodes
                 }
