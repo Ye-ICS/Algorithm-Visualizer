@@ -159,7 +159,7 @@ class MergeSortLayout extends BorderPane {
         
         Button backBtn = new Button("Back");
         backBtn.setPrefSize(100, 30);
-        backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        backBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MaximMenuLayout()));
         
         Button startBtn = new Button("Start Sorting");
         startBtn.setPrefSize(150, 30);
