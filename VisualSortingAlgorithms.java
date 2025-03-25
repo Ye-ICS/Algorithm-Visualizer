@@ -1,5 +1,6 @@
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -8,11 +9,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
+
+import java.security.Key;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 public class VisualSortingAlgorithms extends BorderPane {
-    boolean firstRender;
+    boolean blankRender;
     boolean sorted;
     int lowestLocation;
     int lowestValue = 500;
@@ -20,7 +27,7 @@ public class VisualSortingAlgorithms extends BorderPane {
     int recentlySorted;
     int numSorted;
     int timer;
-
+    Timeline autoSort;
     int[] values;
 
     VisualSortingAlgorithms() {
@@ -31,52 +38,52 @@ public class VisualSortingAlgorithms extends BorderPane {
         Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 32, 1);
         valueSpinner.setEditable(true);
 
-        Button submitBtn = new Button();
-        submitBtn.setText("Submit");
-        submitBtn.setOnAction(event -> onSubmitPress(canvas, valueSpinner.getValue()));
-
-        Label formatLabel = new Label("                   ");
-
         Spinner<Integer> timeSpinner = new Spinner<Integer>(1, 10, 1);
         timeSpinner.setEditable(true);
 
-        /*Button startBtn = new Button();
+        autoSort = new Timeline(new KeyFrame(Duration.millis(25),
+                event -> selectionSort(canvas, valueSpinner.getValue(), canvas.getGraphicsContext2D(), values)));
+        autoSort.setCycleCount(Timeline.INDEFINITE);
+
+        Button submitBtn = new Button();
+        submitBtn.setText("Create");
+        submitBtn.setOnAction(event -> onCreatePress(canvas, valueSpinner.getValue(), autoSort, submitBtn));
+
+        Label formatLabel = new Label("                   ");
+
+        Button startBtn = new Button();
         startBtn.setText("Start");
         startBtn.setOnAction(event -> {
-            onStartPress(canvas, timeSpinner.getValue(), valueSpinner.getValue());
-        });*/
-
-        Button stepBtn = new Button();
-        stepBtn.setText("Step");
-        stepBtn.setOnAction(event -> onStepPress(canvas, valueSpinner.getValue()));
+            onStartPress(canvas, timeSpinner.getValue(), valueSpinner.getValue(), autoSort);
+        });
 
         setBottom(selectionBox);
         setCenter(canvas);
 
-        selectionBox.getChildren().addAll(valueLabel, valueSpinner, submitBtn, formatLabel, timeSpinner, stepBtn);
+        selectionBox.getChildren().addAll(valueLabel, valueSpinner, submitBtn, formatLabel, timeSpinner, startBtn);
     }
 
     /**
      * describe
      * 
      * @param canvas
+     * @param submitBtn
      * @param valueSpinner spiiner containing how many bars to render
      */
-    void onSubmitPress(Canvas canvas, int count) {
-        firstRender = true;
+    void onCreatePress(Canvas canvas, int count, Timeline autoSort, Button submitBtn) {
+        sorted = false;
+        autoSort.stop();
+        blankRender = true;
+        submitBtn.setText("Reset");
         values = generateValues(canvas, count);
         resetSort();
         renderBars(canvas, count, canvas.getGraphicsContext2D(), values);
-        firstRender = false;
+        blankRender = false;
     }
 
-    /*void onStartPress(Canvas canvas, int time, int count) {
-        while (!sorted) {
-            selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
-        }
-    }*/
-
-    void onStepPress(Canvas canvas, int count) {
+    void onStartPress(Canvas canvas, int time, int count, Timeline autoSort) {
+        autoSort.stop();
+        autoSort.play();
         selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
     }
 
@@ -96,12 +103,21 @@ public class VisualSortingAlgorithms extends BorderPane {
         numSorted = 0;
     }
 
+    void checkSort(Timeline autoSort, Canvas canvas, int count) {
+        if (!sorted) {
+            resetSort();
+            sorted = true;
+        } else {
+            autoSort.stop();
+        }
+    }
+
     void renderBars(Canvas canvas, int count, GraphicsContext graphicsContext, int[] values) {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (int i = 0; i < values.length; i++) {
-            if ((selectedLocation == i || lowestLocation == i) && !firstRender) {
+            if ((selectedLocation == i || lowestLocation == i) && !blankRender && !sorted) {
                 graphicsContext.setFill(Color.RED);
-            } else if (recentlySorted == i && !firstRender) {
+            } else if ((recentlySorted == i && !blankRender) || sorted && i <= selectedLocation) {
                 graphicsContext.setFill(Color.GREEN);
             } else {
                 graphicsContext.setFill(Color.BLACK);
@@ -111,26 +127,27 @@ public class VisualSortingAlgorithms extends BorderPane {
     }
 
     void selectionSort(Canvas canvas, int count, GraphicsContext graphicsContext, int[] values) {
-        if (numSorted == values.length) {
-            sorted = true;
+        if (numSorted == values.length - 1 || selectedLocation == values.length && sorted) {
+            checkSort(autoSort, canvas, count);
         }
-        if (selectedLocation == values.length) {
-            for (int i = lowestLocation; i > numSorted; i--) {
-                values[i] = values[i - 1];
+        if (!sorted) {
+            if (selectedLocation == values.length) {
+                for (int i = lowestLocation; i > numSorted; i--) {
+                    values[i] = values[i - 1];
+                }
+                values[numSorted] = lowestValue;
+                recentlySorted = numSorted;
+                lowestValue = 500;
+                numSorted++;
+                selectedLocation = numSorted;
             }
-            values[numSorted] = lowestValue;
-            recentlySorted = numSorted;
-            lowestValue = 500;
-            numSorted++;
-            selectedLocation = numSorted;
-        }
-        if (values[selectedLocation] < lowestValue) {
-            lowestValue = values[selectedLocation];
-            lowestLocation = selectedLocation;
+            if (values[selectedLocation] < lowestValue) {
+                lowestValue = values[selectedLocation];
+                lowestLocation = selectedLocation;
+            }
         }
         renderBars(canvas, count, canvas.getGraphicsContext2D(), values);
         selectedLocation++;
-        System.out.println(selectedLocation);
     }
 }
 /*
