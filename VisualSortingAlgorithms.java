@@ -21,14 +21,23 @@ import javafx.scene.canvas.GraphicsContext;
 public class VisualSortingAlgorithms extends BorderPane {
     boolean blankRender;
     boolean sorted;
+
     int lowestLocation;
     int lowestValue = 500;
     int selectedLocation;
     int recentlySorted;
     int numSorted;
-    int timer;
+
     Timeline autoSort;
     int[] values;
+
+    boolean selectionSort;
+    boolean bubbleSort;
+    boolean shakerSort;
+    boolean insertionSort;
+    boolean mergeSort;
+    boolean quickSort;
+    boolean timSort;
 
     VisualSortingAlgorithms() {
         FlowPane selectionBox = new FlowPane();
@@ -38,10 +47,10 @@ public class VisualSortingAlgorithms extends BorderPane {
         Spinner<Integer> valueSpinner = new Spinner<Integer>(2, 100, 1);
         valueSpinner.setEditable(true);
 
-        Spinner<Integer> timeSpinner = new Spinner<Integer>(1, 10, 1);
+        Spinner<Integer> timeSpinner = new Spinner<Integer>(1, 5, 1);
         timeSpinner.setEditable(true);
 
-        autoSort = new Timeline(new KeyFrame(Duration.millis(100), //lowest = .0833
+        autoSort = new Timeline(new KeyFrame(Duration.millis(100), // lowest = .0833
                 event -> selectionSort(canvas, valueSpinner.getValue(), canvas.getGraphicsContext2D(), values)));
         autoSort.setCycleCount(Timeline.INDEFINITE);
 
@@ -51,16 +60,16 @@ public class VisualSortingAlgorithms extends BorderPane {
 
         Label formatLabel = new Label("                   ");
 
-        Button startBtn = new Button();
-        startBtn.setText("Start");
-        startBtn.setOnAction(event -> {
-            onStartPress(canvas, timeSpinner.getValue(), valueSpinner.getValue(), autoSort);
+        Button selSortBtn = new Button();
+        selSortBtn.setText("Selection Sort");
+        selSortBtn.setOnAction(event -> {
+            onSortPress(canvas, timeSpinner.getValue(), valueSpinner.getValue(), autoSort);
         });
 
         setBottom(selectionBox);
         setCenter(canvas);
 
-        selectionBox.getChildren().addAll(valueLabel, valueSpinner, createBtn, formatLabel, timeSpinner, startBtn);
+        selectionBox.getChildren().addAll(valueLabel, valueSpinner, createBtn, formatLabel, timeSpinner, selSortBtn);
     }
 
     void onCreatePress(Canvas canvas, int count, Timeline autoSort, Button createBtn) {
@@ -95,10 +104,41 @@ public class VisualSortingAlgorithms extends BorderPane {
         }
     }
 
-    void onStartPress(Canvas canvas, int time, int count, Timeline autoSort) {
-        autoSort.stop();
-        autoSort.play();
-        selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
+    void onSortPress(Canvas canvas, int time, int count, Timeline autoSort) {
+        if (!sorted) {
+            autoSort.stop();
+            if (time == 1) {
+                autoSort.setRate(time);
+            } else if (time == 2) {
+                autoSort.setRate(5);
+            } else if (time == 3) {
+                autoSort.setRate(25);
+            } else if (time == 4) {
+                autoSort.setRate(100);
+            } else {
+                autoSort.setRate(2147483647);
+            }
+            autoSort.play();
+            selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
+        }
+    }
+
+    void manageSort(Canvas canvas, int count) {
+        if (selectionSort) {
+            selectionSort(canvas, count, canvas.getGraphicsContext2D(), values);
+        } else if (bubbleSort) {
+
+        } else if (shakerSort) {
+
+        } else if (insertionSort) {
+
+        } else if (mergeSort) {
+
+        } else if (quickSort) {
+
+        } else if (timSort) {
+
+        }
     }
 
     void selectionSort(Canvas canvas, int count, GraphicsContext graphicsContext, int[] values) {
@@ -141,7 +181,6 @@ public class VisualSortingAlgorithms extends BorderPane {
             autoSort.stop();
             blankRender = true;
             renderBars(canvas, count, canvas.getGraphicsContext2D(), values);
+        }
     }
 }
-}
-
