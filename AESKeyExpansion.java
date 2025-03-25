@@ -97,6 +97,7 @@ public class AESKeyExpansion extends VBox {
         fadeIn.play();  
     }  
     
+    @SuppressWarnings("unused")
     private HBox createNavigationButtons() {  
         HBox buttonBar = new HBox(20);  
         buttonBar.setAlignment(Pos.CENTER);  
