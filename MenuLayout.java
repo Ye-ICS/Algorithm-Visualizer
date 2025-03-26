@@ -28,8 +28,12 @@ class MenuLayout extends VBox {
         Button aStarBtn = new Button("A*");
         aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
 
+        
+        Button mazeSortBtn = new Button("Maze Solver - Declan");
+        mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
+        
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn);
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, mazeSortBtn);
         getChildren().addAll(title, buttonsBox);
     }
 }
