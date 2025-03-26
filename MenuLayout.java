@@ -32,7 +32,8 @@ class MenuLayout extends VBox {
 
         AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
 
-        buttonsBox.getChildren().addAll(AESBtn, bubbleSortBtn);
+        buttonsBox.getChildren().addAll(bubbleSortBtn);
+        buttonsBox.getChildren().addAll(AESBtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
