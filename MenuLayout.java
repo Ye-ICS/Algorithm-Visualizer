@@ -58,7 +58,7 @@ class MenuLayout extends VBox {
         recursiveDivisionBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new RecursiveDivisionLayout()));
         
         
-        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn, recursiveDivisionBtn);
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn, recursiveDivisionBtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
