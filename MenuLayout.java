@@ -36,6 +36,9 @@ class MenuLayout extends VBox {
         Button sudokuBtn = new Button("Sudoku Solver");
         sudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Sudoku()));
         
+        Button mazeBtn = new Button("Maze Generator");
+        mazeBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Maze()));
+
         Button aStarBtn = new Button("A*");
         aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
         
