@@ -53,19 +53,12 @@ class MenuLayout extends VBox {
         
         Button mazeSortBtn = new Button("Maze Solver - Declan");
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
-        
-        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn);
-        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn);
 
-        buttonsBox.getChildren().add(mazeSortBtn);
-        
         Button recursiveDivisionBtn = new Button("Recursive Division");
-        // fix this to properly call the RecursiveDivisionLayout
         recursiveDivisionBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new RecursiveDivisionLayout()));
+        
+        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, sudokuBtn, Maximbtn, recursiveDivisionBtn);
 
-
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
-        buttonsBox.getChildren().addAll(recursiveDivisionBtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
