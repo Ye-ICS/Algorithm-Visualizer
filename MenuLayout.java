@@ -5,33 +5,49 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-
 /**
- * Custom layout based on VBox for a menu to select which algorithm to visualize.
+ * Custom layout based on VBox for a menu to select which algorithm to
+ * visualize.
  */
 class MenuLayout extends VBox {
     /**
      * Basic constructor, initializes the menu with a button to each algorithm.
      */
+    @SuppressWarnings("unused")
     MenuLayout() {
         setAlignment(Pos.CENTER);
 
         Text title = new Text("Algorithm Visualizer");
         title.setFont(Font.font(24));
-        
+
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
         Button bubbleSortBtn = new Button("Bubble Sort");
-        bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
+        Button AESBtn = new Button("Advanced Encryption Standard algorithm");
+        AESBtn.setMinSize(300, 50);
+        AESBtn.setOnAction(event -> {
+            FXUtils.setSceneRoot(getScene(), new AEStart());
+        });
 
         Button sudokuSolverbtn = new Button("Sudoku solver");
 
-        sudokuSolverbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SudokuSolver()));
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn);
         buttonsBox.getChildren().addAll(sudokuSolverbtn);
+        AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
+
+
+        Button aStarBtn = new Button("A*");
+        aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
+        
+        Button mazeSortBtn = new Button("Maze Solver - Declan");
+        mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
+
+        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, sudokuSolverbtn);
         getChildren().addAll(title, buttonsBox);
+
+        // Load CSS file
+        getStylesheets().add(getClass().getResource("css/AEStyling.css").toExternalForm());
     }
 
 }
