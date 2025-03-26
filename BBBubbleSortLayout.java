@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-class BubbleSortLayout extends BorderPane {
+class BBBubbleSortLayout extends BorderPane {
     private List<Rectangle> bars = new ArrayList<>();
     private List<Integer> values = new ArrayList<>();
     private Timeline timeline;
@@ -39,7 +39,7 @@ class BubbleSortLayout extends BorderPane {
     private double dragStartY;
     private double barStartHeight;
 
-    BubbleSortLayout() {
+    BBBubbleSortLayout() {
         setPrefSize(800, 600); // Size for entire layout
 
         Text title = new Text("Bubble Sort");

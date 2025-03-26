@@ -21,7 +21,7 @@ class MaximMenuLayout extends VBox {
 
         // Buttons for each sorting algorithm
         Button bubbleSortBtn = new Button("Bubble Sort");
-        bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
+        bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BBBubbleSortLayout()));
 
         Button selectionSortBtn = new Button("Selection Sort");
         selectionSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SelectionSortLayout()));
