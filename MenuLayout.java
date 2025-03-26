@@ -23,14 +23,16 @@ class MenuLayout extends VBox {
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
+        Button bubbleSortBtn = new Button("Bubble Sort");
         Button AESBtn = new Button("Advanced Encryption Standard algorithm");
         AESBtn.setMinSize(300, 50);
         AESBtn.setOnAction(event -> {
             FXUtils.setSceneRoot(getScene(), new AEStart());
         });
+
         AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
 
-        buttonsBox.getChildren().add(AESBtn);
+        buttonsBox.getChildren().addAll(AESBtn, bubbleSortBtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
