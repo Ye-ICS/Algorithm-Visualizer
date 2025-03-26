@@ -1,0 +1,32 @@
+.StartButton {
+    -fx-font-size: 18px;
+    -fx-text-fill: rgb(0, 0, 0); /* White text for contrast */
+    -fx-background-color: #4CAF50; /* Fresh Green for a modern look */
+    -fx-background-radius: 15px;
+    -fx-padding: 80px 20px 20px 20px; /* More padding on top */
+    -fx-background-image: none; /* Remove background image */
+    -fx-border-width: 0;
+    -fx-background-image: url("../images/YK/playButton.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center top 10px; /* Move image higher */
+    -fx-background-size: 90px; /* Adjust size as needed */
+    -fx-cursor: hand;
+    -fx-alignment: center; /* Center text */
+    -fx-content-display: center; /* Ensures text is displayed */
+    -fx-font-weight: bold; /* Bold text for clarity */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 3); /* Soft shadow effect */
+}
+
+/* Hover Effect */
+.StartButton:hover {
+    -fx-background-color: #45a049; /* Slightly darker green for hover */
+    -fx-background-size: 95px; /* Slight increase in size on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 12, 0, 0, 5); /* Stronger shadow on hover */
+}
+
+/* Click Effect */
+.StartButton:pressed {
+    -fx-background-color: #388E3C; /* Darker green on click */
+    -fx-background-size: 90px; /* Reset size on click */
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 0); /* Inward shadow on press */
+}
