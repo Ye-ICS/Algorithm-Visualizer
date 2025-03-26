@@ -61,7 +61,12 @@ class MenuLayout extends VBox {
 
 
 
+
         buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, bruteforceBtn,mazeSortBtn,AESBtn,mazeBtn,sudokuBtn,Maximbtn);
+
+
+        
+        getChildren().addAll(title, buttonsBox);
 
 
         // Load CSS file
