@@ -23,6 +23,12 @@ class MenuLayout extends VBox {
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
+        // Buttons for each sorting algorithm
+        Button Maximbtn = new Button("Maxim");
+        Maximbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MaximMenuLayout()));
+
+       
+       //buttonsBox.getChildren().addAll(bubbleSortBtn);
         Button bubbleSortBtn = new Button("Bubble Sort");
         Button AESBtn = new Button("Advanced Encryption Standard algorithm");
         AESBtn.setMinSize(300, 50);
@@ -45,7 +51,7 @@ class MenuLayout extends VBox {
         Button mazeSortBtn = new Button("Maze Solver - Declan");
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
         
-        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn);
+        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
