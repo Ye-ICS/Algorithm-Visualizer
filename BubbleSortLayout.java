@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
  * Placeholder. May delete later.
  */
 public class BubbleSortLayout extends FlowPane{
+    @SuppressWarnings("unused")
     BubbleSortLayout() {
         setAlignment(Pos.CENTER);
 
