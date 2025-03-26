@@ -34,6 +34,10 @@ class MenuLayout extends VBox {
 
 
 
+        Button sudokuBtn = new Button("Sudoku Solver");
+        sudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Sudoku()));
+        
+
         Button mazeBtn = new Button("Maze Generator");
         mazeBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Maze()));
 
@@ -50,12 +54,8 @@ class MenuLayout extends VBox {
 
 
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, bruteforceBtn,mazeSortBtn,AESBtn,mazeBtn);
 
-
-
-
-        getChildren().addAll(title, buttonsBox);
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, bruteforceBtn,mazeSortBtn,AESBtn,mazeBtn,sudokuBtn);
 
         // Load CSS file
         getStylesheets().add(getClass().getResource("css/AEStyling.css").toExternalForm());
