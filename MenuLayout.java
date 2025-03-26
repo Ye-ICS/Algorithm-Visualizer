@@ -34,6 +34,9 @@ class MenuLayout extends VBox {
 
 
 
+        Button mazeBtn = new Button("Maze Generator");
+        mazeBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Maze()));
+
 
         Button bruteforceBtn = new Button("Sudoku");
         bruteforceBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BruteSudoku()));
@@ -46,7 +49,11 @@ class MenuLayout extends VBox {
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
 
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, bruteforceBtn,mazeSortBtn,AESBtn);
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, bruteforceBtn,mazeSortBtn,AESBtn,mazeBtn);
+
+
+
 
         getChildren().addAll(title, buttonsBox);
 
