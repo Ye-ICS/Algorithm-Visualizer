@@ -34,7 +34,6 @@ public class RecursiveDivisionW {
     public static String[][] drawWalls(String[][] array, Integer horiz, Integer vert) {
         // draw the walls
         int randNum;
-        boolean full = false;
         do {
             randNum = 1 + (int) (Math.random() * (10 - 3 + 1));
             for (int i = 0; i < WIDTH; i++) {
@@ -50,9 +49,8 @@ public class RecursiveDivisionW {
             array[randNum][horiz] = " ";
 
             array[vert][horiz] = "+";
-            full = true;
-        } while (full == false);
-        return (array);
+            return (array);
+        } while (true);
     }
 
     /**
