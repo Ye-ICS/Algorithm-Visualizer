@@ -1,4 +1,6 @@
 import java.util.Random;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -6,12 +8,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class BruteSudoku extends FlowPane {
     
     TextField[][] sudokuCells = new TextField[9][9];
     Random random = new Random();
-
 
     BruteSudoku() {
         Text title = new Text("Brute Force Sudoku Solver");
@@ -47,11 +49,11 @@ public class BruteSudoku extends FlowPane {
         getChildren().addAll(title, backsBtn, sudokuTable, solveButton);
     }
 
-
+    // 🔹 Modified to use animated solving
     void solveSudoku() {
         int[][] board = new int[9][9];
 
-       
+        // Read board from UI
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 String text = sudokuCells[i][j].getText().trim();
@@ -63,18 +65,49 @@ public class BruteSudoku extends FlowPane {
             }
         }
 
-        
-        if (solve(board)) {
-            
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    sudokuCells[i][j].setText(String.valueOf(board[i][j]));
-                }
-            }
-        } else {
-            System.out.println("No solution exists.");
-            fillRandomNumbers();
+        // Solve with animation
+        new Thread(() -> solveWithAnimation(board)).start();
+    }
+
+    // 🔹 Runs the solving process step by step with animation
+    void solveWithAnimation(int[][] board) {
+        solveStep(board, 0, 0);
+    }
+
+    // 🔹 Solves recursively and updates UI dynamically
+    void solveStep(int[][] board, int row, int col) {
+        if (row == 9) return; // Solved successfully
+
+        int nextRow = (col == 8) ? row + 1 : row;
+        int nextCol = (col + 1) % 9;
+
+        if (board[row][col] != 0) {
+            solveStep(board, nextRow, nextCol);
+            return;
         }
+
+        for (int num = 1; num <= 9; num++) {
+            if (isValid(board, row, col, num)) {
+                board[row][col] = num;
+                animateSolving(row, col, num, () -> solveStep(board, nextRow, nextCol));
+
+                return; // Stop recursion until animation is done
+            }
+        }
+
+        // Backtrack
+        board[row][col] = 0;
+        animateSolving(row, col, 0, () -> solveStep(board, nextRow, nextCol));
+    }
+
+    // 🔹 Animates number placement and backtracking
+    void animateSolving(int row, int col, int num, Runnable nextStep) {
+        PauseTransition pause = new PauseTransition(Duration.millis(50)); // Delay per step
+        pause.setOnFinished(e -> {
+            Platform.runLater(() -> sudokuCells[row][col].setText(num == 0 ? "" : String.valueOf(num)));
+            nextStep.run();
+        });
+        pause.play();
     }
 
 
