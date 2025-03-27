@@ -1,3 +1,4 @@
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -10,19 +11,18 @@ public class RecursiveDivisionLayout extends FlowPane{
         BorderPane rootLayout = new BorderPane();
 
         Canvas canvas = new Canvas(500, 500);
-        ScrollPane scrollPane = new ScrollPane(canvas);
+        FlowPane canFlowPane = new FlowPane(canvas);
+        canFlowPane.setAlignment(Pos.CENTER);
 
-        Button drawRecDevMazeBtn = new Button("Draw Recursive Division Maze");
+        Button drawRecDevMazeBtn = new Button("Draw Maze");
         Button backBtn = new Button("Back");
-        FlowPane bottomPanel = new FlowPane(backBtn, drawRecDevMazeBtn);
 
         // drawRecDevMazeBtn.setOnAction(
         //     event -> RecursiveDivisionW.drawMaze(canvas, levelSpinner.getValue()));
         backBtn.setOnAction(
             event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
 
-        rootLayout.setCenter(scrollPane);
-        rootLayout.setBottom(bottomPanel);
+        getChildren().addAll(rootLayout, canFlowPane, drawRecDevMazeBtn, backBtn);
 
     }
 }
