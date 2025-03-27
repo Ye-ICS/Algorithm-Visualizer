@@ -49,7 +49,7 @@ public class BruteSudoku extends FlowPane {
         getChildren().addAll(title, backsBtn, sudokuTable, solveButton);
     }
 
-    // 🔹 Modified to use animated solving
+
     void solveSudoku() {
         int[][] board = new int[9][9];
 
@@ -69,14 +69,14 @@ public class BruteSudoku extends FlowPane {
         new Thread(() -> solveWithAnimation(board)).start();
     }
 
-    // 🔹 Runs the solving process step by step with animation
+
     void solveWithAnimation(int[][] board) {
         solveStep(board, 0, 0);
     }
 
-    // 🔹 Solves recursively and updates UI dynamically
+   
     void solveStep(int[][] board, int row, int col) {
-        if (row == 9) return; // Solved successfully
+        if (row == 9) return; 
 
         int nextRow = (col == 8) ? row + 1 : row;
         int nextCol = (col + 1) % 9;
@@ -91,24 +91,24 @@ public class BruteSudoku extends FlowPane {
                 board[row][col] = num;
                 animateSolving(row, col, num, () -> solveStep(board, nextRow, nextCol));
 
-                return; // Stop recursion until animation is done
+                return; 
             }
         }
 
-        // Backtrack
         board[row][col] = 0;
         animateSolving(row, col, 0, () -> solveStep(board, nextRow, nextCol));
     }
 
-    // 🔹 Animates number placement and backtracking
+
     void animateSolving(int row, int col, int num, Runnable nextStep) {
-        PauseTransition pause = new PauseTransition(Duration.millis(50)); // Delay per step
+        PauseTransition pause = new PauseTransition(Duration.millis(50)); 
         pause.setOnFinished(e -> {
             Platform.runLater(() -> sudokuCells[row][col].setText(num == 0 ? "" : String.valueOf(num)));
             nextStep.run();
         });
         pause.play();
     }
+
 
 
     boolean solve(int[][] board) {
