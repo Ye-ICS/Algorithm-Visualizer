@@ -75,7 +75,13 @@ public class AEStart extends VBox {
         startBtn.setMinSize(200, 50);
         startBtn.getStyleClass().add("StartButton");
         getStylesheets().add(getClass().getResource("css/StartButton.css").toExternalForm());
-
+        Button backBtn = new Button("Back");
+        backBtn.setMinSize(200, 50);
+        backBtn.getStyleClass().add("BackButton");
+        backBtn.setOnAction(event -> {
+            FXUtils.setSceneRoot(getScene(), new MenuLayout()); // Assuming MainMenu is the previous scene
+        });
+        startBox.getChildren().add(backBtn);
         startBtn.setOnAction(event -> {
             password = passwordBox.getText();
             plaintext = plaintextBox.getText();

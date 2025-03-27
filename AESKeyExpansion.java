@@ -86,7 +86,7 @@ public class AESKeyExpansion extends VBox {
             "-fx-background-color: #3498db; -fx-text-fill: white; " +  
             "-fx-font-size: 14px; -fx-padding: 8px 15px;"  
         );  
-        backButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(),   
+        backButton.setOnAction(_ -> FXUtils.setSceneRoot(getScene(),   
             new AESPasswordArray(AEStart.getPassword(), AEStart.getPlaintext())));  
         getChildren().add(backButton);  
         
@@ -320,33 +320,30 @@ public class AESKeyExpansion extends VBox {
         ft.play();  
     }  
     
-    private ImageView createKeyExpansionDiagram() {  
-        // Creating a diagram representation using JavaFX nodes  
-        VBox diagramBox = new VBox(15);  
-        diagramBox.setAlignment(Pos.CENTER);  
-        diagramBox.setPadding(new Insets(10));  
-        diagramBox.setStyle(  
-            "-fx-background-color: white; " +  
-            "-fx-border-color: #95a5a6; " +  
-            "-fx-border-width: 1px; " +  
-            "-fx-border-radius: 5px;"  
-        );  
-        
-        Label diagramTitle = new Label("Key Expansion Process");  
-        diagramTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");  
-        
-        HBox keyFlow = new HBox(5);  
-        keyFlow.setAlignment(Pos.CENTER);  
-        
-        // Simplified diagram showing the flow of key expansion  
-        // This would be an actual JavaFX node graph showing the process  
-        
-        // For simplicity, I'm returning null here, but in a real implementation,  
-        // this would create and return a proper diagram.  
-        // You would create rectangles, arrows, and text to visualize the process.  
-        
-        return null; // Replace with actual diagram implementation  
-    }  
+    private ImageView createKeyExpansionDiagram() {
+        // Placeholder diagram for the key expansion process
+        VBox diagramBox = new VBox(15);
+        diagramBox.setAlignment(Pos.CENTER);
+        diagramBox.setPadding(new Insets(10));
+        diagramBox.setStyle(
+            "-fx-background-color: white; " +
+            "-fx-border-color: #95a5a6; " +
+            "-fx-border-width: 1px; " +
+            "-fx-border-radius: 5px;"
+        );
+
+        Label diagramTitle = new Label("Key Expansion Process");
+        diagramTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        // Add a placeholder for the diagram
+        Label placeholder = new Label("Diagram Placeholder");
+        placeholder.setStyle("-fx-font-size: 14px; -fx-text-fill: #2c3e50;");
+
+        diagramBox.getChildren().addAll(diagramTitle, placeholder);
+
+        // Return the VBox as a Node
+        return new ImageView(); // Replace with actual diagram if available
+    }
     
     private void showRoundKeyGeneration(int roundKeyIndex) {  
         animationContainer.getChildren().clear();  
@@ -360,9 +357,7 @@ public class AESKeyExpansion extends VBox {
         
         // Convert word-based keys to matrix form for visualization  
         int[][] currentKeyMatrix = convertToMatrix(allExpandedKeys, roundKeyIndex);  
-        int[][] prevKeyMatrix = convertToMatrix(allExpandedKeys, roundKeyIndex - 1);  
-        int[][] eightBackMatrix = convertToMatrix(allExpandedKeys, roundKeyIndex - 2);  
-        
+        int[][] prevKeyMatrix = convertToMatrix(allExpandedKeys, roundKeyIndex - 1);          
         // Description of the process based on key index  
         Text processDescription;  
         if (roundKeyIndex % 2 == 0) {  
@@ -457,9 +452,7 @@ public class AESKeyExpansion extends VBox {
         
         // For even-numbered round keys, show all operations  
         // For odd-numbered, just show XOR  
-        if (roundKeyIndex % 2 == 0) {  
-            int[] lastWord = new int[4]; // Get last word of previous key  
-            
+        if (roundKeyIndex % 2 == 0) {              
             // Animation for RotWord  
             HBox rotWordBox = createOperationAnimation("RotWord",   
                 new int[]{0x12, 0x34, 0x56, 0x78}, // Example values  
@@ -719,34 +712,7 @@ public class AESKeyExpansion extends VBox {
         return new int[][][] { key0, key1 };
     }
 
-        private VBox createGridContainer(String[][] grid, String labelText, int GRID_SIZE) {
-                VBox container = new VBox(10);
-                container.setAlignment(Pos.CENTER);
-                Label label = new Label(labelText);
-                label.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
-                container.getChildren().add(label);
-        
-                HBox gridContainer = new HBox();
-                gridContainer.setStyle("-fx-border-color: rgb(30, 70, 170); -fx-border-width: 3px;");
-                gridContainer.setAlignment(Pos.CENTER);
-        
-                for (int col = 0; col < GRID_SIZE; col++) {
-            VBox colBox = new VBox();
-            colBox.setSpacing(5);
-            for (int row = 0; row < GRID_SIZE; row++) {
-                Label cell = new Label(grid[row][col]);
-                cell.setMinSize(40, 40);
-                cell.setStyle("-fx-border-color: green; -fx-border-width: 1px; -fx-background-color: white; -fx-font-size: 17px; -fx-text-fill: #2c3e50;");
-                colBox.getChildren().add(cell);
-            }
-            gridContainer.getChildren().add(colBox);
-        }
-
-        container.getChildren().add(gridContainer);
-        return container;
-    }
-
-    // AES S-Box for SubWord
+        // AES S-Box for SubWord
     private static final int[] SBOX = {
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -831,29 +797,6 @@ public class AESKeyExpansion extends VBox {
             }
             System.out.println();
         }
-    }
-    // Helper method to create a matrix label for displaying a 4x4 matrix
-    private Label createMatrixLabel(int[][] key) {
-        StringBuilder matrixText = new StringBuilder("Key Matrix:\n");
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                matrixText.append(String.format("%02x ", key[i][j])); // Convert to hex format
-            }
-            matrixText.append("\n");
-        }
-
-        Label matrixLabel = new Label(matrixText.toString());
-        matrixLabel.setStyle("-fx-font-size: 16px; -fx-fill: white;");
-        matrixLabel.setPadding(new Insets(10));
-
-        // Fade animation for each matrix
-        FadeTransition fade = new FadeTransition(Duration.seconds(1), matrixLabel);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setDelay(Duration.seconds(0.5));
-        fade.play();
-
-        return matrixLabel;
     }
     public static void generate14RoundKeys(String password) throws NoSuchAlgorithmException {
     // Generate and split the key
