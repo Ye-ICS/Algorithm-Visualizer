@@ -15,8 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,15 +56,11 @@ public class Sudoku extends GridPane {
             getScene().getWindow().setHeight(height);
         });
    
-        // Label for the difficulty selection screen
-        Label difficultyLabel = new Label("Choose Sudoku Difficulty");
-        difficultyLabel.setFont(Font.font("Times New Roman", FontWeight.BOLD, 40));
-        difficultyLabel.setTextFill(Color.WHITE);
-        difficultyLabel.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.5)));
+        Label difficultyLabel = SudokuVisuals.difficultyLabel();
    
-        Button easyButton = createDifficultyButton("Easy", "#27ae60", "#219955");
-        Button mediumButton = createDifficultyButton("Medium", "#f39c12", "#d58512");
-        Button hardButton = createDifficultyButton("Hard", "#e74c3c", "#c0392b");
+        Button easyButton = SudokuVisuals.createDifficultyButton("Easy", "#27ae60", "#219955");
+        Button mediumButton = SudokuVisuals.createDifficultyButton("Medium", "#f39c12", "#d58512");
+        Button hardButton = SudokuVisuals.createDifficultyButton("Hard", "#e74c3c", "#c0392b");
    
         easyButton.setOnAction(e -> loadSudoku("data/sudoku/Easy.txt"));
         mediumButton.setOnAction(e -> loadSudoku("data/sudoku/Medium.txt"));
@@ -83,78 +77,7 @@ public class Sudoku extends GridPane {
         setAlignment(Pos.CENTER);
         add(container, 0, 9, 9, 1);
     }
-   
-    private Button createDifficultyButton(String text, String baseColor, String hoverColor) {
-        Button button = new Button(text);
-        button.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-        button.setPrefSize(300, 140);
-        button.setStyle(
-            "-fx-background-color: " + baseColor + ";" +
-            "-fx-text-fill: white;" +
-            "-fx-background-radius: 10px;"
-        );
-       
-        // Add hover effect
-        button.setOnMouseEntered(e ->
-            button.setStyle(
-                "-fx-background-color: " + hoverColor + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 10px;" +
-                "-fx-scale-x: 1.05;" +
-                "-fx-scale-y: 1.05;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);"
-            )
-        );
-       
-        // Reset on mouse exit
-        button.setOnMouseExited(e ->
-            button.setStyle(
-                "-fx-background-color: " + baseColor + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 10px;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);"
-            )
-        );
-       
-        // Add pressed effect
-        button.setOnMousePressed(e ->
-            button.setStyle(
-                "-fx-background-color: " + hoverColor + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 10px;" +
-                "-fx-scale-x: 0.98;" +
-                "-fx-scale-y: 0.98;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 0);"
-            )
-        );
-       
-        // Reset on mouse release
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(
-                    "-fx-background-color: " + hoverColor + ";" +
-                    "-fx-text-fill: white;" +
-                    "-fx-background-radius: 10px;" +
-                    "-fx-scale-x: 1.05;" +
-                    "-fx-scale-y: 1.05;" +
-                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);"
-                );
-            } else {
-                button.setStyle(
-                    "-fx-background-color: " + baseColor + ";" +
-                    "-fx-text-fill: white;" +
-                    "-fx-background-radius: 10px;" +
-                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);"
-                );
-            }
-        });
-       
-        // Add drop shadow
-        button.setEffect(new DropShadow(5, Color.rgb(0, 0, 0, 0.2)));
-       
-        return button;
-    }
-
+    
     private void loadSudoku(String filename) {
 
         getChildren().clear(); // Clear difficulty buttons
@@ -178,7 +101,6 @@ public class Sudoku extends GridPane {
                 }).start();
             }
         });
-        solveButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 160px; -fx-background-color: #32CD32; -fx-text-fill: white;");
 
         Button resetButton = new Button("Reset");
         resetButton.setOnAction(e -> {
@@ -186,7 +108,6 @@ public class Sudoku extends GridPane {
                 loadSudoku(filename);
             }
         });
-        resetButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 80px; -fx-background-color: #FFA500; -fx-text-fill: white;");
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
@@ -195,22 +116,16 @@ public class Sudoku extends GridPane {
                 showDifficultySelection(); // Show the difficulty selection screen again
             }
         });
-        backButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 80px; -fx-background-color: #FF4500; -fx-text-fill: white;");
+        
+        SudokuVisuals.buttonStyle(solveButton, resetButton, backButton); // Apply button styles to solve, reset, and back buttons
 
         HBox buttonBox = new HBox(10, resetButton, backButton);
         buttonBox.setAlignment(Pos.CENTER);
 
+        // Initialize speedLabel before using it
         speedLabel = new Label("Speed Control");
-        speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        speedLabel.setStyle("-fx-text-fill: black;");
-
         speedSlider = new Slider(1, 10, 1);
-        speedSlider.setShowTickLabels(true);
-        speedSlider.setShowTickMarks(true);
-        speedSlider.setMajorTickUnit(1);
-        speedSlider.setMinorTickCount(0);
-        speedSlider.setSnapToTicks(true);
-        speedSlider.setStyle("-fx-text-fill:black; -fx-font-size: 18px;");
+        SudokuVisuals.speedSlider(speedLabel, speedSlider); // Details of speedslider
 
         speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> { //obs and oldVal are not used but are still needed for addListener
             // Get the integer value of the new slider value to use as the speed factor
@@ -255,36 +170,22 @@ public class Sudoku extends GridPane {
    
         for (int row = 0; row < subGridSize; row++) { // Bigger 3x3 cell
             for (int col = 0; col < subGridSize; col++) {
+                
                 GridPane innerGrid = new GridPane();
                 innerGrid.setPadding(new Insets(2));
    
                 for (int i = 0; i < subGridSize; i++) {  // 3x3 cell inside each bigger 3x3 cell
                     for (int j = 0; j < subGridSize; j++) {
-                        // Create inner cell with rounded corners
+
                         Rectangle innerCell = new Rectangle(cellSize, cellSize);
-                        innerCell.setFill(Color.WHITE);
-                        innerCell.setStroke(Color.LIGHTGRAY);
-                        innerCell.setStrokeWidth(1);
-                        innerCell.setArcWidth(5);
-                        innerCell.setArcHeight(5);
-                       
-                        // Add inner shadow for depth
-                        InnerShadow innerShadow = new InnerShadow();
-                        innerShadow.setRadius(2);
-                        innerShadow.setColor(Color.rgb(0, 0, 0, 0.05));
-                        innerCell.setEffect(innerShadow);
-   
+
                         int globalRow = row * subGridSize + i; // Full 9x9 row index
                         int globalCol = col * subGridSize + j; // Full 9x9 column index
    
                         cellStacks[globalRow][globalCol] = new StackPane(innerCell);
                         StackPane cellStack = cellStacks[globalRow][globalCol];
                        
-                        // Add shadow effect to cell
-                        DropShadow cellShadow = new DropShadow();
-                        cellShadow.setRadius(5);
-                        cellShadow.setColor(Color.rgb(0, 0, 0, 0.1));
-                        cellStack.setEffect(cellShadow);
+                        SudokuVisuals.innerCellDesign(innerCell, i, j, cellStack);
    
                         int number = gridNumbers[globalRow][globalCol];
    
@@ -292,27 +193,19 @@ public class Sudoku extends GridPane {
                             Text text = new Text(String.valueOf(number));
                             text.setFont(Font.font("Arial", FontWeight.BOLD, 24));
                             text.setFill(Color.rgb(44, 62, 80)); // Dark blue-gray color for original numbers
+
                             cellStack.getChildren().add(text);
+
                             isOriginal[globalRow][globalCol] = true; // Mark as an original number
                         }
-                       
+
                         innerGrid.add(cellStack, j, i);
                     }
                 }
    
                 // Outer cell with rounded corners and shadow
                 Rectangle outerCell = new Rectangle(cellSize * subGridSize + 4, cellSize * subGridSize + 4);
-                outerCell.setFill(Color.TRANSPARENT);
-                outerCell.setStroke(Color.rgb(52, 73, 94)); // Dark blue-gray color
-                outerCell.setStrokeWidth(3);
-                outerCell.setArcWidth(15);
-                outerCell.setArcHeight(15);
-               
-                // Add shadow effect to outer grid
-                DropShadow outerShadow = new DropShadow();
-                outerShadow.setRadius(8);
-                outerShadow.setColor(Color.rgb(0, 0, 0, 0.3));
-                outerCell.setEffect(outerShadow);
+                SudokuVisuals.outerCellDesign(outerCell);
    
                 StackPane stack = new StackPane(outerCell, innerGrid);
                 add(stack, col, row);
