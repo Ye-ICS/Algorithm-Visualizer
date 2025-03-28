@@ -47,11 +47,18 @@ class MenuLayout extends VBox {
 
         Button aStarBtn = new Button("A*");
         aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
+        bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
+
+        buttonsBox.getChildren().addAll(bubbleSortBtn);
         
         Button mazeSortBtn = new Button("Maze Solver - Declan");
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
+
+        Button recursiveDivisionBtn = new Button("Recursive Division");
+        recursiveDivisionBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new RecursiveDivisionLayout()));
         
-        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn);
+        
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn, recursiveDivisionBtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
