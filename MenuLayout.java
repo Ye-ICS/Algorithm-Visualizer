@@ -23,19 +23,28 @@ class MenuLayout extends VBox {
         FlowPane buttonsBox = new FlowPane();
         buttonsBox.setAlignment(Pos.CENTER);
 
+        // Buttons for each sorting algorithm
+        Button Maximbtn = new Button("Maxim");
+        Maximbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MaximMenuLayout()));
+
+       
+       //buttonsBox.getChildren().addAll(bubbleSortBtn);
         Button bubbleSortBtn = new Button("Bubble Sort");
+      
         Button AESBtn = new Button("Advanced Encryption Standard algorithm");
         AESBtn.setMinSize(300, 50);
         AESBtn.setOnAction(event -> {
             FXUtils.setSceneRoot(getScene(), new AEStart());
         });
+        AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
 
         Button sudokuSolverbtn = new Button("Sudoku solver");
 
-
-        buttonsBox.getChildren().addAll(sudokuSolverbtn);
-        AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
-
+        Button sudokuBtn = new Button("Sudoku Solver");
+        sudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Sudoku()));
+        
+        Button mazeBtn = new Button("Maze Generator");
+        mazeBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Maze()));
 
         Button aStarBtn = new Button("A*");
         aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
@@ -43,7 +52,7 @@ class MenuLayout extends VBox {
         Button mazeSortBtn = new Button("Maze Solver - Declan");
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
 
-        buttonsBox.getChildren().addAll(mazeSortBtn, bubbleSortBtn, aStarBtn, AESBtn, sudokuSolverbtn);
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn, sudokuSolverbtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
