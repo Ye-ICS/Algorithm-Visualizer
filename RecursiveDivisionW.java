@@ -65,6 +65,8 @@ public class RecursiveDivisionW {
         // draw the maze
         int vertLine = 2 + (int) (Math.random() * (horiz - 3 + 1)); // vertical line
         int horizLine = 2 + (int) (Math.random() * (vert - 3 + 1)); // horizontal line
+        int vertWall = vertLine; // vertical wall
+        int horizWall = horizLine; // horizontal wall
         int randNum;
         int remainingWidth = horiz - vertLine;
         int remainingHeight = vert - horizLine;
@@ -83,7 +85,7 @@ public class RecursiveDivisionW {
         array[horizLine][vertLine] = "+";
 
         if (remainingHeight <= 2 || remainingWidth <= 2) {
-            return (array);
+            drawMaze(array, horizWall, vertWall);
         } else {
             drawMaze(array, vertLine, horizLine);
         }
