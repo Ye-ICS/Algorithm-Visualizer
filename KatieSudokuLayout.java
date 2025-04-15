@@ -5,17 +5,22 @@ import java.util.Scanner;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class KatieSudokuLayout extends TilePane {
+public class KatieSudokuLayout extends VBox {
     public Text[][] cell = new Text[9][9];
     int[][] board = readBoard("1.txt");
+    private int boardGap = 5;
 
     KatieSudokuLayout() throws FileNotFoundException {
         TilePane boardTilePane = new TilePane();
         boardTilePane.setPrefColumns(9);
         boardTilePane.setPrefRows(9);
+        boardTilePane.setHgap(boardGap * 2);
+        boardTilePane.setVgap(boardGap);
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -23,6 +28,8 @@ public class KatieSudokuLayout extends TilePane {
                 boardTilePane.getChildren().add(cell[i][j]);
             }
         }
+
+        HBox hbox = new HBox();
 
         Text text = new Text("Hi");
         Button solveBtn = new Button("Solve");
@@ -33,7 +40,9 @@ public class KatieSudokuLayout extends TilePane {
                 text.setText(":(");
             }
         });
-        getChildren().addAll(boardTilePane, solveBtn, text);
+
+        hbox.getChildren().addAll(solveBtn, text);
+        getChildren().addAll(boardTilePane, hbox);
     }
 
     public static int[][] readBoard(String filename) throws FileNotFoundException {
