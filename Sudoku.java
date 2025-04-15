@@ -182,17 +182,13 @@ public class Sudoku extends GridPane {
     }
 
     private boolean backtrack(int[][] board, int row, int col) {
-        
-        if (row == 9)
-        {
+        if (row == 9) {
             return true; // If we reach past the last row, the Sudoku is solved
         }
-        if (col == 9) 
-        {
+        if (col == 9) {
             return backtrack(board, row + 1, 0); // Move to the next row
         }
-        if (board[row][col] != 0) 
-        {
+        if (board[row][col] != 0) {
             return backtrack(board, row, col + 1); // Skip filled cells
         }
 
@@ -201,22 +197,20 @@ public class Sudoku extends GridPane {
             if (isValid(board, row, col, number)) { // Check if the number is valid in this position
                 
                 board[row][col] = number; // Place the number
-    
-                // Check if it's the last number being placed
-                boolean isLastCell = isLastCellToBeFilled(board, row, col);
-                updateCell(row, col, number, isLastCell);
-    
+
+                updateCell(row, col, number);
+
                 // Recursively try to solve the next cell (move to the next column). If placing a number is possible in that cell, return true.
                 if (backtrack(board, row, col + 1)) {
-                    return true; 
+                    return true;
                 }
-    
+
                 // If placing 'number' didn't work, backtrack by resetting the cell to 0.
                 board[row][col] = 0;
-                updateCell(row, col, 0, false);
+                updateCell(row, col, 0);
             }
         }
-        
+
         // No valid number found
         return false;
     }
@@ -250,44 +244,26 @@ public class Sudoku extends GridPane {
         return true;
     }
 
-    private void updateCell(int row, int col, int number, boolean isLastCell) {
+    private void updateCell(int row, int col, int number) {
         Platform.runLater(() -> {
             StackPane cellStack = cellStacks[row][col];
             cellStack.getChildren().clear();
     
             Rectangle innerCell = new Rectangle(60, 60);
-            innerCell.getStyleClass().add("inner-cell"); // Apply CSS class to the inner cell
+            innerCell.getStyleClass().add("inner-cell");
             cellStack.getChildren().add(innerCell);
     
             if (number != 0) {
                 Text text = new Text(String.valueOf(number));
     
-                // Reset all previously placed numbers to normal black
-                for (int i = 0; i < 9; i++) {
-                    for (int j = 0; j < 9; j++) { 
-                        if (!isOriginal[i][j] && cellStacks[i][j].getChildren().size() > 1) {
-                            Text previousText = (Text) cellStacks[i][j].getChildren().get(1);
-                            previousText.setFill(Color.BLACK);
-                            previousText.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
-                        }
-                    }
-                }
-
-                if (isOriginal[row][col]) { 
+                if (isOriginal[row][col]) {
                     // Keep original numbers bold and black
                     text.setFont(Font.font("Arial", FontWeight.BOLD, 24));
                     text.setFill(Color.BLACK);
-                } 
-                else 
-                {
-                    // If it's the last cell, do NOT apply green, bold, or bigger font
-                    if (isLastCell) {
-                        text.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
-                        text.setFill(Color.BLACK);
-                    } else {
-                        text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-                        text.setFill(Color.GREEN);
-                    }
+                } else {
+                    // Apply green, bold, or bigger font for non-original numbers
+                    text.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+                    text.setFill(Color.GREEN);
                 }
                 cellStack.getChildren().add(text);
             }
@@ -298,16 +274,17 @@ public class Sudoku extends GridPane {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    private boolean isLastCellToBeFilled(int[][] board, int row, int col) {
-        for (int i = row; i < 9; i++) {
-            for (int j = (i == row ? col : 0); j < 9; j++) { // If in the starting row, start from the given column; otherwise, start from the first column
-                if (board[i][j] == 0) {
-                    return false; // More empty cells exist
+    
+        // Reset the cell to black after the delay
+        Platform.runLater(() -> {
+            if (!isOriginal[row][col] && number != 0) {
+                StackPane cellStack = cellStacks[row][col];
+                if (cellStack.getChildren().size() > 1) {
+                    Text text = (Text) cellStack.getChildren().get(1);
+                    text.setFill(Color.BLACK);
+                    text.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
                 }
             }
-        }
-        return true; // This is the last cell being filled
+        });
     }
 }
