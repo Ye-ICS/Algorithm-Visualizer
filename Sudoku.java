@@ -33,54 +33,19 @@ public class Sudoku extends GridPane {
     private volatile long stepDelay; // Sleep time
 
     private boolean solving = false; // Keeps track of sudoku and checks if it is being solved or not (used for solve, reset and back button)
-   
-    public Sudoku() {
+
+    public Sudoku(String filename) {
+        setAlignment(Pos.CENTER);
+
+        // Add padding to ensure proper spacing
+        setPadding(new Insets(3));
+
         // Load the external CSS file
         getStylesheets().add(getClass().getResource("css/SudokuStyle.css").toExternalForm());
-        showDifficultySelection();
+        loadSudoku(filename); // Load the Sudoku puzzle based on the selected difficulty
     }
 
-    private void showDifficultySelection() {
-       
-        StackPane container = new StackPane(); // Wrap VBox for centering
-        VBox difficultySelection = new VBox(20);
-        difficultySelection.setAlignment(Pos.CENTER);
-   
-        // Match Sudoku grid's window size
-        int width = 577;  // Match Sudoku width
-        int height = 752; // Match Sudoku height
-   
-        // Set window size to match the Sudoku UI
-        Platform.runLater(() -> {
-            getScene().getWindow().setWidth(width);
-            getScene().getWindow().setHeight(height);
-        });
-   
-        Label difficultyLabel = SudokuVisuals.difficultyLabel();
-   
-        Button easyButton = SudokuVisuals.createDifficultyButton("Easy", "#27ae60", "#219955");
-        Button mediumButton = SudokuVisuals.createDifficultyButton("Medium", "#f39c12", "#d58512");
-        Button hardButton = SudokuVisuals.createDifficultyButton("Hard", "#e74c3c", "#c0392b");
-   
-        easyButton.setOnAction(e -> loadSudoku("data/sudoku/Easy.txt"));
-        mediumButton.setOnAction(e -> loadSudoku("data/sudoku/Medium.txt"));
-        hardButton.setOnAction(e -> loadSudoku("data/sudoku/Hard.txt"));
-    
-        Button backButton = new Button("Back to Menu");
-        backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
-        backButton.getStyleClass().add("back-button"); // Apply CSS class to the back button
-    
-        difficultySelection.getChildren().addAll(difficultyLabel, easyButton, mediumButton, hardButton, backButton);
-        container.getChildren().add(difficultySelection); // Center VBox inside StackPane
-
-        // Ensure the entire StackPane itself is centered in the GridPane
-        setAlignment(Pos.CENTER);
-        add(container, 0, 9, 9, 1);
-    }
-    
     private void loadSudoku(String filename) {
-
-        getChildren().clear(); // Clear difficulty buttons
         isOriginal = new boolean[9][9]; // Reset isOriginal array
 
         try {
@@ -90,7 +55,7 @@ public class Sudoku extends GridPane {
         }
 
         createSudokuGrid();
-        
+
         Button solveButton = new Button("Solve Sudoku");
         solveButton.setOnAction(e -> { 
             if (!solving) {
@@ -112,11 +77,10 @@ public class Sudoku extends GridPane {
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             if (!solving) {
-                getChildren().clear(); 
-                showDifficultySelection(); // Show the difficulty selection screen again
+                FXUtils.setSceneRoot(getScene(), new DifficultyMenuLayout()); // Load DifficultyMenuLayout
             }
         });
-        
+
         SudokuVisuals.buttonStyle(solveButton, resetButton, backButton); // Apply button styles to solve, reset, and back buttons
 
         HBox buttonBox = new HBox(10, resetButton, backButton);
@@ -134,7 +98,7 @@ public class Sudoku extends GridPane {
             // The formula adjusts the delay by dividing 15000 by 3 raised to the power of the speed factor. Exponential increase
         });
 
-        // Default speed and start posiiton of timer
+        // Default speed and start position of timer
         speedSlider.setValue(10); 
         speedSlider.setValue(1);
 
@@ -143,7 +107,7 @@ public class Sudoku extends GridPane {
 
         add(controls, 0, 9, 9, 1);
         GridPane.setHalignment(solveButton, HPos.CENTER);
-    }    
+    }
 
     int[][] getTable(String filename) throws FileNotFoundException { //getting values from the file
         Scanner scanner = new Scanner(new File(filename));
