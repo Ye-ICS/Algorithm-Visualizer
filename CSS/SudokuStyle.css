@@ -1,0 +1,28 @@
+/* Background gradient for the Sudoku root node */
+.root {
+    -fx-background-color: linear-gradient(to bottom right, rgb(22, 49, 150), rgb(27, 150, 169), rgb(47, 189, 168));
+}
+
+/* Back button style */
+.back-button {
+    -fx-font-size: 14px;
+    -fx-pref-width: 160px;
+    -fx-background-color: #FF4500;
+    -fx-text-fill: white;
+}
+
+/* Inner cell style */
+.inner-cell {
+    -fx-fill: white;
+    -fx-stroke: lightgray;
+}
+
+/* Outer cell style */
+.outer-cell {
+    -fx-arc-width: 10;
+    -fx-arc-height: 10;
+    -fx-fill: transparent;
+    -fx-stroke: black;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 2, 2);
+}

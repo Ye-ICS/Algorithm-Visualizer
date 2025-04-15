@@ -35,8 +35,8 @@ public class Sudoku extends GridPane {
     private boolean solving = false; // Keeps track of sudoku and checks if it is being solved or not (used for solve, reset and back button)
    
     public Sudoku() {
-        // Apply background gradient to the root node
-        setStyle("-fx-background-color: linear-gradient(to bottom right,rgb(22, 49, 150),rgb(27, 150, 169),rgb(47, 189, 168));");
+        // Load the external CSS file
+        getStylesheets().add(getClass().getResource("css/SudokuStyle.css").toExternalForm());
         showDifficultySelection();
     }
 
@@ -68,7 +68,7 @@ public class Sudoku extends GridPane {
     
         Button backButton = new Button("Back to Menu");
         backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
-        backButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 160px; -fx-background-color: #FF4500; -fx-text-fill: white;");
+        backButton.getStyleClass().add("back-button"); // Apply CSS class to the back button
     
         difficultySelection.getChildren().addAll(difficultyLabel, easyButton, mediumButton, hardButton, backButton);
         container.getChildren().add(difficultySelection); // Center VBox inside StackPane
@@ -205,7 +205,7 @@ public class Sudoku extends GridPane {
    
                 // Outer cell with rounded corners and shadow
                 Rectangle outerCell = new Rectangle(cellSize * subGridSize + 4, cellSize * subGridSize + 4);
-                SudokuVisuals.outerCellDesign(outerCell);
+                outerCell.getStyleClass().add("outer-cell"); // Apply CSS class to the outer cell
    
                 StackPane stack = new StackPane(outerCell, innerGrid);
                 add(stack, col, row);
@@ -292,8 +292,7 @@ public class Sudoku extends GridPane {
             cellStack.getChildren().clear();
     
             Rectangle innerCell = new Rectangle(60, 60);
-            innerCell.setFill(Color.WHITE);
-            innerCell.setStroke(Color.LIGHTGRAY);
+            innerCell.getStyleClass().add("inner-cell"); // Apply CSS class to the inner cell
             cellStack.getChildren().add(innerCell);
     
             if (number != 0) {
