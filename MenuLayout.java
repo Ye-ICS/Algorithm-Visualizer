@@ -29,15 +29,8 @@ class MenuLayout extends VBox {
         Button Maximbtn = new Button("Maxim");
         Maximbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MaximMenuLayout()));
 
-        Button katieSudokuBtn = new Button("Sudoku Solver");
-        sudokuBtn.setOnAction(event -> {
-            try {
-                FXUtils.setSceneRoot(getScene(), new KatieSudokuLayout());
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        });
+        Button katieSudokuBtn = new Button("Sudoku Solver (Katie)");
+        katieSudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new KatieSudokuLayout()));
        
        //buttonsBox.getChildren().addAll(bubbleSortBtn);
         Button bubbleSortBtn = new Button("Bubble Sort");

@@ -12,10 +12,15 @@ import javafx.scene.text.Text;
 
 public class KatieSudokuLayout extends VBox {
     public Text[][] cell = new Text[9][9];
-    int[][] board = readBoard("1.txt");
+    int[][] board;
     private int boardGap = 5;
 
-    KatieSudokuLayout() throws FileNotFoundException {
+    KatieSudokuLayout(){
+        try {
+            board = readBoard("1.txt");
+        } catch (FileNotFoundException fne) {
+            throw new IllegalStateException(fne);
+        }
         TilePane boardTilePane = new TilePane();
         boardTilePane.setPrefColumns(9);
         boardTilePane.setPrefRows(9);
@@ -57,7 +62,6 @@ public class KatieSudokuLayout extends VBox {
     }
 
     public void updateBoard() {
-        // System.out.println("IM GOING TO KILL YOU");
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 cell[i][j].setText(board[i][j] + "");
