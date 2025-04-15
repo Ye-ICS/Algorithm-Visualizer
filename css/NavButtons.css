@@ -1,0 +1,18 @@
+/* Buttons for navigation */
+.nav-button {
+    -fx-font-size: 16px;
+    -fx-padding: 10px 20px;
+    -fx-background-color: #90EE90; /* Light Green */
+    -fx-text-fill: black;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: #87CEFA; /* Light Blue */
+}
+
+.nav-button:pressed {
+    -fx-background-color: #006400; /* Dark Green */
+}
