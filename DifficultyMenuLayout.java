@@ -35,9 +35,9 @@ public class DifficultyMenuLayout extends VBox {
         Button mediumButton = SudokuVisuals.createDifficultyButton("Medium", "#f39c12", "#d58512");
         Button hardButton = SudokuVisuals.createDifficultyButton("Hard", "#e74c3c", "#c0392b");
 
-        easyButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new Sudoku("data/sudoku/Easy.txt")));
-        mediumButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new Sudoku("data/sudoku/Medium.txt")));
-        hardButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new Sudoku("data/sudoku/Hard.txt")));
+        easyButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new SudokuVisuals("data/sudoku/Easy.txt")));
+        mediumButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new SudokuVisuals("data/sudoku/Medium.txt")));
+        hardButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new SudokuVisuals("data/sudoku/Hard.txt")));
     
         Button backButton = new Button("Back to Menu");
         backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
