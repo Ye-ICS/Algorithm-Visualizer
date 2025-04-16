@@ -83,7 +83,7 @@ public class SudokuVisuals extends GridPane {
             }
         });
 
-        SudokuVisuals.buttonStyle(solveButton, resetButton, backButton); // Apply button styles to solve, reset, and back buttons
+        DifficultyMenuLayout.buttonStyle(solveButton, resetButton, backButton); // Apply button styles to solve, reset, and back buttons
 
         HBox buttonBox = new HBox(10, resetButton, backButton);
         buttonBox.setAlignment(Pos.CENTER);
@@ -91,7 +91,7 @@ public class SudokuVisuals extends GridPane {
         // Initialize speedLabel before using it
         speedLabel = new Label("Speed Control");
         speedSlider = new Slider(1, 10, 1);
-        SudokuVisuals.speedSlider(speedLabel, speedSlider); // Details of speedslider
+        DifficultyMenuLayout.speedSlider(speedLabel, speedSlider); // Details of speedslider
 
         speedSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int speedFactor = newVal.intValue();
@@ -148,7 +148,7 @@ public class SudokuVisuals extends GridPane {
                         cellStacks[globalRow][globalCol] = new StackPane(innerCell);
                         StackPane cellStack = cellStacks[globalRow][globalCol];
 
-                        SudokuVisuals.innerCellDesign(innerCell, i, j, cellStack);
+                        innerCellDesign(innerCell, i, j, cellStack);
 
                         int number = gridNumbers[globalRow][globalCol];
 
@@ -175,107 +175,7 @@ public class SudokuVisuals extends GridPane {
         }
     }
 
-    public static Button createDifficultyButton(String text, String baseColor, String hoverColor) {
-                
-        Button button = new Button(text);
-        button.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-        button.setPrefSize(300, 140);
-        button.setStyle(
-            "-fx-background-color: " + baseColor + ";" +
-            "-fx-text-fill: white;" +
-            "-fx-background-radius: 10px;"
-        );
-       
-        // Add hover effect
-        button.setOnMouseEntered(e ->
-            button.setStyle(
-                "-fx-background-color: " + hoverColor + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 10px;" +
-                "-fx-scale-x: 1.05;" +
-                "-fx-scale-y: 1.05;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);"
-            )
-        );
-       
-        // Reset on mouse exit
-        button.setOnMouseExited(e ->
-            button.setStyle(
-                "-fx-background-color: " + baseColor + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 10px;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);"
-            )
-        );
-       
-        // Add pressed effect
-        button.setOnMousePressed(e ->
-            button.setStyle(
-                "-fx-background-color: " + hoverColor + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 10px;" +
-                "-fx-scale-x: 0.98;" +
-                "-fx-scale-y: 0.98;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 0);"
-            )
-        );
-       
-        // Reset on mouse release
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(
-                    "-fx-background-color: " + hoverColor + ";" +
-                    "-fx-text-fill: white;" +
-                    "-fx-background-radius: 10px;" +
-                    "-fx-scale-x: 1.05;" +
-                    "-fx-scale-y: 1.05;" +
-                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);"
-                );
-            } else {
-                button.setStyle(
-                    "-fx-background-color: " + baseColor + ";" +
-                    "-fx-text-fill: white;" +
-                    "-fx-background-radius: 10px;" +
-                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);"
-                );
-            }
-        });
-       
-        // Add drop shadow
-        button.setEffect(new DropShadow(5, Color.rgb(0, 0, 0, 0.2)));
-       
-        return button;
-    }
-
-    public static Label difficultyLabel() {
-                
-        // Label for the difficulty selection screen
-        Label difficultyLabel = new Label("Choose Sudoku Difficulty");
-        difficultyLabel.setFont(Font.font("Times New Roman", FontWeight.BOLD, 40));
-        difficultyLabel.setTextFill(Color.WHITE);
-        difficultyLabel.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.5)));
-        return difficultyLabel;
-    }
-
-    public static void speedSlider(Label speedLabel, Slider speedSlider) {
-                
-        speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        speedLabel.setStyle("-fx-text-fill: black;");
-
-        speedSlider.setShowTickLabels(true);
-        speedSlider.setShowTickMarks(true);
-        speedSlider.setMajorTickUnit(1);
-        speedSlider.setMinorTickCount(0);
-        speedSlider.setSnapToTicks(true);
-        speedSlider.setStyle("-fx-text-fill:black; -fx-font-size: 18px;");
-    }
-
-    public static void buttonStyle(Node solveButton, Node resetButton, Node backButton) {
-                            
-        solveButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 160px; -fx-background-color: #32CD32; -fx-text-fill: white;");
-        resetButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 80px; -fx-background-color: #FFA500; -fx-text-fill: white;");
-        backButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 80px; -fx-background-color: #FF4500; -fx-text-fill: white;");
-    }
+    
 
     public static void innerCellDesign(Rectangle innerCell, int i, int j, Node cellStack) {
         
