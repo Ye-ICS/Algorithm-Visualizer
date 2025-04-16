@@ -43,7 +43,7 @@ public class DifficultyMenuLayout extends VBox {
         mediumButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new SudokuVisuals("data/sudoku/Medium.txt")));
         hardButton.setOnAction(e -> FXUtils.setSceneRoot(getScene(), new SudokuVisuals("data/sudoku/Hard.txt")));
 
-        Button backButton = new Button("Back to Menu");
+        Button backButton = new Button("Back");
         backButton.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
         backButton.getStyleClass().add("back-button"); // Apply CSS class to the back button
 

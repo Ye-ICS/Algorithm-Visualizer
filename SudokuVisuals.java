@@ -4,7 +4,6 @@ import javafx.scene.text.Text;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -165,7 +163,6 @@ public class SudokuVisuals extends GridPane {
                         innerGrid.add(cellStack, j, i);
                     }
                 }
-
                 Rectangle outerCell = new Rectangle(cellSize * subGridSize + 4, cellSize * subGridSize + 4);
                 outerCell.getStyleClass().add("outer-cell");
 
@@ -176,59 +173,30 @@ public class SudokuVisuals extends GridPane {
     }
 
     public static void speedSlider(Label speedLabel, Slider speedSlider) {
-                
-        speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        speedLabel.setStyle("-fx-text-fill: black;");
+        speedLabel.getStyleClass().add("speed-label");
+        speedSlider.getStyleClass().add("speed-slider");
 
         speedSlider.setShowTickLabels(true);
         speedSlider.setShowTickMarks(true);
         speedSlider.setMajorTickUnit(1);
         speedSlider.setMinorTickCount(0);
         speedSlider.setSnapToTicks(true);
-        speedSlider.setStyle("-fx-text-fill:black; -fx-font-size: 18px;");
     }
 
     public static void buttonStyle(Node solveButton, Node resetButton, Node backButton) {
-                            
-        solveButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 160px; -fx-background-color: #32CD32; -fx-text-fill: white;");
-        resetButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 80px; -fx-background-color: #FFA500; -fx-text-fill: white;");
-        backButton.setStyle("-fx-font-size: 14px; -fx-pref-width: 80px; -fx-background-color: #FF4500; -fx-text-fill: white;");
+        solveButton.getStyleClass().add("solve-button");
+        resetButton.getStyleClass().add("reset-button");
+        backButton.getStyleClass().add("back-button");
     }
 
     public static void innerCellDesign(Rectangle innerCell, int i, int j, Node cellStack) {
-        
-        // Create inner cell with rounded corners
-        innerCell.setFill(Color.WHITE);
-        innerCell.setStroke(Color.LIGHTGRAY);
-        innerCell.setStrokeWidth(1);
-        innerCell.setArcWidth(5);
-        innerCell.setArcHeight(5);
-        
-        // Add inner shadow for depth
-        InnerShadow innerShadow = new InnerShadow();
-        innerShadow.setRadius(2);
-        innerShadow.setColor(Color.rgb(0, 0, 0, 0.05));
-        innerCell.setEffect(innerShadow);
+        // Apply CSS class for inner cell
+        innerCell.getStyleClass().add("inner-cell");
 
-        // Add shadow effect to cell
+        // Add shadow effect to cell stack
         DropShadow cellShadow = new DropShadow();
         cellShadow.setRadius(5);
         cellShadow.setColor(Color.rgb(0, 0, 0, 0.1));
         cellStack.setEffect(cellShadow);
-    }
-
-    public static void outerCellDesign(Shape outerCell) {
-        
-        outerCell.setFill(Color.TRANSPARENT);
-        outerCell.setStroke(Color.rgb(52, 73, 94)); // Dark blue-gray color
-        outerCell.setStrokeWidth(3);
-        ((Rectangle) outerCell).setArcWidth(15);
-        ((Rectangle) outerCell).setArcHeight(15);
-        
-        // Add shadow effect to outer grid
-        DropShadow outerShadow = new DropShadow();
-        outerShadow.setRadius(8);
-        outerShadow.setColor(Color.rgb(0, 0, 0, 0.3));
-        outerCell.setEffect(outerShadow);
     }
 }
