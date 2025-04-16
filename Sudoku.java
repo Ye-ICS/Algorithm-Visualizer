@@ -10,8 +10,8 @@ import javafx.application.Platform;
 
 public class Sudoku {
    
-    public static void solveSudoku(int[][] board, long stepDelay) {
-        backtrack(board, 0, 0, new boolean[9][9], new StackPane[9][9], stepDelay);
+    public static void solveSudoku(int[][] board, long stepDelay, boolean[][] isOriginal, StackPane[][] cellStacks) {
+        backtrack(board, 0, 0, isOriginal, cellStacks, stepDelay);
     }
 
     private static boolean backtrack(int[][] board, int row, int col, boolean[][] isOriginal, StackPane[][] cellStacks, long delayAmount) {
@@ -101,7 +101,7 @@ public class Sudoku {
         try {
             Thread.sleep(delayAmount); // sleep time based on slider value
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); 
         }
 
         // Reset the cell to black after the delay
