@@ -11,6 +11,59 @@
     -fx-text-fill: white;
 }
 
+/* Difficulty button base style */
+.difficulty-button {
+    -fx-font-family: Arial;
+    -fx-font-weight: bold;
+    -fx-font-size: 30px;
+    -fx-pref-width: 300px;
+    -fx-pref-height: 140px;
+    -fx-background-radius: 10px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 0);
+}
+
+/* Hover effect for difficulty buttons */
+.difficulty-button:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 0);
+}
+
+/* Pressed effect for difficulty buttons */
+.difficulty-button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 3, 0, 0, 0);
+}
+
+/* Easy button color */
+.easy-button {
+    -fx-background-color: #27ae60;
+}
+
+.easy-button:hover {
+    -fx-background-color: #219955;
+}
+
+/* Medium button color */
+.medium-button {
+    -fx-background-color: #f39c12;
+}
+
+.medium-button:hover {
+    -fx-background-color: #d58512;
+}
+
+/* Hard button color */
+.hard-button {
+    -fx-background-color: #e74c3c;
+}
+
+.hard-button:hover {
+    -fx-background-color: #c0392b;
+}
+
 /* Inner cell style */
 .inner-cell {
     -fx-fill: white;
