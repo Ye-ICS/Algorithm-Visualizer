@@ -11,6 +11,7 @@ public class BubbleSortLayout extends FlowPane{
     BubbleSortLayout() {
         setAlignment(Pos.CENTER);
 
+        
         Text description = new Text("This page is under construction...");
 
         Button backBtn = new Button("Back");

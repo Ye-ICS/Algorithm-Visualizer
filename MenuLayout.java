@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
@@ -27,6 +29,8 @@ class MenuLayout extends VBox {
         Button Maximbtn = new Button("Maxim");
         Maximbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new MaximMenuLayout()));
 
+        Button katieSudokuBtn = new Button("Sudoku Solver (Katie)");
+        katieSudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new KatieSudokuLayout()));
        
        //buttonsBox.getChildren().addAll(bubbleSortBtn);
         Button bubbleSortBtn = new Button("Bubble Sort");
@@ -51,7 +55,7 @@ class MenuLayout extends VBox {
         Button mazeSortBtn = new Button("Maze Solver - Declan");
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
         
-        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn);
+        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn, katieSudokuBtn);
         getChildren().addAll(title, buttonsBox);
 
         // Load CSS file
