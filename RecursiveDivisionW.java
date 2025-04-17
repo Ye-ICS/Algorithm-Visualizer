@@ -82,11 +82,11 @@ public class RecursiveDivisionW {
         array[randNum][vertLine] = " ";
         array[horizLine][vertLine] = "+";
 
-        if (remainingHeight <= 2 || remainingWidth <= 2) {
-            drawMaze(array, HEIGHT, WIDTH);
-        } else {
-            drawMaze(array, vertLine, horizLine);
-        }
+        // if (remainingHeight <= 2 || remainingWidth <= 2) {
+        //     drawMaze(array, HEIGHT, WIDTH);
+        // } else {
+        //     drawMaze(array, vertLine, horizLine);
+        // }
         return (array);
     }
 

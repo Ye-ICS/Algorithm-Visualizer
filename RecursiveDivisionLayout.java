@@ -8,7 +8,6 @@ import javafx.scene.layout.FlowPane;
 public class RecursiveDivisionLayout extends FlowPane{
 
     RecursiveDivisionLayout() {
-        BorderPane rootLayout = new BorderPane();
 
         Canvas canvas = new Canvas(500, 500);
         FlowPane canFlowPane = new FlowPane(canvas);
@@ -22,7 +21,7 @@ public class RecursiveDivisionLayout extends FlowPane{
         backBtn.setOnAction(
             event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
 
-        getChildren().addAll(rootLayout, canFlowPane, drawRecDevMazeBtn, backBtn);
+        getChildren().addAll(canFlowPane, drawRecDevMazeBtn, backBtn);
 
     }
 }
