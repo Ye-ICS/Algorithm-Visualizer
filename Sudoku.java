@@ -6,12 +6,16 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
 import javafx.application.Platform;
 
+public class Sudoku {
+
+    
 /**
  * This method initializes the solving process by marking the original cells of the puzzle and then
  * calls a recursive backtracking function to solve the puzzle. 
+ * @param board The Sudoku board represented as a 2D array.
+ * @param stepDelay The delay between each step of the solving process.
+ * @param cellStacks The visual representation of the Sudoku cells.
  */
-public class Sudoku {
-   
     public static void solveSudoku(int[][] board, long stepDelay, StackPane[][] cellStacks) {
         boolean[][] isOriginal = new boolean[9][9];
         for (int row = 0; row < 9; row++) {
@@ -108,7 +112,6 @@ public class Sudoku {
         try {
             Thread.sleep(delayAmount); // sleep time based on slider value
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); 
         }
 
         // Reset the cell to black after the delay
