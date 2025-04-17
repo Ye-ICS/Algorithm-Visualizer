@@ -23,8 +23,6 @@ public class SudokuVisuals extends GridPane {
 
     private int[][] gridNumbers;
     private StackPane[][] cellStacks = new StackPane[9][9]; // Store references to UI cells
-    public boolean[][] isOriginal = new boolean[9][9];
-
     private Slider speedSlider; // Slider to control solving speed
     private Label speedLabel;   // Label to display speed control text
 
@@ -43,8 +41,6 @@ public class SudokuVisuals extends GridPane {
     }
 
     private void loadSudoku(String filename) {
-        isOriginal = new boolean[9][9]; // Reset isOriginal array
-
         try {
             gridNumbers = getTable(filename);
         } catch (FileNotFoundException e) {
