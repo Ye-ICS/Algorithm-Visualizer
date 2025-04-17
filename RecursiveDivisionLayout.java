@@ -1,11 +1,11 @@
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
 
-public class RecursiveDivisionLayout extends FlowPane{
+public class RecursiveDivisionLayout extends FlowPane {
 
     RecursiveDivisionLayout() {
 
@@ -13,15 +13,22 @@ public class RecursiveDivisionLayout extends FlowPane{
         FlowPane canFlowPane = new FlowPane(canvas);
         canFlowPane.setAlignment(Pos.CENTER);
 
-        Button drawRecDevMazeBtn = new Button("Draw Maze");
+        Button drawMazeBtn = new Button("Draw Maze");
         Button backBtn = new Button("Back");
 
-        // drawRecDevMazeBtn.setOnAction(
-        //     event -> RecursiveDivisionW.drawMaze(canvas, levelSpinner.getValue()));
-        backBtn.setOnAction(
-            event -> FXUtils.setSceneRoot(getScene(), new MenuLayout()));
+        drawMazeBtn.setOnAction(
+                event -> drawALine(canvas.getGraphicsContext2D()));
 
-        getChildren().addAll(canFlowPane, drawRecDevMazeBtn, backBtn);
+        // backBtn.setOnAction(
+        //         event -> backBtn.setOnAction(FXUtils.setSceneRoot(getScene(), new MenuLayout())));
 
+        getChildren().addAll(canFlowPane, drawMazeBtn, backBtn);
+
+    }
+
+    void drawALine(GraphicsContext gc) {
+        gc.setStroke(Color.BLACK);
+        gc.strokeLine(0, 0, 300, 300);
+        gc.fillRect(0, 300, 300, 300);
     }
 }
