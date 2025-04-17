@@ -68,7 +68,7 @@ public class Sudoku {
         int startCol = (col / 3) * 3;
 
         // Checking if 'numExists' already exists in the same 3x3 subgrid
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) { // Loop over 3 rows of subgrid
             for (int j = 0; j < 3; j++) {
                 if (numExists == board[startRow + i][startCol + j]) {
                     return false;
@@ -83,7 +83,6 @@ public class Sudoku {
     private static void updateCell(int row, int col, int number, boolean[][]isOriginal, StackPane[][] cellStacks, long delayAmount) {
         Platform.runLater(() -> {
             StackPane cellStack = cellStacks[row][col]; 
-            if (cellStack == null) return;
             cellStack.getChildren().clear();
 
             Rectangle innerCell = new Rectangle(60, 60);

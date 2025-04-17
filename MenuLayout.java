@@ -33,7 +33,7 @@ class MenuLayout extends VBox {
         AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
 
         Button sudokuBtn = new Button("Sudoku Solver (Rudraksha)");
-        sudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DifficultyMenuLayout()));
+        sudokuBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SudokuMenuLayout()));
         
         Button mazeBtn = new Button("Maze Generator");
         mazeBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Maze()));

@@ -73,7 +73,7 @@ public class SudokuVisuals extends GridPane {
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            FXUtils.setSceneRoot(getScene(), new DifficultyMenuLayout()); // Load DifficultyMenuLayout
+            FXUtils.setSceneRoot(getScene(), new SudokuMenuLayout()); // Load DifficultyMenuLayout
         });
 
         buttonStyle(solveButton, resetButton, backButton); // Apply button styles to solve, reset, and back buttons

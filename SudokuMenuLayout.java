@@ -9,9 +9,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public class DifficultyMenuLayout extends VBox {
+public class SudokuMenuLayout extends VBox {
 
-    public DifficultyMenuLayout() {
+    public SudokuMenuLayout() {
         getStylesheets().add(getClass().getResource("css/SudokuStyle.css").toExternalForm());
         getStyleClass().add("root"); 
         
