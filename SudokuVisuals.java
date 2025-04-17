@@ -151,8 +151,6 @@ public class SudokuVisuals extends GridPane {
                             text.setFill(Color.rgb(44, 62, 80));
 
                             cellStack.getChildren().add(text);
-
-                            isOriginal[globalRow][globalCol] = true;
                         }
                         innerGrid.add(cellStack, j, i);
                     }
