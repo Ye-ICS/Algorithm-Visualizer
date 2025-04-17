@@ -1,16 +1,24 @@
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
-
 import javafx.application.Platform;
 
+/**
+ * This method initializes the solving process by marking the original cells of the puzzle and then
+ * calls a recursive backtracking function to solve the puzzle. 
+ */
 public class Sudoku {
    
-    public static void solveSudoku(int[][] board, long stepDelay, boolean[][] isOriginal, StackPane[][] cellStacks) {
+    public static void solveSudoku(int[][] board, long stepDelay, StackPane[][] cellStacks) {
+        boolean[][] isOriginal = new boolean[9][9];
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                isOriginal[row][col] = board[row][col] != 0; 
+            }
+        }
         backtrack(board, 0, 0, isOriginal, cellStacks, stepDelay);
     }
 

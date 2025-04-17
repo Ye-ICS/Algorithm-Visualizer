@@ -15,7 +15,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -32,7 +31,6 @@ public class SudokuVisuals extends GridPane {
     private boolean solving = false; // Keeps track of sudoku and checks if it is being solved or not (used for solve, reset and back button)
     private volatile long stepDelay; // Sleep time
 
-
     public SudokuVisuals(String filename) {
         setAlignment(Pos.CENTER);
 
@@ -43,7 +41,6 @@ public class SudokuVisuals extends GridPane {
         getStylesheets().add(getClass().getResource("css/SudokuStyle.css").toExternalForm());
         loadSudoku(filename); // Load the Sudoku puzzle based on the selected difficulty
     }
-
 
     private void loadSudoku(String filename) {
         isOriginal = new boolean[9][9]; // Reset isOriginal array
@@ -61,7 +58,7 @@ public class SudokuVisuals extends GridPane {
             if (!solving) {
                 solving = true; // Prevent pressing during solving
                 new Thread(() -> {
-                    Sudoku.solveSudoku(gridNumbers, stepDelay, isOriginal, cellStacks); // Pass isOriginal and cellStacks
+                    Sudoku.solveSudoku(gridNumbers, stepDelay, cellStacks); // Pass isOriginal and cellStacks
                     solving = false; // Reset solving flag
                 }).start();
             }
@@ -76,9 +73,7 @@ public class SudokuVisuals extends GridPane {
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
-            if (!solving) {
-                FXUtils.setSceneRoot(getScene(), new DifficultyMenuLayout()); // Load DifficultyMenuLayout
-            }
+            FXUtils.setSceneRoot(getScene(), new DifficultyMenuLayout()); // Load DifficultyMenuLayout
         });
 
         buttonStyle(solveButton, resetButton, backButton); // Apply button styles to solve, reset, and back buttons
@@ -159,7 +154,6 @@ public class SudokuVisuals extends GridPane {
 
                             isOriginal[globalRow][globalCol] = true;
                         }
-
                         innerGrid.add(cellStack, j, i);
                     }
                 }

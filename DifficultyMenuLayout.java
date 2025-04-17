@@ -62,7 +62,6 @@ public class DifficultyMenuLayout extends VBox {
     }
 
     public static Label difficultyLabel() {
-                
         // Label for the difficulty selection screen
         Label difficultyLabel = new Label("Choose Sudoku Difficulty");
         difficultyLabel.setFont(Font.font("Times New Roman", FontWeight.BOLD, 40));
