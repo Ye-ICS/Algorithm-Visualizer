@@ -58,7 +58,7 @@ public class SudokuVisuals extends GridPane {
             if (!solving) {
                 solving = true; // Prevent pressing during solving
                 new Thread(() -> {
-                    Sudoku.solveSudoku(gridNumbers, stepDelay, cellStacks); // Pass isOriginal and cellStacks
+                    Sudoku.solveSudoku(gridNumbers, stepDelay, cellStacks); 
                     solving = false; // Reset solving flag
                 }).start();
             }
