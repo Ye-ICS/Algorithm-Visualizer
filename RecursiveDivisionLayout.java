@@ -29,6 +29,5 @@ public class RecursiveDivisionLayout extends FlowPane {
     void drawALine(GraphicsContext gc) {
         gc.setStroke(Color.BLACK);
         gc.strokeLine(0, 0, 300, 300);
-        gc.fillRect(0, 300, 300, 300);
     }
 }
