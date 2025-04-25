@@ -83,13 +83,6 @@ public class RecursiveDivisionW {
         randNum = 1 + (int) (Math.random() * (horizLine - 3 + 1));
         array[randNum][vertLine] = " ";
         array[horizLine][vertLine] = "+";
-
-        // if (remainingHeight <= 2 || remainingWidth <= 2) {
-        //     drawMaze(array, HEIGHT, WIDTH);
-        // } else {
-        //     drawMaze(array, vertLine, horizLine);
-        // } 
-         // NEED to call the method recursively 4 times, one 4 each quad 
         return (array);
     }
 
@@ -98,6 +91,9 @@ public class RecursiveDivisionW {
      */
     public void main(String[] args) {
         String[][] grid = new String[WIDTH][HEIGHT];
+        int bottom = 10;
+        int top, left = 0;
+        int right = 10;
         int randHoriz = 2 + (int) (Math.random() * ((WIDTH - 2) - 2 + 1));
         int randVert = 2 + (int) (Math.random() * ((HEIGHT - 2) - 2 + 1));
 
