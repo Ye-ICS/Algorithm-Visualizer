@@ -1,35 +1,36 @@
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
+public class MenuLayout extends VBox { 
 
-/**
- * Custom layout based on VBox for a menu to select which algorithm to visualize.
- */
-class MenuLayout extends VBox {
-    /**
-     * Basic constructor, initializes the menu with a button to each algorithm.
-     */
-    MenuLayout() {
-        setAlignment(Pos.CENTER);
-
-        Text title = new Text("Algorithm Visualizer");
-        title.setFont(Font.font(24));
+    public MenuLayout() {
         
-        FlowPane buttonsBox = new FlowPane();
-        buttonsBox.setAlignment(Pos.CENTER);
+        TextField word1Input = new TextField();
+        word1Input.setPromptText("Enter first word");
 
-        Button bubbleSortBtn = new Button("Bubble Sort");
-        bubbleSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new BubbleSortLayout()));
+        TextField word2Input = new TextField();
+        word2Input.setPromptText("Enter second word");
 
-        Button aStarBtn = new Button("A*");
-        aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
+        Button calcButton = new Button("Calculate Edit Distance");
+        Button clearButton = new Button("Clear");
 
+        Label resultLabel = new Label("Edit Distance: ");
 
-        buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn);
-        getChildren().addAll(title, buttonsBox);
+        calcButton.setOnAction(e -> {
+            String w1 = word1Input.getText();
+            String w2 = word2Input.getText();
+            int distance = EditDistanceC.computeEditDistance(w1, w2);
+            resultLabel.setText("Edit Distance: " + distance);
+        });
+
+        clearButton.setOnAction(e -> {
+            word1Input.clear();
+            word2Input.clear();
+            resultLabel.setText("Edit Distance: ");
+        });
+
+        this.setSpacing(10);
+        this.setStyle("-fx-padding: 20; -fx-alignment: center;");
+        this.getChildren().addAll(word1Input, word2Input, calcButton, clearButton, resultLabel);
     }
 }

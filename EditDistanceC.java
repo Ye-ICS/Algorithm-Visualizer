@@ -1,42 +1,34 @@
-import java.util.Scanner;
-import javafx.scene.control.Button;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Text;
+public class EditDistanceC {
+    
+    public static int computeEditDistance(String w1, String w2) {
+        int m = w1.length();
+        int n = w2.length();
 
-public class EditDistanceC extends FlowPane{
-    EditDistanceC() {
-        Text display = new Text("The result will show up here");
-        Button submitBtn = new Button("Go");
-        submitBtn.setOnAction(event -> display.setText("Distance: " + testEditDistance("hi", "he")));
+        int[][] dp = new int[m + 1][n + 1];
 
-        getChildren().addAll(display, submitBtn); //Basic structure for testing
-    }
+        
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i; 
+        }
+        for (int j = 0; j <= n; j++) {
+            dp[0][j] = j; 
+        }
 
+        
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (w1.charAt(i - 1) == w2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; 
+                } else {
+                    int delete = dp[i - 1][j];      
+                    int insert = dp[i][j - 1];      
+                    int substitute = dp[i - 1][j - 1]; 
 
-    int testEditDistance(String string, String otherString) {
-        //Backend only for now for testing
-        System.out.println("Welcome! Please input string number 1 you want to compare:");
+                    dp[i][j] = 1 + Math.min(delete, Math.min(insert, substitute));
+                }
+            }
+        }
 
-        String[] compOne; 
-        compOne = new String[string.length()];
-
-        System.out.println("Please input string number 2 you want to compare:");
-
-        String[] compTwo; 
-        compTwo = new String[otherString.length()]; 
-
-
-        //Fill each array index[i] with corresponding letter in index[i] from string input1
-        for (int i = 0; i != string.length(); i++) {
-            compOne[i] = string.substring(i);
-        } 
-        //Same thing but for second array - for future use in ease of comparing.
-        for (int i = 0; i != otherString.length(); i++) {
-            compTwo[i] = otherString.substring(i);
-        } 
-        System.out.println("Calculating...");
-
-        return 0;
-
+        return dp[m][n]; 
     }
 }
