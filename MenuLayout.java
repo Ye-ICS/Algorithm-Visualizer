@@ -46,11 +46,15 @@ class MenuLayout extends VBox {
         Button mazeBtn = new Button("Maze Generator");
         mazeBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new Maze()));
 
+        AESBtn.getStyleClass().add("AEStyling"); // Corrected CSS class name
+
+
         Button aStarBtn = new Button("A*");
         aStarBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new AStar()));
         
         Button mazeSortBtn = new Button("Maze Solver - Declan");
         mazeSortBtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new DeclanJonesLayout()));
+        sudokuSolverbtn.setOnAction(event -> FXUtils.setSceneRoot(getScene(), new SudokuSolver()));
 
         buttonsBox.getChildren().addAll(bubbleSortBtn, aStarBtn, AESBtn, mazeSortBtn, sudokuBtn, Maximbtn, sudokuSolverbtn);
         getChildren().addAll(title, buttonsBox);

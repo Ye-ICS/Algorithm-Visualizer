@@ -55,11 +55,21 @@ public class SudokuSolver extends FlowPane{
         board[8][2] = 8;
         board[8][4] = 5;
         board[8][7] = 4;
+        
 
-
-    
+        int gCoordinate = 0;
+        
 
         TextField[][] fields = new TextField[9][9];
+
+        int delay = 50;
+        //Timeline timeline = new Timeline();
+       // KeyFrame keyframe = new KeyFrame(Duration.millis(delay), event -> solve(board, ){
+         //   var result = solve(null);
+            
+       // });
+
+
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
 
@@ -87,13 +97,12 @@ public class SudokuSolver extends FlowPane{
         getChildren().addAll(grid, backBtn, start, resetBtn);
 
     }
-    static boolean solve(int board[][],int coordinate, TextField[][] fields){
+    boolean solve(int board[][],int coordinate, TextField[][] fields){
         System.out.println("coordinate: " + coordinate);
         int x = coordinate / 9;
         int y = coordinate % 9;
         int new_coordinate = 0;
         for(int i = coordinate + 1; i <= 80; i++){
-            updateGrid(board, fields);
             if(board[i / 9][i % 9] <= 0){
                 new_coordinate = i;
                 break;
@@ -102,6 +111,7 @@ public class SudokuSolver extends FlowPane{
         for(int i = 1; i <= 9; i++){
             if(check(board, coordinate / 9, coordinate % 9, i)){
                 board[x][y] = -i;
+                updateGrid(board, fields);
                 if(coordinate == 80){
                     updateGrid(board, fields);
                     System.out.println("done");
